@@ -1,0 +1,454 @@
+\chapter{Работа със CVS}
+
+\textbf{Премина се към работа със SVN, но тези инструкции за CVS ще останат 
+тук поради исторически причини.}
+
+\section{Достъп до изходните кодове чрез CVS}
+
+
+Естествено, трябва да имате инсталиран CVS.  Ако разполагате с Debian:
+
+\begin{verbatim}
+# apt-get install cvs
+\end{verbatim}
+
+
+За да изтеглите последните сорсове на книгата от CVS хранилището, изпълнете:
+
+\begin{verbatim}
+$ export CVSROOT=:pserver:anonymous@photo-forum.net:/home/cvsroot
+$ cvs login
+$ cvs -z9 checkout -P debian-book
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Тези, които имат желание да се включат в разработката на книгата и да
+commit-ват в CVS-хранилището, трябва да имат инсталиран SSH и права за
+писане в проекта, които могат да получат, ако изпратят писмо до
+\texttt{debian-book@lists.zadnik.org}.  Авторите трябва да изтеглят
+книгата по следния начин:
+
+\begin{verbatim}
+$ export CVSROOT=:ext:име@photo-forum.net:/home/cvsroot
+$ export CVS_RSH=ssh
+$ cvs -z9 checkout -P debian-book
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Където \emph{име} е Вашето потребителско име.
+
+\section{Бързи инструкции за CVS}
+
+
+Работата със CVS е подробно описана в документацията на SourceForge.
+Добри източници за CVS са: \hlink{http://cvshome.org}{http://cvshome.org} и
+\hlink{http://www.loria.fr/\textasciitilde molli/cvs-index.html}{http://www.loria.fr/\textasciitilde molli/cvs-index.html}. 
+Ако не искате да се задълбочавате чак толкова, тук са представени
+основните понятия и действия при работата със CVS.
+
+
+За да направите каквато и да е промяна, трябва да имате \emph{работно копие}
+на книгата.  Преди всяка промяна синхронизирате работното копие със CVS-хранилището:
+
+\begin{verbatim}
+$ cvs update -PdR
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Извършвате промяната и записвате промените и в CVS хранилището:
+
+\begin{verbatim}
+$ cvs commit -m 'описание на промените' file1 path/to/file2
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Всяко действие със CVS-хранилището се извършва чрез командата
+\texttt{cvs}, която получава като параметър името на конкретното
+действие и евентуално имената на файловете, които са намесени.  За
+по-голямо удобство е нужно променливата \texttt{CVSROOT} да съдържа с
+кое хранилище се работи, а \texttt{CVS\_RSH} да съдържа \texttt{ssh}.
+Следните команди на Bash настройват обкръжението както трябва (където
+трябва да замените \emph{име} с потребителското си име):
+
+\begin{verbatim}
+export CVSROOT=:ext:име@photo-forum.net:/home/cvsroot
+export CVS_RSH=ssh
+\end{verbatim}
+
+
+След като всичко това е настроено, може да изтеглите работно копие на
+книгата с помощта на командата (опцията \texttt{-P} пропуска празните
+директории, които не са малко в книгата):
+
+\begin{verbatim}
+$ cvs -z9 checkout -P debian-book
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Тази команда създава начално работно копие.  За обновяване на
+съдържанието на работното копие използвайте командата
+
+\begin{verbatim}
+$ cvs -z9 update -PdR
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Тази команда задължително трябва да се изпълнява в директория на
+работното копие.
+
+
+\LaTeX~файловете се намират в директорията \texttt{src}.  Ако имената
+на файловете не са достатъчни, за да ви орентират кой какво съдържа,
+погледнете във файла \texttt{debian-book.tex}.
+
+
+След като свършите с промените, трябва да се обнови и файла
+\texttt{ChangeLog}.  Използвайте скрипта \texttt{changelog.up},
+намиращ се в главната директория debian-book.  За да го използвате
+обаче, трябва да имате инсталирани пакетите \deb{cvs2cl} и
+\deb{txt2html}.
+
+\subsection{CVS session with project-x}
+
+
+\begin{verbatim}
+$ cd                            # move to the work area
+$ cvs co project-x              # get sources from CVS to local
+$ cd project-x
+      ... make changes to the content ...
+$ cvs diff -u                   # similar to diff -u repository/ local/
+$ cvs ci -m "Describe change"   # save local sources to CVS
+$ vi newfile_added
+$ cvs add newfile_added
+$ cvs ci -m "Added newfile_added"
+$ cvs up                        # merge latest version from CVS
+      ... watch out for lines starting with "C filename"
+      ... unmodified code is moved to `.#filename.version'.
+      ... Search "<<<<<<<" and ">>>>>>>" in filename.
+$ cvs tag Release-1             # add release tag
+      ... edit further ...
+$ cvs tag -d Release-1          # remove release tag
+$ cvs ci -m "more comments"
+$ cvs tag Release-1             # re-add release tag
+$ cd                            # move back to the work area
+$ cvs co -r Release-initial -d old project-x
+      ... get original version to old directory
+$ cd old
+$ cvs tag -b Release-initial-bugfixes # create branch (-b) tag
+      ... Now you can work on the old version (Tag=sticky)
+$ cvs update
+      ... Source tree now has sticky tag "Release-initial-bugfixes"
+      ... Work on this branch
+$ cvs up # sync with files modified by others on this branch
+$ cvs ci -m "check into this branch"
+$ cvs update -kk -A
+      ... Remove sticky tag and forget contents
+      ... Update from main trunk without keyword expansion
+$ cvs update -kk -j Release-initial-bugfixes
+      ... Merge from Release-initial-bugfixes branch into the main
+      ... trunk without keyword expansion.  Fix conflicts with editor.
+$ cvs ci -m "merge Release-initial-bugfixes"
+$ cd
+$ tar -cvzf old-project-x.tar.gz old     # make archive, -j for bz2
+$ cvs release -d old               # remove local source (optional)
+\end{verbatim}
+
+
+\subsection{Добавяне на файлове}
+
+Добавянето на файлове се извършва посредством две стъпки: Първо
+стартирате командата \texttt{add}, а след това -- \texttt{commit}.
+Файлът няма да се появи в хранилището, докато не се изпълни
+\texttt{commit}:
+
+\begin{verbatim}
+$ cvs add newfile.c
+cvs add: scheduling file 'newfile.c' for addition
+cvs add: use 'cvs commit' to add this file permanently
+$ cvs ci -m "added newfile.c" newfile.c
+RCS file: /usr/local/cvs/myproj/newfile.c,v
+done
+Checking in newfile.c;
+/usr/local/cvs/myproj/newfile.c,v  <-  newfile.c
+initial revision: 1.1
+done
+\end{verbatim}
+
+\subsection{Добавяне на директории}
+
+
+За разлика от добавянето на файл, добавянето на нова директория се извършва
+посредством една стъпка; не е нужно да изпълнявате commit след това:
+
+\begin{verbatim}
+$ mkdir c-subdir
+$ cvs add c-subdir
+Directory /usr/local/cvs/myproj/c-subdir added to the repository
+\end{verbatim}
+
+
+Ако погледнете в новата директория на Вашето работно копие
+ще видите, че чрез add автоматично бива създадена CVS поддиректория:
+
+\begin{verbatim}
+$ ls c-subdir
+CVS/
+$ ls c-subdir/CVS
+Entries     Repository  Root
+\end{verbatim}
+
+
+Сега в нея можете да добавяте файлове (или нови директории), както и при която и да
+е друга директория в работното копие.
+
+\subsection{Премахване на файлове}
+
+
+Премахването на файл е подобна на добавянето, освен че има една допълнителна
+стъпка:
+Първо трябва да премахнете файла от работното копие:
+
+\begin{verbatim}
+$ rm newfile.c
+$ cvs remove newfile.c
+cvs remove: scheduling 'newfile.c' for removal
+cvs remove: use 'cvs commit' to remove this file permanently
+$ cvs ci -m "removed newfile.c" newfile.c
+Removing newfile.c;
+/usr/local/cvs/myproj/newfile.c,v  <-  newfile.c
+new revision: delete; previous revision: 1.1
+done
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Забележете, че във втората и третата команда изрично именуваме \texttt{newfile.c},
+въпреки че не съществува вече в работното копие. Разбира се, при commit
+не е задължително да именувате файла, стига да нямате нищо против commit
+да включи всички други промени, които са се състояли в работното копие.
+
+\subsection{Премахване на директории}
+
+
+Както вече беше споменато, CVS всъщност не дръжи под контрол версиите (version
+control) на директории. Вместо това, като един вид евтин заместител,
+предлага определени странни функции, които в повечето случаи вършат работа.
+Една от тези функции е, че празните директории могат да бъдат третирани
+по по--особен начин. Ако искате да премахнете директория от даден проект, първо
+трябва да премахнете всички файлове, които съдържа
+
+\begin{verbatim}
+$ cd dir
+$ rm file1 file2 file3
+$ cvs remove file1 file2 file3
+(output omitted)
+$ cvs ci -m "removed all files" file1 file2 file3
+(output omitted)
+\end{verbatim}
+
+
+и след това да стартирате update в директорията над нея с опцията -P:
+
+\begin{verbatim}
+$ cd ..
+$ cvs update -P
+(output omitted)
+\end{verbatim}
+
+
+Опцията -P указва на update да "съкрати" (prune) всички празни директории ---
+тоест да ги премахне от работното копие. Щом това е направено, може да се
+каже, че директорията е премахната; всички файлове са премахнати, както и самата
+директория (поне от работното копие, въпреки че все още има празна директория в
+хранилището).
+Интересно съответствие (counterpart) на тази функция е, че когато пуснете
+само update, CVS не сваля автоматично нови директории от хранилището
+към Вашето работно копие. Съществуват няколко оправдавания за това поведение, но
+нито едно не заслужава да бъде обсъдено тук. Краткият отговор е, че от
+време на време трябва да пускате update с опцията -d, която указва
+да бъдат свалени всички нови директории от хранилището.
+
+\subsection{Преименуване на файлове и директории}
+
+
+Преименуването на файл е еквивалентно на създаването му под ново име и премахването му под старото.
+Под Unix командите са:
+
+\begin{verbatim}
+$ cp oldname newname
+$ rm oldname
+\end{verbatim}
+
+
+Ето еквивалента при CVS:
+
+\begin{verbatim}
+$ mv oldname newname
+$ cvs remove oldname
+(output omitted)
+$ cvs add newname
+(output omitted)
+$ cvs ci -m "renamed oldname to newname" oldname newname
+(output omitted)
+$
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Относно файловете --- това е всичко. Преименуването на директории
+не е много по--различно: създайте новата директория, добавете я чрез cvs, преместете всички файлове от старата директория в новата, чрез cvs remove ги премахнете от старата директория, чрез cvs add ги добавете в новата, след това cvs commit, за да има всичко ефект, и накрая направете cvs update -P, за да накарате сега празната директория да изчезне от работното копие. Това е все едно да:
+
+\begin{verbatim}
+$ mkdir newdir
+$ cvs add newdir
+$ mv olddir/* newdir
+mv: newdir/CVS: cannot overwrite directory
+$ cd olddir
+$ cvs rm foo.c bar.txt
+$ cd ../newdir
+$ cvs add foo.c bar.txt
+$ cd ..
+$ cvs commit -m "moved foo.c and bar.txt from olddir to newdir"
+$ cvs update -P
+\end{verbatim}
+
+
+Забележка: съобщението след третата команда. То Ви казва, че не може да
+копира поддиректорията CVS/ на olddir в newdir, защото newdir вече съдържа
+директория с такова име. Това е хубаво, защото и без това искате olddir да запази своята CVS/ поддиректория. Очевидно, преместеането на директории може да бъде не особено леко. Най-добрият
+подход е да опитате да измислите добра подредба на проекта Ви още в началото на разработването му, така че да не Ви се налага често да премествате директории. По-късно ще научите по-драстичен начин за преместване на директории, който включва правенето на промяната направо в хранилището. Най-добре е обаче този начин да бъде запазен за спешни случаи; когато е възможно, най-добре е да
+управлявате всичко с CVS операции вътре в работните копия.
+
+\subsection{CVS и бинарните файлове}
+
+
+Досега оставих неизказана малката мръсна тайна: CVS не може да
+се оправя особено добре с бинарни файлове. Не че CVS изобщо не може да се
+справя с бинарни файлове; справя се, но не с особена самоувереност.
+Всички файлове, с които работихме до сега бяха такива съдържащи обикновен текст.
+CVS има някои специални трика/похвата за текстови файлове. Например,
+когато работи между Unix хранилище и Windows или Macintosh работно копие, то конвертира завършека на реда както е подходящо за всяка платформа. Например, Unix конвенцията е да се използва само linefeed (LF), докато Windows очаква carriage return/linefeed (CRLF) предица в края на всеки ред. По този начин работното копие на машина използваща Windows ще има CRLF завършеци, а работното копие на същия проект върху Unix машина ще има LF завършеци (самото хранилище винаги се записва във формат LF). Друг трик е, че CVS засича специални стрингове (string - поредица от символи),
+познати още като RCS ключови стрингове, в текстови файлове и ги замества с revision information и други полезни неща. Например, ако Вашият файл съдържа стринга
+
+\begin{verbatim}
+$Revision: 1.4 $
+\end{verbatim}
+
+
+CVS will expand on each commit to include the revision number. For example, it may
+get expanded to
+
+\begin{verbatim}
+$Revision: 1.4 $
+\end{verbatim}
+
+
+CVS ще държи този стринг актуален, докато файлът бива разработван. (Различните
+ключови стрингове са документирани в Advanced CVS и Third-Party Tools.)
+This string expansion е много полезна функция при текстови файлове, като
+Ви позволява да видите the revision
+number или друга информация относно файла, докато го редактирате. Но какво ще
+стане, ако файлът е JPG изображение?
+Или компилирана изпълнима програма? При тези видове файлове CVS може доста да
+навреди, ако се blundere around expanding който и да е ключов стринг, който
+срещне. При бинарни файлове, по случайност могат да се появят подобни стрингове.
+
+
+По тази причина, когато добавяте бинарен файл, трябва да кажете на CVS
+да изключи както keyword expansion, така и преустройванто на завършека на
+реда (line-ending conversion). За да
+направите това, използвайте -kb:
+
+\begin{verbatim}
+$ cvs add -kb filename
+$ cvs ci -m "added blah" filename
+(etc)
+\end{verbatim}
+
+
+Също така, в някои случаи (като текстови файлове, които е вероятно да
+съдържат фалшифицирани ключови стрингове), може да поискате да изключите
+само the keyword expansion. Това се прави с -ko:
+
+\begin{verbatim}
+$ cvs add -ko filename
+$ cvs ci -m "added blah" filename
+(etc)
+\end{verbatim}
+
+
+Обърнете внимание, че не можете пълноценно да пуснете cvs diff на
+два revisions of a binary file. Diff използва текстово-базиран алгоритъм,
+който може само да съобщи  дали двата бинарни файла се различават, но не и
+как точно се различават. Бъдещи версии на CVS може да предлагат начин за изпълнение на diff
+върху бинарни файлове.
+
+\subsection{Работа зад защитна стена (firewall)}
+
+%
+%Ако се намирате зад защитна стена (firewall), на която портове 22 (ssh) и 2401 (pserver) са
+%затворени, все още имате шанс да използвате CVS на SourceForge.Net. Как се прави това е
+%подробно описано тук: 
+% \hlink{http://sourceforge.net/docman/display\_doc.php?docid=768\&group\_id=1\#firewall}{http://sourceforge.net/docman/display\_doc.php?docid=768\&group\_id=1\#firewall}. 
+
+% 
+%Най-кратно казано, трябва да извършите същите настройки, както все едно че портът ви е
+%отворен, но когато се свръзвате, трябва да изберете сървър \texttt{cvs-ssh.sourceforge.net} 
+%за \texttt{SSH} достъп или \texttt{cvs-pserver.sourceforge.net} за \texttt{pserver} достъп. 
+%Понеже и двата сървъра приемат заявките на \emph{port 80} или \emph{port 443}, 
+%задължително настройте вашият клиентски софтуер да търси връзки към тези портове,
+%а не към подразбиращите се 22 при \texttt{SSH} връзка или 2401 при \texttt{pserver} връзка.
+
+\subsection{Заключение}
+
+
+В крайна сметка правете само неща, които наистина разбирате ;-)
+
+
+\textbf{Преди да комитвате в CVS хранилището, проверявайте дали кодът се компилира при вас, винаги тествайте с PDF.}
+
+\section{Използване на общодостъпен ключ за достъп до CVS}
+
+
+По подразбиране всяка команда \man{cvs}{1} изисква парола за достъп.
+Това е досадно, но решение има -- използването на общодостъпен ключ
+(\emph{public key}) вместо парола.
+
+
+Тук ще бъдат представени кратки инструкции, засягащи темата единствено
+в най-общия случай.
+
+\begin{enumerate}
+  \item{Изпълнете командата \texttt{ssh-keygen -t dsa}.  Въведете за
+      парола добре измислена парола, която да е поне толкова
+      неразбиваема, колкото истинската Ви парола.}
+  \item{\texttt{scp {.}ssh/id\_dsa.pub photo-forum.net:.}}
+  \item{\texttt{photo-forum.net\$ cat id\_dsa.pub >> {.}ssh/authorized\_keys}}
+\end{enumerate}
+
+
+С това всичко е подготвено за почти безпаролна работа със CVS
+хранилището.
+
+
+За да използвате ключа, веднъж в цялата X (или конзолна) сесия трябва
+да изпълните командата \man{ssh-add}{1}, която пита за паролата, която
+дадохте на \man{ssh-keygen}{1}.  По този начин в текущата сесия се
+зарежда личния ключ (\emph{private key}), който се използва при всяко
+извикване на командата \texttt{ssh}.  (Всички команди към CVS
+хранилището минават през \texttt{ssh}, затова и трябва да се установи
+променливата \texttt{CVS\_RSH}.)
+
+
+Ако командата \texttt{ssh-add} се оплаче, че не може да намери
+\texttt{ssh-agent}, значи дистрибуцията, която ползвате, не е
+направена, както трябва.  В Дебиан няма такива проблеми.  Тук няма да
+се показва решение на този проблем, а ако го имате, обърнете се към
+справочника относно командата \man{ssh-agent}{1}.
+

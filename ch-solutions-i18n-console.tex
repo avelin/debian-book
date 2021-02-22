@@ -1,0 +1,49 @@
+\section{\textit{console-cyrillic}: Конзола}
+
+
+За конзолата е достатъчно да се инсталира пакетът
+\deb{console-cyrillic} (CD2). На въпросите отговаряйте с
+подразбиращите се отговори, освен може би на тези въпроси:
+
+\begin{tabular}{|l|l|}
+
+  \hline Choose the keyboard layout & Bulgarian phonetic или Bulgarian BDS \\
+
+  \hline How to toggle between Cyrillic and Latin letters & Alt+Shift
+  или нещо друго \\
+
+  \hline What is your encoding? & CP1251 (или UTF-8) \\
+
+  \hline Do you want to setup Cyrillic on the console at boot-time? &
+  Yes \\
+  \hline
+
+\end{tabular}
+
+\subsection{\textit{cyr}: Команда за конфигуриране на конзолата}
+
+
+Подробна информация за параметрите, които могат да се предадат на
+командата \manx{cyr}{1}, може да получите след изпълнение на
+
+\begin{verbatim}
+cyr --help
+\end{verbatim}
+
+
+Ако се изпълни командата с опция \texttt{\texttt{-}-save}, настройките
+от командния ред се и запазват във файла \texttt{\textasciitilde%
+  /.cyr\_defaults}.  Следващото изпълнение на \texttt{cyr} без
+параметри ще конфигурира конзолата според запазените настройки.  Така,
+след като веднъж има запазени потребителски настройки, добавянето на
+командата
+
+\begin{verbatim}
+cyr 2> /dev/null
+\end{verbatim}
+
+
+във файла \texttt{\textasciitilde /.bash\_profile} ще конфигурира конзолата при
+всяко влизане (login) в системата.  (\texttt{2> /dev/null} подтиска
+грешките при отваряне на терминал в X, като \texttt{xterm} или
+\texttt{gnome-terminal}.)

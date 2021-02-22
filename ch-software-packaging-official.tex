@@ -1,0 +1,524 @@
+\chapter{Изграждане на дистрибуцията и средства за контрол}
+        
+\section{Packaging - \textit{Debian official maintainer's way}}
+
+\subsection{Бързо запознаване с \texttt{hello} и \texttt{hello-debhelper}}
+
+Целта на този процес е да се организира изграждането на сорс и бинарни 
+пакети, които да бъдат обработвани от инструментите за пакетиране, инсталиране, 
+премахване и преконфигуриране. Целта е в системата да има установен ред и правила 
+при изпълнението на тези дейности с което наистина ще държим нещата под наш 
+контрол, независимо колко е голяма инсталираното от системата, 
+знаейки какво е инсталирано, как е инсталирано, с чисто премахване или 
+надграждане на нещо вече инсталирано. \texttt{Debian} е известен с легендарните си 
+способности за чисто инсталиране и надграждане на пакетите на системата. В тази глава 
+ще се постараем да обясним къде е генезиса на всичко това и то да не изглежда просто 
+като легенда, а като рутинна практика при всекидневното използване на системата. 
+Като реален пример може да се посочи десктопа на един от авторите който е система 
+първоначално инсталирана преди около 5 години (към момента на писане на тази глава). 
+Системата разбира се е подложена на всекидневни упгрейди, инсталации на нови пакети или 
+тяхното премахване и други по-необичайни дейности, при които проблеми може и да има, 
+но те са решими. През повечето време системата изглежда като току-що инсталирана. Чиста. 
+Разбира се, това съвсем не значи, че в някой директории като \texttt{/usr/local/} и в 
+домашните директории на потребителите не може да се води война от инсталиране и премахване 
+на каквото ви душа иска. Напротив, това не е територия на системата и е изцяло на вашата 
+воля, какво ще правите там. Е, с глупави и опасни програми не си губете времето, внимавайте 
+какво инсталирате и къде особено когато използвате суперпотребителя \texttt{root}. 
+Научете \texttt{Debian} отвътре за да подчините и експлоатирате възможностите му за 
+вашите потребителски цели.
+
+\begin{itemize}
+
+\item За да разберем какво съдържа един дебиански пакет, вземаме кой да е 
+такъв и пробваме командите \texttt{dpkg-deb -x} и \texttt{dpkg-deb -е} върху него. 
+
+\item За да разберем какво представлява изходния код на един дебиански пакет, 
+вземаме изходния код на пакета \deb{hello}, поглеждаме набързо \texttt{.dsc} файла, 
+а останалите два файла разпакетираш по два начина:
+	\begin{itemize}
+	\item с \texttt{dpkg-source} 
+	\item ръчно с \texttt{tar} и \texttt{patch}
+	\end{itemize}
+
+\item Разглеждаме съдържанието на директорията \texttt{debian} в изходния код на пакета 
+\deb{hello}. Ползваме \hlink{Debian Policy Manual}{http://wwww.debian.org/doc/debian-policy/} 
+като справочник или това е в пакета \deb{debian-policy}.
+
+\item Когато нещата станат ясни, правиме същото с пакета \deb{hello-debhelper}, използвайки
+\man{debhelper}{7} като справочник. Имайте на предвид, че \deb{debhelper} улеснява значително 
+създаването на дебиански пакети автоматизирайки извършването на много рутинни и повтарящи се дейности.
+
+\item През свободното време четем: 
+	\begin{itemize}
+	\item \hlink{Debian Policy Manual}{http://wwww.debian.org/doc/debian-policy/}
+	\item \hlink{Debian Developer's Reference}{http://wwww.debian.org/doc/debian-policy/}
+	\item \hlink{Debian New Maintainer' Guide}{http://www.debian.org/doc/maint-guide/}
+	\end{itemize}
+
+\item Вземаме програмата която искаме да пакетираме и копираме в изходния й код директорията 
+\texttt{debian} от пакета \deb{hello-debhelper}, като пригодяваме нещата за да генерираме
+нашия \texttt{deb}-пакет. Следващия път няма да използваме \deb{hello-debhelper}, а някой вече 
+съществуващ изготвен от нас пакет.
+
+\item Когато разберем какво значи \textbf{Intend To Package}, изпращаме \textbf{ITP} съобщение, 
+за да не би някой друг да реши да пакетира същата програма и да си дублирате усилията. Ако
+все още не сме одобрени за \texttt{upload} в официалното хранилище, можем да използваме
+\hlink{Mentors Public Package Repository}{http://mentors.debian.net}
+\end{itemize}
+
+\subsection{Същото с \texttt{dh-make} и \texttt{devscripts}}
+
+\begin{itemize}
+\item Начално дебианизиране с инструмента \man{dh\_make}{8} от пакета \deb{dh-make}
+\begin{verbatim}
+dh_make -e your.maintainer@address -f ../program-1.2.3.tar.gz
+\end{verbatim}
+\item Цикъл на поддръжка с инструментите от пакета \deb{devscripts}
+\begin{itemize}
+\item Влизаме в сорс директорията на пакета
+\item Правим промени по файловете
+\item Документиране на промените с: \texttt{dch -i "I changed this"}
+\item Компилираме изпълнявайки: \texttt{debuild}. Ако се върне грешка, 
+се връщаме пак към промяна на файловете. Също така можем да стартираме 
+компилацията със съответната част на \texttt{debian/rules} (като 
+\texttt{debian/rules build binary patch unpatch и т.н.} каквото има предвидено)
+\item Проверяваме дали пакета е в норми с: \texttt{debc}
+\item Инсталираме пакета за да го изтестваме лично с: \texttt{debi} 
+\item Ако всичко е наред издаваме пакета с: \texttt{debrelease}
+\end{itemize}
+\end{itemize}
+
+\subsection{По-дълги обяснения}
+
+На практика, след като се установи, че даден софтуер си заслужава да се
+включи в официалния архив от пакети на Debian, се изготвя
+\textit{debian source package}, който включва \textit{upstream source}
+и директорията с \textit{maintainer scripts}. От този \textit{debian
+  source package} след това се получават \textit{debian binary
+  packages} (\textit{deb-файлове}) за различните хардуерни
+архитектури, като се отчита и фактът, че има и такъв софтуер, който не
+е пригоден или предвиден за всички хардуерни архитектури, а само за
+една или няколко. Обикновено за получаването на базовите или начални
+версии на maintainer scripts за \texttt{debian/} се използват 
+Perl-скриптовете от пакета \deb{debhelper}, след което се донастройват
+специфичните за пакета неща. В крайна сметка се създава унифицирано
+управление на процеса по конфигуриране на сорса, компилация, свързване
+и евентуално последващо конфигуриране и преконфигуриране на софтуера
+за различните хардуерни архитектури. Разбира се, \textit{maintainer
+  scripts} не изместват стандартните \textit{GNU devel tools}, а
+работейки преди или над тях, ги използват по подходящ начин.
+Естествено, в крайна сметка се извикват стандартните \textit{GNU devel
+  tools} чрез файла \texttt{debian/rules}, който се явява стандартен
+файл за програмата \texttt{make}, само че не е именуван като
+\texttt{Makefile}, а започващ с \textit{shebang} (\texttt{\#!}) ред в
+началото си, указващ пътя до \texttt{make}. Използват се още доста
+файлове в \textit{maintainer scripts} и пример за това как точно
+стават нещата, е даден в \hlink{\textbf{Debian New Maintainers'
+  Guide}}{http://www.debian.org/doc/maint-guide/}. Едно доста добро 
+  обяснение като за начало би бил документът на IBM -  
+\hlink{\textit{Learn how to build easy-to-distribute packages for Debian users}}{http://www-106.ibm.com/developerworks/linux/library/l-debpkg.html?ca=dgr-lnxw01DebianLinux}.
+
+\subsection{Инструменти улесняващи пакетирането}
+
+Ще обясним накратко кои пакети и кои програми идващи с тях обикновено 
+се използват при този процес. Тук ще дадем само някои насоки, което не 
+изключва прочитането на \man{man}{1} страниците на програмите и документацията 
+в директориите \texttt{/usr/share/doc/име\_на\_пакет/}. Имайте предвид, че 
+постоянно могат да се появяват такива, но възлагайте на тях само рутинната част по 
+създаването на файловете необходими за пакетиране, след което лично се убедете 
+в тяхното съдържание и нанесете съответните корекции, така щото сорс пакета 
+който създавате да се получат съответните бинарни пакети (\man{deb}{5}) в 
+съответствие с всички правила и норми. Процеса може да бъде много прост и 
+рутинен, но и много сложен и необичаен, всичко зависи от това какъв сорс 
+пакетирате и как точно сте решили да го направите.
+
+\subsubsection{Пакета \deb{dh-make}} 
+Съдържа програмата \man{dh\_make}{8}, която се използва 
+за първоначалното създаване на директорията \texttt{debian} и файловете в нея. 
+С други думи спестява ви тази рутинна дейност, но задължително трябва да разгледате 
+файловете и да внесете необходимите промени за точно този сорс пакет който дебианизирате.
+Дотук вече трябва да сте добили представа как се борави с debian \texttt{binary packages} 
+(или \man{deb}{5}). Нека видим как се получават те. Захващаме се да разберем какво има и в 
+\texttt{debian source packages}. Само да напомним, че без да сте прочели 
+\hlink{Debian New Maintainer's Guide}{http://www.debian.org/doc/maint-guide/}, още достъпен 
+и като пакет \deb{maint-guide}, или поне да сте прехвърлили с поглед
+\hlink{стария му превод}{http://debian.gabrovo.com/docs/maint-guide/},
+ще ви е доста трудно да разберете за какво ще се говори в следващата глава.
+Пакетът \deb{dh-make} съдържа скрипта \man{dh\_make}{8}, който
+генерира debian source package от \textit{regular source code archive}
+(или \textit{upstream sources}), подготвя \texttt{control}-файловете,
+както и предоставя примерна конфигурация за \man{debhelper}{1}
+инструментите, за която конфигурация обикновено е необходимо само
+малко донастройка, за за да пасне за конкретния случай.  Или с други
+думи, \deb{dh-make} се използва за създаване на скелета или общия вид
+на debian source package, след което може да доредактирате файловете в
+директория \texttt{debian/} както намерите за добре.  По-опитните
+maintainers могат и без него, но силно се препоръчва да се използва от
+начинаещите потребители, при което по-лесно и бързо ще свикнат с
+процеса на конфигуриране на debian source packages.  Използва се
+например така:
+
+\begin{verbatim}
+# cd program-source-directory
+# dh_make -e your.maint@address -f ../programname-x.y.z.tar.gz
+\end{verbatim}
+
+Разбира се, ще отговорите на няколко въпроса, като дали това ще е
+single или multiple binary packages, библиотеки и прочее. За повече се
+обърнете към \hlink{Debian New Maintainer's
+  Guige}{http://www.debian.org/doc/maint-guide}, главата First Steps,
+т. 2.4 Initial Debianization.
+
+\subsubsection{Пакета \deb{debhelper}}
+Съдържа колекция от мощни \texttt{Perl} скриптове които 
+можете да извиквате от \texttt{debian/rules}, който обикновено е файл за 
+програмата \man{make}{1}, както и от други скриптове като
+\texttt{.preinst,.postinst,.prerm,.postrm}. Скриптовете са много, просто изпълнете: 
+\texttt{dpkg -L denhelper} за да ги видите.
+Скриптовете \texttt{dh\_*} от пакета \deb{debhelper} се извикват от
+maintainer scripts в debian source packages, и по точно от файла
+\texttt{debian/rules}.  Използват се за автоматизиране на процедурите
+по построяването на debian binary packages, а именно, като инсталиране
+на определени файлове в дадения пакет, компресиране, установяване на
+съответните права и собственост, интегриране с debian menu system и
+много други.  Повечето debian source packages използват скриптовете на
+\deb{debhelper} като част от техния build процес.
+
+
+Ето и какви Perl скриптове се съдържат във версия 4.0.2 на пакета
+\deb{debhelper}. За да ги листнем, изпълняваме:
+
+\begin{verbatim}
+$ dpkg -L debhelper | grep usr/bin
+\end{verbatim}
+
+
+Следват кратки обяснения за скриптовете от пакета \deb{debhelper}:
+
+\begin{itemize}
+  
+\item \man{dh\_builddeb}{1}: извиква \man{dpkg}{8} да билдва пакети.
+  
+\item \man{dh\_clean}{1}: почиства build директорията на пакета.
+  
+\item \man{dh\_compress}{1}: компресира файлове и оправя символните
+  връзки в билд директорията на пакета.
+  
+\item \man{dh\_fixperms}{1}: оправя правата на файловете в билд
+  директорията на пакета.
+  
+\item \man{dh\_gencontrol}{1}: генерира и инсталира
+  \texttt{control}-файла в билд директорията на пакета.
+  
+\item \man{dh\_install}{1}: инсталира файлове, които не се нуждаят от
+  специална обработка в билд директорията на пакета. За някои
+  по-специални файлове са предвидени и по-специални скриптове.
+  
+\item \man{dh\_installchangelogs}{1}: инсталира
+  \texttt{changelog}-файловете в билд директорията на пакета
+  
+\item \man{dh\_installcron}{1}: инсталира \deb{cron} скриптове в
+  \texttt{etc/cron.*}
+  
+\item \man{dh\_installdeb}{1}: в \texttt{DEBIAN} директорията
+  инсталира файловете:
+        
+  \begin{itemize}
+  \item \texttt{package.postinst} 
+  \item \texttt{package.preinst}
+  \item \texttt{package.postrm}
+  \item \texttt{package.prerm}
+  \item \texttt{package.shlibs}
+  \item \texttt{package.conffiles}
+  \end{itemize}
+  
+\item \man{dh\_installdebconf}{1}: инсталира файловете,
+  използвани от \man{debconf}{7} в билд директорията на пакета.
+  
+\item \man{dh\_installdirs}{1}: създава поддиректориите в билд
+  директорията на пакета.
+  
+\item \man{dh\_installdocs}{1}: инсталира документацията в билд
+  директорията на пакета.
+  
+\item \man{dh\_installemacsen}{1}: за някои пакети е възможно или е
+  необходимо да се извършва byte-compiling по време на инсталацията.
+  Такъв пример е Emacs (е то оставаше точно пък той да не е ;-). Ако
+  вашият пакет се нуждае подобна функционалност, точно този
+  \texttt{dh\_*}-скрипт ще извикате от файла \texttt{debian/rules}.
+  
+\item \man{dh\_installexamples}{1}: инсталира examples файловете в
+  билд директорията на пакета, или по-точно в
+  \texttt{usr/share/doc/\textit{пакет}/examples}. Файлът
+  \texttt{debian/packages.examples} може да съдържа списък с други
+  файлове, които да бъдат инсталирани.
+  
+\item \man{dh\_installinfo}{1}: инсталира info-файловете.  Файлът
+  \texttt{debian/packages.info} може да съдържа списък с други
+  файлове, които да бъдат инсталирани.
+  
+\item \man{dh\_installinit}{1}: инсталира init-скриптове в билд
+  директорията на пакета.
+  
+\item \man{dh\_installlogrotate}{1}: инсталира конфигурационните
+  файлове за \deb{logrotate}
+  
+\item \man{dh\_installman}{1}: инсталира man-файловете. Файлът
+  \texttt{debian/packages.manpages} може да съдържа списък с други
+  файлове, които да бъдат инсталирани
+  
+\item \man{dh\_installmanpages}{1}: това е стария аналог на предната
+  команда, вместо него използвайте \man{dh\_installman}{1}
+  
+\item \man{dh\_installmenu}{1}: инсталира debian menu файловете в билд
+  директорията на пакета. Автоматично генерира \texttt{postinst} и
+  \texttt{postrm}, необходими да взаимодействат в пакета \deb{menu}.
+  Ако има файл \texttt{debian/package.menu}, то той се инсталира в
+  \texttt{usr/lib/menu/package} в билд директорията на пакета (това е
+  debian menu файлът, \man{menufile}{5L}). Ако има файл
+  \texttt{debian/package.menu-method}, то той се инсталира в
+  \texttt{etc/menu-methods/\textit{пакет}} в билд директорията на
+  пакета.  Tова е debian menu method файл. За повече информация вижте
+  \man{update-menus}{1}.
+  
+\item \man{dh\_installmime}{1}: инсталира MIME-файловете в билд
+  директорията на пакета. Ако има файл \texttt{debian/package.mime},
+  то той се инсталира в \texttt{usr/lib/mime/packages/\textit{пакет}}
+  в билд директорията на пакета.
+  
+\item \man{dh\_installmodules}{1}: регистрира kernel-модули
+  посредством \deb{modutils}. Ако има файл
+  \texttt{debian/package.modules}, то той ще бъде инсталиран в
+  \texttt{etc/modutils/\textit{пакет}}
+  
+\item \man{dh\_installpam}{1}: инсталира файловете за поддръжка на
+  PAM. Ако има файл \texttt{debian/package.pam}, то той ще бъде
+  инсталиран като \texttt{etc/pam.d/\textit{пакет}}.
+  
+\item \man{dh\_installwm}{1}: регистрира window manager.  Файлът
+  \texttt{debian/package.wm} може да съдържа списък с други прозоречни
+  манежери.
+  
+\item \man{dh\_installxaw}{1}: инсталира конфигурационните файлове на
+  Xaw wrappers в билд директорията на пакета. Ако има файл
+  \texttt{debian/package.xaw}, то той ще бъде инсталиран в
+  \texttt{usr/lib/xaw-wrappers/config/\textit{пакет}} в билд
+  директорията на пакета.
+
+\item \man{dh\_installxfonts}{1}: регистрира шрифтовете за X
+  
+\item \man{dh\_link}{1}: създава символни връзки в билд директорията
+  на пакета
+  
+\item \man{dh\_listpackages}{1}: листва binary packages, за които ще
+  се използва \deb{debhelper}
+
+\item \man{dh\_makeshlibs}{1}: генерира shlibs-файл
+
+\item \man{dh\_md5sums}{1}: генерира \texttt{DEBIAN/md5sums} файл.
+  
+\item \man{dh\_movefiles}{1}: файлът \texttt{debian/package.files}
+  съдържа списък с файловете, които да бъдат преместени от
+  \texttt{debian/tmp} в \texttt{subpackages}. Използвайте
+  \man{dh\_install}{1}, която напълно я замества, като може и доста
+  други работи.
+  
+\item \man{dh\_perl}{1}: генерира зависимостите на Perl скриптовете
+  вкл. и Perl модулите, от които зависят
+  
+\item \man{dh\_shlibdeps}{1}: генерира зависимостите за споделените
+  библиотеки (много яка проверка)
+  
+\item \man{dh\_strip}{1}: стрипва или премахва дебъг символите от
+  изпълнимите и библиотечните файлове, за да се намали размера им
+  
+\item \man{dh\_suidregister}{1}: не ползвайте този скрипт! Оставен е
+  само за обратна съвместимост. Вместо него използвайте
+  \man{dpkg-statoverride}{8}.
+  
+\item \man{dh\_testdir}{1}: тества директорията преди да се билдва
+  пакета. Проверява за наличието на \texttt{debian/control}, както и
+  за някой други основни файлове.
+  
+\item \man{dh\_testroot}{1}: проверява за това дали пакетът се билдва
+  от потребителя \texttt{root}. За справка \man{fakeroot}{1}.
+  
+\item \man{dh\_testversion}{1}: не ползвайте този скрипт! Проверява
+  дали е инсталирана правилната версия на пакета \deb{debhelper}.
+  Вместо него се използват dependencies и conflicts от
+  \texttt{control} файла.
+  
+\item \man{dh\_undocumented}{1}: създава символна връзка към
+  \texttt{undocumented.7.gz}. В случай, че пакетът няма \textit{man}
+  страница, разбира се.
+
+\end{itemize}
+
+Разбира се, не при всички debian source packages ще се извикват всички
+\texttt{dh\_*} скриптове. Това ще зависи от съответния пакет, както и
+от решенията на maintainer-а. Най-добре ще е първо да изчетете добре
+man-стрaниците за тези скриптове, както и четенето на самите скриптове
+(Perl) не пречи, разбира се. Вземете, например, сорса на MPlayer от
+CVS или някое негово издание и разгледайте файла \texttt{debian/rules}
+за това какви \texttt{dh\_*} скриптове се извикват от него. Същото
+можете да направите и с който и да е debian source package, включен в
+официалния Debian архив. Другото, което е добре да направите, е да
+разгледате самия \deb{debhelper} като debian source package, и по
+специално неговата директория \texttt{debian/} и естествено
+Perl-скриптовете, които предоставя. Изпълняваме:
+
+\begin{verbatim}
+# apt-get source debhelper
+\end{verbatim}
+
+\subsubsection{Пакета \deb{debconf}, \deb{debconf-utils}, \deb{po-debconf}} 
+Унифициран начин пакетите да задават въпроси на потребители при първоначално 
+инсталиране, последващо преконфигуриране и премахване. 
+
+\subsubsection{Пакета \deb{devscripts}} 
+Съвременният начин. \texttt{zless /usr/share/doc/devscripts/README.gz}
+Предвиден е да облекчи живота на Debian package maintainers. Съдържа следните 
+скриптове, като dependencies/recommendations са показани в счупените скоби:
+
+\begin{itemize}
+ 
+\item \man{bts}{1}: Команда за комуникиране с Bug Tracking System
+  [\deb{www-browser}, \deb{mailx}]
+ 
+\item \man{dch}{1}, \man{debchange}{1}: Автоматично добавя entries към
+  \texttt{debian/changelog} файловете
+ 
+\item \man{debclean}{1}: Пречиства (purge) a Debian source tree
+  [\deb{fakeroot}]
+ 
+\item \man{debuild}{1}: Wrapper за билдване на пакети без да е
+  необходимо да се изпълнява \texttt{su} или да се мисли как да се
+  стартира \man{dpkg}{8} да билдва, използвайки \man{fakeroot}{1}. Също
+  така се оправя с общите проблеми на средата, umask и т.н.
+  [\deb{fakeroot}, \deb{lintian}, \deb{gnupg}]
+ 
+\item \man{debdiff}{1}: Сравнява две версии на Debian package, за да
+  привери за добавени или премахнати файлове [\deb{wdiff},
+  \deb{patchutils}]
+ 
+\item \man{debpkg}{1}: Dpkg wrapper за менажиране и тестове на пакети
+  без \texttt{su} [\deb{perl-suid}]
+ 
+\item \man{debi}{1}, \man{debc}{1}: скриптове за инсталиране на пакети
+  и извличане на тяхното съдържание
+ 
+\item \man{debit}{1}: скрипт за инсталиране на пакети и тестването им
+  с debian-test [\deb{debian-test}]
+ 
+\item \man{debrelease}{1}: Wrapper за \deb{dupload} или \deb{dput}
+  [\deb{dupload} | \deb{dput}, \deb{ssh}]
+ 
+\item \man{dscverify}{1}: Проверка целостта на Debian package от
+  файловете \texttt{.changes} или \texttt{.dsc} [\deb{gnupg},
+  \texttt{debian-keyring}, \texttt{libdigest-md5-perl}]
+ 
+\item \man{debsign}{1}, \man{debrsign}{1}: подписване на двойката
+  файлове \texttt{.changes}/\texttt{.dsc} без да необходима останалата
+  част от пакета; двойката файлове може да се подписва отдалечено или
+  да се изтеглят файловете и да се подпишат локално [\deb{gnupg},
+  \deb{debian-keyring}, \deb{ssh}]
+ 
+\item \man{dpkg-depcheck}{1}, \man{dpkg-genbuilddeps}{1}: Определя
+  използваните пакети по време на build на даден Debian package;
+  удобен за определяне на \texttt{Build-Depends} в \texttt{control}
+  файла [\deb{build-essential}, \deb{strace}]
+ 
+\item \man{grep-excuses}{1}: \man{grep}{1} на файла
+  \texttt{update\_excuses.html} за дадени пакети [\deb{libwww-perl}]
+ 
+\item \man{mergechanges}{1}: merge на \texttt{.changes} файловете от
+  пакет, който е билднат за друга хардуерна архитектура
+ 
+\item \man{plotchangelog}{1}: показва графика на данните от
+  \texttt{changelog} файла [\deb{libtimedate-perl}, \deb{gnuplot}]
+ 
+\item \man{uupdate}{1}: интегрира upstream промените в debian source
+  package [\deb{patch}]
+ 
+\item \man{uscan}{1}: сканира upstream сайтовете за нови издания. Също
+  така са включени и няколко примерни mail filters за филтриране на
+  пощата от пощенските списъци на Debian чрез \deb{exim},
+  \deb{procmail} и др.  [\deb{libwww-perl}]
+
+\end{itemize}
+
+
+\subsubsection{Пакета \deb{debmake}}
+Старият начин. Това е още един от пакетите, предназначени за
+разработка и поддръжка на Debian source packages. Но този пакет се
+използва все по-рядко.
+
+\begin{itemize}
+  
+\item \man{deb-make}{1L}: генерира debian source package от upstream
+  source код. Настройва файловете control. Предоставя примерна
+  конфигурация за debstd, която в повечето случаи е използваема с
+  минимална нужда от доредактиране
+  
+\item \man{debstd}{1L} разполага със следните възможности:
+        
+  \begin{itemize}
+  \item автоматизира компресирането и инсталирането на документацията
+  \item генерира multiple binaries от един-единствен debian source
+    package
+  \item генерира maintainer scripts и ги инсталира на подходящите
+    места с подходящите права.
+  \item може да модифицира много от debian config files чрез
+    генериране на подходящи maintainer scripts.
+  \item извиква \man{dpkg-shlibdeps}{1} за всички ELF binaries и
+    генерира коректен shlibs файл за дадените библиотеки автоматично.
+  \item проверява symlinks за manpages / documentation и пренасочва в
+    случай, че е необходимо.  
+  \end{itemize}
+  
+\end{itemize}
+
+\subsubsection{Пакета \deb{dpatch}, \deb{patchutils}, \deb{dh-kpatches}}
+
+\subsubsection{Пакета \deb{cdbs}}
+
+\subsubsection{Пакета \deb{cvs-buildpackage}}
+
+\subsubsection{Пакета \deb{svn-buildpackage}}
+
+\subsubsection{Пакета \deb{arch-buildpackage}}
+
+\subsubsection{Пакета \deb{tla-buildpackage}}
+
+
+\subsection{Инструменти за проверка и контрол}
+
+\subsubsection{Пакета \deb{linda}}
+
+\subsubsection{Пакета \deb{lintian}}
+
+\subsubsection{Пакета \deb{debian-test}}
+
+\subsubsection{Пакета \deb{debbugs}}
+
+\subsubsection{Пакета \deb{reportbug}}
+
+
+\subsection{Примерни програми за пакетиране}
+
+FIXME: да се започне и довърши step-by-step пример за:
+
+\begin{itemize}
+\item \hlink{http://mironcho.sf.net}{http://mironcho.sf.net}
+\item \hlink{http://bebocd.sf.net}{http://bebocd.sf.net}
+\item \hlink{http://opensource.netuser.cc/sgmixer/}{http://opensource.netuser.cc/sgmixer/}
+\item \hlink{http://biona.sf.net}{http://biona.sf.net}
+\item \hlink{http://netacct-mysql.gabrovo.com}{http://netacct-mysql.gabrovo.com} (upstream debianized)
+\end{itemize}
+
+Примерни apt хранилища с binary и source пакети:
+
+\begin{itemize}
+\item \hlink{http://danchev.fccf.net/debian/}{http://danchev.fccf.net/debian/}
+\item \hlink{http://ftp.logos-bg.net/debian/}{http://ftp.logos-bg.net/debian/}
+\end{itemize}

@@ -1,0 +1,176 @@
+\chapter{Преобразуване на Woody към Sarge}
+
+Тук ще бъде описан процесът на преминаване към Sarge при положение, че
+току-що е инсталиран Woody.  Понеже Sarge още не е издаден, тук се
+използва името на издание \texttt{testing}, което в момента на
+писането е бъдещият Sarge.
+
+\section{\textit{/etc/apt/sources.list}}
+
+Първото нещо е да укажете на \deb{apt} да използва пакетите на Sarge
+вместо тези на Woody.  Просто в \texttt{/etc/apt/sources.list} трябва
+да замените \texttt{stable} (или \texttt{woody}) с \texttt{testing}.
+
+Може да направите това и по време на самото инсталиране на Woody,
+когато пита за източниците.  Ще трябва обаче да зададете ръчно
+редактиране на файла \texttt{sources.list}.
+
+Ето примерно съдържание на \texttt{sources.list}:
+
+\begin{verbatim}
+deb http://ftp.bg.debian.org/debian/ testing main non-free contrib
+\end{verbatim}
+
+\section{\textit{dist-upgrade}}
+
+\begin{verbatim}
+# apt-get update
+# apt-get dist-upgrade
+\end{verbatim}
+
+С това се извършва същинското преминаване от Woody към Sarge.
+
+\section{\textit{grub}: Замяна на LILO с GRUB}
+
+\begin{verbatim}
+# apt-get install grub
+# grub-install /dev/hda
+# update-grub
+# dpkg -P lilo                   # Пълно изтриване на LILO
+\end{verbatim}
+
+Това е въпрос на личен избор, но \deb{grub} в почти всички случаи е
+по-добър.
+
+Файлът \man{kernel-img.conf}{5} се използва при инсталиране и
+деинсталиране на ядра.  Следната конфигурация в
+\texttt{/etc/kernel-img.conf} прави \deb{grub} винаги да поддържа
+списък на всички инсталирани ядра автоматично.
+
+\begin{verbatim}
+postinst_hook = /sbin/update-grub
+postrm_hook = /sbin/update-grub
+warn_initrd = no
+\end{verbatim}
+
+\section{\textit{kernel-image-2.6-686}}
+
+\begin{verbatim}
+# apt-get install kernel-image-2.6-686
+\end{verbatim}
+
+В почти всички случаи искате да имате ядро 2.6.  Конкретното
+предложено име на пакет избира последното налично готово ядро от
+серията 2.6, което е компилирано за процесори Pentium II или по-нови.
+Вместо \texttt{686} може да сложите \texttt{386} или \texttt{k7}.  Ако
+системата Ви е многопроцесорна, добавете \texttt{-smp} към името на
+пакета.
+
+Ако сте настроили \man{kernel-img.conf}{5} както трябва, просто
+рестартирайте и ще сте с новото ядро.
+
+\section{\textit{udev}: Замяна на devfs с udev}
+
+Целта му е да замени досегашната реализация на \texttt{devfs} от 
+\texttt{kernel-space} прехвърляйки нещата към \texttt{user-space} използвайки \texttt{sysfs} 
+и \texttt{/sbin/hotplug}. Директорията \texttt{/dev} ще бъде динамично запълнена с файловете 
+на устройствата в зависимост от вашата конфигурация. Подробна информация за \deb{udev} може 
+да намерите на \hlink{неговия сайт}{http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html}.
+Хвърлете й един поглед за да сте в час какви промени се случват. Това което трябва да направите е:
+
+Освен това преди да инсталирате каквото и да е изтеглете сорса на \deb{udev} и \deb{hotplug} 
+и прегледайте поне документацията идваща с него.
+
+\begin{verbatim}
+cd /tmp
+apt-get source udev hotplug
+\end{verbatim}
+
+Трябва да имате 2.6 ядро компилирано със следните конфигурационни опции:
+\begin{verbatim}
+CONFIG_HOTPLUG=y
+CONFIG_PROC_KCORE=y
+CONFIG_SYSFS=y
+# Ако включите CONFIG_DEVFS_FS=y , то при зареждане трябва да подадете 
+# devfs=nomount за да може да се използва udev 
+# Не включвайте CONFIG_DEVFS_MOUNT=y
+CONFIG_DEVPTS_FS=y # ако я имате, защото след 2.6.4 е активирана  
+                   # директно в сорса на ядрото и не е като опция
+CONFIG_TMPFS=y
+CONFIG_RAMFS=y
+\end{verbatim}
+
+Внимание: не редактирайте директно config файла на ядрото за да включите някоя опция,
+използвайте някой от конфигураторите (make menuconfig, make xconfig и т.н.). Това е защото
+включването на една опция може да изисква включване на друга, което може да се окаже малко
+трудно да го разберете веднага на момента. 
+
+\begin{verbatim}
+apt-get install udev hotplug
+\end{verbatim}
+
+Ако някои файлове за особени устройства в \texttt{/dev} не бъдат създадени, то ги добавяте в
+\texttt{/etc/udev/links.conf}. Например:
+
+\begin{verbatim}
+M nvidia0 c 195 0
+M nvidia1 c 195 1
+M nvidiactl c 195 255
+\end{verbatim}
+
+Където \textbf{M} означава, че device nodes ще бъдат създадени с \texttt{/sbin/MAKEDEV}.
+
+\section{\textit{screen}, \textit{less}, \textit{vim}: За работа в терминал}
+
+\begin{verbatim}
+# apt-get install screen less vim
+# dpkg -P nvi
+\end{verbatim}
+
+Това са някои пакети, които често се използват при работа в терминал.
+
+В \texttt{/etc/profile} добавете следния ред, който ще направи
+\deb{less} да може да показва \deb{gzip} и \deb{bzip2} файлове:
+
+\begin{verbatim}
+eval $(lesspipe)
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+Към \texttt{/etc/vim/vimrc} добавете следните редове, които включват
+оцветяването на файлове и генериране на backup файлове (което винаги е
+добра идея):
+
+\begin{verbatim}
+set backup
+syntax on
+\end{verbatim}
+
+\section{\textit{/etc/inetd.conf}: Изключване на ненужни услуги}
+
+От файла \man{inetd.conf}{5} изключете ненужните услуги
+\texttt{discard}, \texttt{time} и \texttt{daytime}.  Презаредете
+\man{inetd}{8}:
+
+\begin{verbatim}
+# /etc/init.d/inetd reload
+\end{verbatim}
+
+\section{\textit{postfix}: Замяна на Exim с Postfix}
+
+\begin{verbatim}
+# apt-get install postfix
+\end{verbatim}
+
+Както и при GRUB, замяната на Exim с Postfix е въпрос на
+предпочитание.  Инсталирането на пакета \deb{postfix} ще премахне
+пакетите на Exim!
+
+\section{\textit{ssh}, \textit{dnsutils}: Отдалечен достъп}
+
+\begin{verbatim}
+# apt-get install ssh dnsutils
+\end{verbatim}
+
+Ако сте в мрежа, сигурно ще искате тези пакети.

@@ -1,0 +1,128 @@
+\section{Debian GNU/Linux в клъстер чрез Mosix, OpenMosix и други}
+
+
+Разбира се, клъстерните технологии не са специфични за Debian, но
+понеже има подобни пакети, включени в архива на Debian, а както и
+реални примери на работещи клъстери, изградени от Debian GNU/Linux
+машини, ще споменем и тази тема.
+
+
+Ето няколко примера:
+
+\begin{itemize}
+  
+\item \hlink{Debian Beowulf
+    Project}{http://www.debian.org/ports/beowulf/}. На страницата
+  \hlink{с потребителите на Debian}{http://www.debian.org/users/}
+  можете да забележите доста примери на действащи клъстерни
+  конфигурации с Debian GNU/Linux (от 2 до 256 nodes, а вероятно и
+  повече)
+
+\item Широко прилагани и използвани в университетските и академичните среди:
+        
+  \begin{itemize}
+  \item \hlink{Artificial Intelligence Lab, Massachusetts Institute of
+      Technology, USA}{http://www.ai.mit.edu/}: In the MIT AI lab the
+    "`Officially Supported"' flavor of GNU/Linux is Debian. There are
+    approximately 100 user workstations running Debian, as well as a
+    small but growing \hlink{OpenMosix
+      Cluster}{http://www.ai.mit.edu/sysadmin/cluster.html} serving
+    compute cycles. The switch to Debian was made official in
+    September 2001. The largest reason being the ease of package
+    management, which users love (users here get that kind of freedom)
+    and also allows the sysadmins to semi-automate security updates
+    (we like to check the updates on a test system before forcing them
+    on the users, but to date there's been no problems).
+  \item \hlink{Doshisha University,
+      Japan}{http://www.doshisha.ac.jp/}: At Doshisha University,
+    Debian "`potato"' runs on \hlink{256-node Beowulf cluster}{http://cambria.doshisha.ac.jp}. 
+    They are arranged on 16-node computer groups which have 1 diskfull and 15 diskless machines.
+    Maintenance with Debian installed has been a pleasure with security updates being only an 
+    apt-get away, and the updates being very prompt.
+  \end{itemize}
+  
+\item \hlink{Също така}{http://www.sara.nl/beowulf/} и в големи
+  компютърни центрове като \hlink{SARA,
+    Netherlands}{http://www.sara.nl}
+  
+  \begin{itemize}
+  \item 168 nodes IA-32 Beowulf клъстер използван в университета на Амстердам. 
+  \item 16 nodes Alpha клъстер използвам от различни потребители.
+  \item 2 nodes (4 CPU на машина) IA-64 клъстер, за пренасяне на
+    32-битови приложения към 64-битови.
+  \item 9 nodes IA-32 клъстер за тестване на приложения и
+    инсталационни методи
+  \end{itemize}
+  
+\item \hlink{Qli Linux
+    Clusters}{http://www.qlilinuxpc.com/products/clustering/}: Дори се
+  и продават готови преинсталирани с Debian и Red Hat машини обединени
+  в клъстер.  Става въпрос за маниши от добре познатата ни x86 (IA-32)
+  архитектура с процесори на Intel Xeon и AMD Athlon.
+\end{itemize}
+
+
+Тук ми се ще да дам и един такъв пример леко встрани. Не малко хора
+употребяват и свързват думата Enterprise само и единствено с т.н.
+Commercial OS vendors или по-точно със системите, които се предоставят
+от тях. Не винаги става ясно в какъв смисъл се употребява думата
+Enterprise, но почти винаги като че ли се има предвид използването на
+някаква технология за clustering, или пък дадена mission-critical
+задача. Доста едностранчиво и праволинейно е да се мисли, че това е
+единственият и неповторим подход. Нека погледнем от другата страна ---
+Debian и Gentoo например са отявлени представители на т.н.
+некомерсиални General-purpose Distributions.  Общото е, че те не се
+продават срещу заплащане, и проектите са sponsored by companies, а не
+owned by companies.  Ето една статия от три части
+
+\begin{itemize}
+\item \hlink{OpenMosix 1}{http://www-1.ibm.com/servers/esdd/articles/openmosix.html?t=gr,lnxw02=OpenMosix1}
+\item \hlink{OpenMosix 2}{http://www-1.ibm.com/servers/esdd/articles/openmosixpart2.html?t=gr,lnxw02=OpenMozix2}
+\item \hlink{OpenMosix 3}{http://www-1.ibm.com/servers/esdd/articles/openmosixpart3.html?t=gr,lnxw02=OpenMosix3} 
+\end{itemize}
+
+която може да разясни някои недоразумения в този дух. В случая се
+визира clustering чрез \hlink{OpenMosix}{http://www.openmosix.org} и
+примера е даден с Gentoo, но спокойно можете да си мислите същото и за
+Debian, защото Mosix (\hlink{kernel
+  patches}{http://packages.debian.org/kernel-patch-mosix} and
+\hlink{userland tools}{http://packages.debian.org/mosix}), а
+впоследствие и OpenMosix (\hlink{kernel
+  patches}{http://packages.debian.org/kernel-patch-open-mosix} and
+\hlink{userland tools}{http://packages.debian.org/openmosix})
+присъстват отдавна в неговия архив, но дори и да не присъстваха нямаше
+да бъде болка за умиране --- на който му трябва clustering
+най-вероятно ще знае как да използва този софтуер и в upstream вид.
+Забележете каква е и историята на самия \hlink{OpenMosix
+  проект}{http://www.openmosix.org} защо е GPL'ed, и защо е било
+необходимо да се основава той, наследявайки своя предшественик
+\hlink{Mosix}{http://www.mosix.com}.  Въпросът не опира до каквато и
+да е религиозна или идеологическа основа, въпросът не е кой е
+по-комерсиален или по-неутрален в материалния смисъл на думите,
+въпросът опира чисто и просто само до техническото съвършенство на
+софтуера и възможностите за постигане на такова.  Запазвайки колкото е
+възможно по-голям неутралитет, т.е. без каквито и да са притеснения
+как ще се продава това или онова, възможностите за техническо
+усъвършенстване се увеличават. Проектът Debian, а както и самия Linux
+kernel, са блестящи примери за запазване на собствен неутралитет.
+Както казва и самия Linus Torvalds, дори и той да бъде "`купен"' от
+някоя компания, не е възможно това да стане с Linux. Създателят на
+проекта Debian впоследствие напусна този проект и започна да развива
+своя комерсиална дейност, което си е абсолютно нормално и в реда на
+нещата, но самият проект Debian винаги ще си остане неутрален и
+некомерсиален, поради гореспоменатите причини, иначе няма да е Debian.
+Много ползватели на свободен и/или отворен софтуер го ползват и
+защитават само поради идеологически и религиозни причини, несъзнавайки
+къде точно се крие неговото превъзходство, а това е много много жалко.
+Софтуерът не е основа за водене на безсмислени идеологически войни на
+тема "`кой е по-велик"', софтуерът е за да върши някаква полезна
+работа.  Аз например не ползвам Debian и Linux (e.g.  Debian
+GNU/Linux), защото съм чул, че са безплатни (т.е. получават се без
+заплащане), ексцентрични и модни.  Напротив, ползвам ги поради
+техническите им качества, последните оценявам технически, а не
+идеологически или религиозно, което хич не е сериозно да се прави.
+Естествено, че нямам нищо против да бъда убеден от даден Commercial OS
+vendor, че съществуват и технически по-съвършенни аналози за General
+Computing usage, винаги съм готов да слушам, но технически аргументи,
+а не сухи рекламни трикове подвеждащи потребителя.
+

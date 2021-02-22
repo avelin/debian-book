@@ -1,0 +1,373 @@
+\section{\textit{XFree86}: Графична среда}
+
+\subsection{\textit{XKB}: Клавиатура}
+
+Следните текстове могат да ви помогнат ако искате да разберете повече
+за разширението XKB на X:
+
+\begin{itemize}
+
+\item \hlink{The XKB Configuration
+    Guide}{http://www.xfree86.org/current/XKB-Config.html} (част от
+  XFree86 4.3)
+
+\item \hlink{How to further enhance XKB
+    configuration}{http://www.xfree86.org/current/XKB-Enhancing.html}
+  (част от XFree86 4.3)
+  
+\item \hlink{An Unreliable Guide to XKB
+    configuration}{http://www.charvolant.org/\textasciitilde%
+    doug/xkb/html/index.html} (от \hlink{Doug
+    Palmer}{http://www.charvolant.org/\textasciitilde doug/})
+
+\item \hlink{X Keyboard Extension}{http://www.tsu.ru/\textasciitilde%
+    pascal/other/xkb/} (от \hlink{Иван
+    Паскал}{http://www.tsu.ru/\textasciitilde pascal/})
+
+\end{itemize}
+
+\subsubsection{\textit{xserver-xfree86}: Конфигуриране при инсталиране}
+
+При инсталирането на пакета \deb{xserver-xfree86} трябва да отговорите
+на следните въпроси:
+
+\begin{tabular}{|l|c|p{2.5in}|}
+
+  \hline \textbf{Въпрос} & \textbf{Опция} &
+  
+  \textbf{Отговори за българска среда} \\
+  
+  \hline Please select your keyboard layout  & \textit{XkbLayout}  &
+  \begin{itemize}
+  \item{\texttt{bg}}
+  \end{itemize} \\
+
+  \hline Please select your keyboard variant & \textit{XkbVariant} &
+  \begin{itemize}
+  \item{\texttt{phonetic}}
+  \item{\texttt{bds}}
+  \end{itemize} \\
+
+  \hline Please select your keyboard options & \textit{XkbOptions} &
+  \begin{itemize}
+  \item{\texttt{grp:shift\_toggle}}
+  \item{\texttt{grp:ctrl\_shift\_toggle}}
+  \item{\texttt{grp:caps\_toggle}}
+  \item{\texttt{grp:ctrl\_alt\_toggle}}
+  \item{\texttt{grp:alt\_shift\_toggle}}
+  \item{\texttt{grp:menu\_toggle}}
+  \end{itemize} \\
+  \hline
+
+\end{tabular}
+
+Списък на всички опции, задавани чрез \textit{Option}, може да се
+намери в \texttt{/etc/X11/xkb/rules/xfree86.lst}.
+
+\subsubsection{\textit{XF86Config}: Редактиране на конфигурацията на X}
+
+
+Редактирайте файла \texttt{/etc/X11/XF86Config-4}, като копирате
+секцията InputDevice за клавиатурата преди реда
+
+\begin{verbatim}
+### BEGIN DEBCONF SECTION
+\end{verbatim}
+
+ако го има. След това в копието се добавят или променят следните
+настройки:
+
+\begin{verbatim}
+Section "InputDevice"
+        .. 
+        ..
+        Option  "XkbLayout"     "bg"
+        Option  "XkbVariant"    "phonetic"
+        Option  "XkbOptions"    "grp:alt_shift_toggle,grp_led:scroll"
+EndSection
+\end{verbatim}
+
+Различните възможности за стойностите на опциите могат да се видят от
+предишната секция.
+
+Ако ползвате XFree86 версия 4.3 или по-голяма, трябва да употребите
+малко по-друг синтаксис, който позволява повече от две подреждания
+(layouts).  Примерите по-долу засягат само \textit{XkbLayout} и
+\textit{XkbVariant}, защото останалите неща са същите.
+
+\begin{verbatim}
+# едновременно фонетична и БДС наредба
+        Option "XkbLayout" "us,bg,bg"
+        Option "XkbVariant" ",phonetic,bds"
+
+# или само фонетична
+        Option "XkbLayout" "us,bg"
+        Option "XkbVariant" ",phonetic"
+\end{verbatim}
+
+\subsubsection{\textit{setxkbmap}: Различна подредба за отделен потребител}
+
+Командата \man{setxkbmap}{1} позволява конфигуриране на клавиатурата
+от команден ред или скрипт.  Например:
+
+За фонетична подредба с превключване на кирилица/латиница с десен Alt:
+\begin{verbatim}
+# setxkbmap bg phonetic_enhanced grp:toggle,grp_led:scroll
+\end{verbatim}
+
+За БДС подредба подредба с превключване на кирилица/латиница с десен Alt:
+\begin{verbatim}
+# setxkbmap bg bds_enhanced grp:toggle,grp_led:scroll
+\end{verbatim}
+
+(Не забравяйте, че от XFree86 4.3 нататък има малко по-друг синтаксис,
+както е показано по-горе.)
+
+Такъв скрипт може да се използва при
+начално зареждане на потребителска X сесия, променяйки глобалните
+настройки за подредба на клавиатурата. Файлът \texttt{\textasciitilde%
+  /.xsession} (в Дебиан вместо \texttt{\textasciitilde /.xinitrc}
+трябва да се използва \texttt{\textasciitilde /.xsession}) е подходящ
+за тази цел.  Забележете, че този файл може и да не се изпълни от
+display manager-и, различни от \deb{xdm}, като \deb{kdm} или \deb{gdm}
+например.  Използвайки горните променливи, командата изглежда по
+следния начин (в квадратни скоби се отбелязват части, които могат да
+се пропуснат):
+
+\begin{verbatim}
+# setxkbmap [ -layout XkbLayout ]
+            [ -variant XkbVariant ]
+            [ -option XkbOptions ]
+            [ -compat XkbCompat ]
+\end{verbatim}
+
+Като графични превключватели на подредбата на клавиатурата може да
+ползвате \deb{kxkb}, \deb{xxkbd} и др.
+
+\subsubsection{Важна корекция}
+
+Проверете дали имате този файл, и ако не то непременно трябва да изпълните командата:
+
+\begin{verbatim}
+# touch /usr/lib/X11/locale/microsoft-cp1251/Compose
+\end{verbatim}
+
+понеже някои програми не могат да тръгнат, ако този файл не
+съществува.
+
+\subsection{Шрифтове}
+
+Ако искате да разберете повече за шрифтовете в X, следните
+текстове може да ви помогнат:
+
+\begin{itemize}
+
+\item \hlink{Fonts in
+    XFree86}{http://www.xfree86.org/current/fonts.html}, от
+  документацията на \hlink{XFree86}{http://www.xfree86.org/}
+
+\item \hlink{XFree86 Font De-uglification
+    HOWTO}{http://feenix.burgiss.net/ldp/fdu/}
+
+\end{itemize}
+
+Имайте впредвид, че в X кодирането на знаците на нашата кирилица се
+именува \texttt{microsoft-cp1251}, по специално в имената на
+шрифтовете, и \texttt{windows-1251} на всички други места, като поща
+например.  Последното име е и официалното на това кодиране.
+
+В X широко се използват някои предефинирани имена на шрифтове, като
+\texttt{fixed} или \texttt{10x20} например.  Версиите на тези шрифтове
+с кодировка \texttt{windows-1251} са с префикс \texttt{w-}, като
+\texttt{w-fixed} и \texttt{w-10x20} например.  Префиксът \texttt{c-}
+се използва за шрифтове с Уникод кодиране, което в X се именува
+\texttt{iso10646-1}.  Всички такива кратки имена (\textit{alias}-и,
+псевдоними) могат да се видят с командата
+\hlink{xlsfonts}{http://www.xfree86.org/current/xlsfonts.1.html}:
+
+
+\begin{verbatim}
+$ xlsfonts | grep ^w-
+\end{verbatim}
+
+Пълен списък на всички псевдоними се намира във файловете
+\texttt{*.alias} от поддиректориите на \texttt{/etc/X11/fonts}.  За да
+видите образите на знаците на някой шрифт, използвайте командата
+\hlink{xfd}{http://www.xfree86.org/current/xfd.1.html} от вида:
+
+\begin{verbatim}
+$ xfd -fn w-10x20
+\end{verbatim}
+
+За търсене и разглеждане на шрифт използвайте
+\hlink{xfontsel}{http://www.xfree86.org/current/xfontsel.1.html}.
+Една комбинация от двете команди, която използвам за
+\hlink{Уникод}{http://www.unicode.org/} шрифтове (в X ги именуват с
+кодиране \texttt{iso10646-1}), е
+
+\begin{verbatim}
+$ xfd -fn "`xfontsel -print`"
+\end{verbatim}
+
+\subsubsection{Пакети с шрифтове, съдържащи кирилица}
+
+(FIXME: Тази част още не е прехвърлена.)
+
+\subsubsection{Препоръчвани пакети с шрифтове}
+
+Ето списък на най-често използваните пакети с кирилски шрифтове:
+
+\begin{itemize}
+\item \deb{xfonts-base}
+\item
+  \texttt{xfonts-cronyx-\{\hlink{cp1251}{http://packages.debian.org/xfonts-cronyx-cp1251-75dpi},\hlink{koi8r}{http://packages.debian.org/xfonts-cronyx-koi8r-75dpi}\}-\{\{\hlink{75}{http://packages.debian.org/xfonts-cronyx-75dpi},\hlink{100}{http://packages.debian.org/xfonts-cronyx-100dpi}\}dpi,\hlink{misc}{http://packages.debian.org/xfonts-cronyx-misc}\}}
+\item
+  \texttt{\hlink{xfonts-bolkhov}{http://packages.debian.org/xfonts-bolkhov-75dpi}-\{cp1251,koi8r\}-\{75dpi,misc\}}
+\item \deb{scalable-cyrfonts-x11}
+\item \deb{scalable-terminus}
+\item \deb{msttcorefonts}
+\end{itemize}
+
+\textit{Забележка} Ако не знаете точното предназначение на кривите
+скоби, използвани тук, моля прочетете частта \hlink{Brace
+  Expansion}{http://www.gnu.org/manual/bash-2.05a/html\_chapter/bashref\_3.html\#SEC27}
+от секцията \hlink{Basic Shell
+  Features}{http://www.gnu.org/manual/bash-2.05a/html\_chapter/bashref\_3.html}
+в \hlink{ръководството на
+  Bash}{http://www.gnu.org/manual/bash-2.05a/}.  Тук те няма да се
+обясняват, защото и без друго това е една от ценните възможности на
+Bash, която си струва да се знае.
+
+\subsubsection{TrueType шрифтове}
+
+Има два основни начина, с които една програма може да използва
+шрифтове.  Първият е класическият: дават се команди на X сървъра да
+изобрази определени знаци от определен шрифт.  Наричаме този начин
+\textit{използване на X шрифтовете} (\textit{X core fonts}).  Вторият
+начин е самата програма да направи изображение на знаците, които иска
+да покаже, и да прати тези готови образи на X сървъра чрез
+\hlink{разширението RENDER}{http://keithp.com/\textasciitilde%
+  keithp/talks/} на \hlink{XFree86}{http://www.xfree86.org/}.  За тази
+цел се използва библиотеката
+\hlink{FreeType}{http://www.FreeType.org/}.  Самата библиотека не
+прави повече от построяване на образи на знаци.  Задачата да се
+прехвърлят тези образи в X сървъра се изпълнява от библиотеката Xft,
+последната версия 2 на която е част от по-общата система
+\hlink{FontConfig}{http://fontconfig.org/} за използване на шрифтове.
+Този начин наричаме \textit{използване на Xft шрифтовете}.  (В бъдеще
+по-добре е да се наричат \textit{FontConfig шрифтове}, но в Дебиан 3.0
+това няма да е адекватно, защото там има само Xft1.) От потребителска
+гледна точка вторият начин има няколко предимства: способността да се
+изглаждат знаците на шрифтовете (anti-aliasing, X шрифтовете нямат
+тази способност), много по-разбираемото именуване на шрифтовете
+(сравнете \texttt{Lucida Sans 14} с
+\texttt{-b\&h-lucida-medium-r-normal-sans-14-100-100-100-p-80-iso10646-1})
+и способността за фино конфигуриране на Xft.  Вторият начин е по-нов и
+само по-новите програми (например тези на KDE2 и GNOME2) са способни
+да го използват.
+
+И по двата начина могат да се използват TrueType шрифтове.  Като X
+шрифтове те се изобразяват чрез вариант на FreeType, или чрез друга
+библиотека за изобразяване на знаци --- XTT, но това е само за
+съвместимост с по-старите програми.
+
+\paragraph{Инсталиране на TrueType шрифтове}
+
+Понякога се разпространяват TrueType шрифтове за определено кодиране,
+например \texttt{windows-1251}.  Много вероятно е да имате проблеми с
+тях, защото те ще се възприемат като с кодиране \texttt{iso8859-1}.
+Използвайте Уникод шрифтове.
+
+\begin{enumerate}
+\item Вземете отнякъде TrueType шрифтове
+\item Инсталирайте пакета \deb{ttmkfdir}
+\item Сложете \texttt{*.ttf} файловете в някаква временна директория.
+\item Изпълнете там командата
+\begin{verbatim}$ ttmkfdir -о име.scale\end{verbatim}
+където \textit{име} е специфично за тази група шрифтове име.
+\item Копирайте \texttt{*.ttf} файловете в директорията
+  \texttt{/usr/lib/X11/fonts/TrueType}.  Създайте я, ако не
+  съществува.
+\item Копирайте файла \texttt{\textit{име}.scale} в директорията
+  \texttt{/etc/X11/fonts/TrueType}.  Създайте я, ако не съществува.
+\item Изпълнете командите:
+\begin{verbatim}
+# update-fonts-scale TrueType
+# update-fonts-dir TrueType
+\end{verbatim}
+\end{enumerate}
+
+\paragraph{Използване като X шрифтове}
+
+Ако използвате шрифтовия сървър \deb{xfs}, трябва да добавите
+директорията \texttt{/usr/lib/X11/fonts/TrueType} към параметъра
+\texttt{catalogue} във файла \texttt{/etc/X11/fs/config}.  В шрифтовия
+сървър \deb{xfs-xtt} това е файлът \texttt{/etc/X11/fs-xtt/config}.
+За да видите резултат веднага след като инсталирате шрифтовете,
+изпълнете командата
+
+\begin{verbatim}
+# /etc/init.d/xfs reload
+\end{verbatim}
+
+или ако използвате \deb{xfs-xtt}:
+
+\begin{verbatim}
+# /etc/init.d/xfs-xtt reload
+\end{verbatim}
+
+Ако не използвате шрифтов сървър, копирайте цялата секция
+\texttt{Files} на \texttt{/etc/X11/XF86Config-4} в края на файла,
+задължително след реда (ако го има):
+
+\begin{verbatim}
+### END DEBCONF SECTION
+\end{verbatim}
+
+Добавете \texttt{/usr/lib/X11/fonts/TrueType} в началото на списъка с
+директориите.
+
+\paragraph{Използване като Xft шрифтове}
+
+Не е нужно да правите каквото и да е --- директорията на шрифтовете е
+част от подразбиращата се конфигурация.  Между другото във FontConfig,
+която система не е част от Дебиан 3.0, инсталирането на TrueType
+шрифтове се свежда до копиране на \texttt{*.ttf} файловете в
+директорията \texttt{\textasciitilde /.fonts}.
+
+Възможно е обаче да искате да конфигурирате Xft.  Подробности могат да
+се намерят в \hlink{XFree86 Font De-uglification
+  HOWTO}{http://feenix.burgiss.net/ldp/fdu/}.  Обикновено най-желаната
+конфигурация се свежда до добавяне на следните редове към
+\texttt{/etc/X11/XftConfig}:
+
+\begin{verbatim}
+match
+        any size > 8
+        any size < 15
+edit 
+        antialias = false;
+\end{verbatim}
+
+Това забранява изглаждането на шрифтове с големина между 8 и 15 пункта.
+
+\subsection{\textit{xfs}: Шрифтов сървър}
+
+Инсталирането на шрифтов сървър, като например \deb{xfs} или
+\deb{xfs-xtt}, е
+\hlink{препоръчително}{https://listman.redhat.com/pipermail/roswell-list/2001-September/001816.html}.
+Изпoлзвайте \deb{xfs}.  За да получите по-добри резултати, в края на
+файла \texttt{/etc/X11/XF86Config-4}, задължително след реда (ако го
+има)
+
+\begin{verbatim}
+### END DEBCONF SECTION
+\end{verbatim}
+
+вмъкнете следното:
+
+\begin{verbatim}
+Section "Files"
+        FontPath        "unix:/7100"    # xfs port
+EndSection "Files"
+\end{verbatim}

@@ -1,0 +1,332 @@
+\section{Достъп до Knoppix и Debian CD и DVD images}
+
+\subsection{Knoppix images}
+
+\begin{itemize}
+ \item \hlink{http://www.knopper.net/knoppix/}{http://www.knopper.net/knoppix/} - официален сайт.
+ \item \hlink{http://www.knopper.net/knoppix-mirrors/index-en.html}{http://www.knopper.net/knoppix-mirrors/index-en.html} - download.
+ \item \hlink{http://www.knopper.net/download/knoppix/}{http://www.knopper.net/download/knoppix/} - специфичните за Knoppix binary и source packages.
+\end{itemize}
+
+\subsection{Debian images}
+
+\begin{itemize}
+\item \hlink{http://www.debian.org/CD/vendors/}{http://www.debian.org/CD/vendors/} - CD доставчици.
+\item \hlink{http://www.debian.org/distrib/cd}{http://www.debian.org/distrib/cd} - CD iso images.
+\item \hlink{ftp://cdimage.debian.org/debian-cd/}{ftp://cdimage.debian.org/debian-cd/} - Официални 
+ CD images на Stable Releases през ftp, rsync, jigdo за всички архитектури (\textit{за сега не е 
+ мирорнато у нас с изключение на x86 CD images, вероятно поради убийствените изисквания за 
+ intl bandwidth и local storage}).
+\item rsync -avz cdimage.debian.org::debian-cd/
+\item \hlink{ftp://ftp.fsn.hu/pub/CDROM-Images/debian/}{ftp://ftp.fsn.hu/pub/CDROM-Images/debian/}
+\item \hlink{ftp://ftp.fsn.hu/pub/CDROM-Images/debian-unofficial/}{ftp://ftp.fsn.hu/pub/CDROM-Images/debian-unofficial/} - Неофициални CD и DVD 
+ images на Stable, Testing и Unstable през ftp, rsync, jigdo за x86 архитектурата (\textit{за сега не е
+ мирорнато у нас без изключения, вероятно поради убийствените изисквания за intl bandwidth и
+ local storage}).
+\end{itemize}
+
+\subsection{Български миръри на Knoppix и Debian}
+
+\textbf{За българските потребители ще е по-удобно да изтеглят Debian Knoppix от български миръри}:
+
+Images:
+
+\begin{itemize}
+\item \hlink{ftp://ftp.bg.debian.org/debian-cd/}{ftp://ftp.bg.debian.org/debian-cd/} - 
+ официалния Debian mirror за България
+\item \hlink{ftp://ftp.uni-sofia.bg/cd-images/}{ftp://ftp.uni-sofia.bg/cd-images/} - 
+ вторичен мирър - Knoppix и Debian images и много други.
+\item rsync -auv debian.ludost.net::cd-images/linux/ - 
+ вторичен мирър - Knoppix и Debian images и много други.
+\item jigdo-lite ftp://debian.ludost.net/debian-jigdo/..jigdo -
+\hlink{jigdo}{http://atterer.net/jigdo/} files за сглобяване на images при потребителя.
+\end{itemize}
+
+Binary и Source Packages - тези може да ги описвате в \texttt{/etc/apt/sources.list}.
+В директорията \texttt{utils/home/} на книгата може да разгледате такива конфигурационни файлове:
+
+\begin{itemize}
+\item \hlink{ftp://ftp.bg.debian.org}{ftp://ftp.bg.debian.org}
+\item \hlink{ftp://ftp.uni-sofia.bg}{ftp://ftp.uni-sofia.bg}
+\item \hlink{http://debian.ludost.net}{http://debian.ludost.net}
+\end{itemize}
+
+\textbf{Не бързайте да изтегляте Debian images}:
+
+\begin{itemize}
+\item Debian поддържа отчайващо много официални и неофициални начини на инсталация 
+  и може да се окаже, че за вас е по-подходящ някой друг начин на инсталация, като
+  \hlink{netinst}{http://www.debian.org/distrib/netinst} или
+  инсталация на Debian Base от Knoppix LiveCD чрез инсталаторите 
+  \texttt{knx-hdinstall} и 
+  \hlink{knoppix-installer}{http://www.knoppix.net/docs/index.php/KnoppixInstaller} 
+  или пък чрез \hlink{debootstrap}{http://www.inittab.de/manuals/debootstrap.html}. 
+  Ето и едно \hlink{сравнение между някои от тях}{http://www.knoppix.net/forum/viewtopic.php?t=6785}
+  като по принцип е добра идея да се прегледа първо \hlink{официалния инсталатор на
+  Debian}{http://www.debian.org/devel/debian-installer/} и  
+  \hlink{документацията на Knoppix}{http://www.knoppix.net/docs/} 
+  за други интересни и алтернативни начини на инсталация. 
+\item Също така не е нужно да разполагате с всичките CD-та, първото и
+  второто ще са ви предостатъчни, пък и винаги може да доинсталирате и
+  обновите каквото ви е необходимо впоследствие от Debian mirrors.
+\end{itemize}
+
+Ако нямате възможност или не знаете как да дръпнете и изпечете на CD
+тези images, тогава ви остава да намерите някой, който да го направи
+за вас, или безплатно и на приятелски начала, ако е ваш познат, или
+може да се наложи да заплатите разходите по изтеглянето, изпичането и
+самата празна CDROM бланка, ако не си носите такава. Помнете, че за
+самия софтуер на Debian и Knoppix не могат да се искат пари, но пък
+никой не е длъжен да ви пече колкото се сетите на брой CD-та за негова
+сметка, щото на вас така ви харесва, пък не можете да го постигнете
+сами. Така че е излишно да се хвърляте на повече от едно-две CD-та,
+след това много лесно може да се доинсталира и обнови каквото ви
+трябва, пък го е нямало на тези CD's.
+
+\subsection{Примери за сглобяване на ISO files с jigdo}
+
+\subsubsection{Примерни огледални сайтове}
+
+Ако по българските миръри няма ISO файла който търсите (за дадена архитектура или по-нова в
+момента разработвана и неиздадена версия) то можем да ползваме \textit{.deb's} които ги има
+по нашите миръри и да не теглим ISO files от чужбина, а само т.н. \textit{.jigdo} и
+\textit{.template} files. Българските миръри могат да ги изтеглят от:
+
+\begin{verbatim}
+rsync -avz cdimage.debian.org::debian-cd/
+rsync -avz us.cdimage.debian.org::jigdo-area/
+rsync -avz non-us.cdimage.debian.org::debian-jigdo/
+\end{verbatim}
+
+Много добър пример за \textit{ISO} и \textit{jigdo} files, а така и \textit{rsync} сървър е 
+\textbf{mirrors.kernel.org}. В поддиректории на \textbf{debian-cd/} се съхраняват:
+
+\begin{itemize}
+\item \textbf{jigdo-area/} съдържаща съответните \textbf{.jigdo} и \textbf{.template} files. 
+\item \textbf{jigdo/} и символични връзки \textit{<архитектура>} -> \textit{jigdo/<архитектура>} за \textbf{ISO} files.
+\end{itemize}
+
+\begin{verbatim}
+# rsync -avz mirrors.kernel.org::debian-cd/
+
+drwxrwxr-x        4096 2003/12/02 16:49:56 jigdo-area
+drwxr-xr-x        4096 2003/01/15 09:47:59 jigdo-area/3.0_r0
+...
+drwxr-xr-x        4096 2003/12/02 16:49:56 jigdo-area/3.0_r2
+drwxr-xr-x        4096 2003/12/04 12:20:13 jigdo-area/3.0_r2/jigdo
+drwxr-xr-x        4096 2003/12/02 16:51:22 jigdo-area/3.0_r2/jigdo/hppa
+-rw-r--r--        454 2003/11/27 02:23:38 jigdo-area/3.0_r2/jigdo/hppa/MD5SUMS
+-rw-r--r--        32791 2003/11/27 02:14:19 jigdo-area/3.0_r2/jigdo/hppa/woody-hppa-1.jigdo
+-rw-r--r--        14515668 2003/11/27 02:15:17 jigdo-area/3.0_r2/jigdo/hppa/woody-hppa-1.template
+-rw-r--r--        39198 2003/11/27 02:15:38 jigdo-area/3.0_r2/jigdo/hppa/woody-hppa-1_NONUS.jigdo
+-rw-r--r--        14640001 2003/11/27 02:15:41 jigdo-area/3.0_r2/jigdo/hppa/woody-hppa-1_NONUS.template
+...
+...
+drwxr-xr-x        4096 2003/03/24 07:43:53 jigdo
+drwxr-xr-x        4096 2003/03/24 05:21:57 jigdo/ia64
+-rw-r--r--        607846400 2003/03/24 05:08:06 jigdo/ia64/debian-30r1-ia64-binary-1.iso
+...
+lrwxrwxrwx        11 2003/03/24 05:20:29 alpha -> jigdo/alpha
+lrwxrwxrwx        9 2003/03/24 05:20:32 arm -> jigdo/arm
+lrwxrwxrwx        10 2003/03/24 05:20:37 hppa -> jigdo/hppa
+lrwxrwxrwx        10 2003/03/21 07:14:47 i386 -> jigdo/i386
+lrwxrwxrwx        10 2003/03/24 05:20:45 ia64 -> jigdo/ia64
+lrwxrwxrwx        10 2003/03/24 05:54:13 m68k -> jigdo/m68k
+lrwxrwxrwx        10 2003/03/24 05:54:16 mips -> jigdo/mips
+lrwxrwxrwx        12 2003/03/24 08:29:08 mipsel -> jigdo/mipsel
+lrwxrwxrwx        13 2003/03/24 08:29:13 powerpc -> jigdo/powerpc
+lrwxrwxrwx        10 2003/03/24 08:29:19 s390 -> jigdo/s390
+lrwxrwxrwx        12 2003/03/24 08:29:23 source -> jigdo/source
+lrwxrwxrwx        11 2003/03/24 08:29:27 sparc -> jigdo/sparc
+\end{verbatim}
+
+Домашен потребител не е нужно да мирорва горното, достатъчно е да знае какво ISO иска и да си избере един 
+\textit{.jigdo} file , съответния \textit{.template} file ще бъде изтеглен автоматично.
+
+\subsubsection{Сглобяване на \texttt{ISO image} който го няма по българските миръри с изтегляне на
+даден \texttt{.jigdo} и \texttt{.template} file}
+
+\begin{itemize}
+
+\item Намираме и изтегляме един \textit{.jigdo} файл по наше желание от някой чужд мирър:
+ \begin{verbatim}
+ # jigdo-lite ftp://ftp.fsn.hu/pub/CDROM-Images/debian-unofficial/sid/jigdo/sid-i386-1.jigdo
+ \end{verbatim}
+
+ Ако имаме \texttt{.jigdo} файл в текущата директория можем просто да го подаден на
+ \texttt{jigdo-lite}:
+
+ \begin{verbatim}
+ # jigdo-lite sid-i386-1.jigdo
+ \end{verbatim}
+
+\item Ще ни се даде възможност да спестим теглене на пакети ако вече ги имаме:
+ \begin{verbatim}
+ If you already have a previous version of the CD you are
+ downloading, jigdo can re-use files on the old CD that are also
+ present in the new image, and you do not need to download them
+ again. Mount the old CD ROM and enter the path it is mounted under
+ (e.g. `/mnt/cdrom').
+ Alternatively, just press enter if you want to start downloading
+ the remaining files.
+ Files to scan:
+ \end{verbatim}
+
+ Имайте предвид, че освен CDROM-дискове, може да монтирате и ISO-файлове:
+ \begin{verbatim}
+ # mount -o loop /path/to/file.iso /mnt/loop1
+ \end{verbatim}
+
+\item Ще бъде изтеглен съответния \textit{.template} файл (ако не бъде намерен в текущата
+ директория) за кореспондиращия му \textit{.jigdo} файла посочен по-горе.
+
+\item Монтираната медия ще бъде сканирана, при което ще бъдете информирани колко файла са
+ намерени от тези които се изискват от \texttt{.template} файла.
+
+\item Предлага ни се отново да монтираме някоя медия за да бъде сканирана:
+
+ \begin{verbatim}
+ If you already have a previous version of the CD you are
+ downloading, jigdo can re-use files on the old CD that are also
+ present in the new image, and you do not need to download them
+ again. Mount the old CD ROM and enter the path it is mounted under
+ (e.g. `/mnt/cdrom').
+ Alternatively, just press enter if you want to start downloading
+ the remaining files.
+
+ You can also enter a single digit from the list below to
+ select the respective entry for scanning:
+   1: /mnt/loop1
+   2: /mnt/loop2
+ Files to scan:
+ \end{verbatim}
+
+ Можем да посочим път до нещо което е монтирано което и го няма в списъка, да изберем нещо съществуващо
+ от списъка или просто не избираме нищо и натискаме само \texttt{Enter}.
+
+\item Въвеждаме някой български FTP/HTTP мирър на Debian, т.е. пътя до 
+ директориите \textit{debian/} и \textit{debian-non-US/} откъдето ще бъдат изтеглени
+ binary \textit{.deb's} или source packages, прави им се \textit{checksum} проверка:
+ 
+ \begin{verbatim}
+ Debian mirror: ftp.bg.debian.org/debian/
+ Debian non-US mirror: ftp.bg.debian.org/debian-non-US/
+ \end{verbatim}
+
+ След което ще бъде сглобен ISO image. В най-лошия случай ако това се провали можете да започнете 
+ с \man{jigdo-lite}{1} отначало като ще се опита да продължи от там докъдето е стигнал. Ако горното 
+ не помогне продължавате с \man{rsync}{1}, стига да намерите някъде online ISO-то което ви трябва. 
+ Махаме разширението \textit{.tmp} и изпълняваме (т.е. \textit{rsync} ще пише във файла на който 
+ махнахме разширението \textit{.tmp}):
+
+ \begin{verbatim}
+ # rsync rsync://server.org/path/binary-i386-1.iso binary-i386-1.iso 
+ \end{verbatim}
+
+\end{itemize}
+
+\subsubsection{Сглобяване на \texttt{ISO image} който го няма по българските миръри с изтегляне на
+всички \texttt{.jigdo} и \texttt{.template} files}
+
+За разлика от горния пример тук мирорваме локално всички \texttt{.jigdo} и \texttt{.template}
+файлове със скрипт подобен на този от \texttt{utils/desync.sh}, необходимото място е около 1GB. 
+След което процедираме по следния начин (например ще сглобяваме CD 1 на Sarge за Alpha):
+
+\begin{verbatim}
+cd debian-cd-unofficial/sarge/jigdo/
+jigdo-lite sarge-alpha-1.jigdo
+\end{verbatim}
+
+jigdo-lite ще ни съобщи, че е намерил съответния \texttt{.template} в текущата директория
+(особено удобно ако в \texttt{.jigdo}, секция [Image], Template= е зададено с абсолютен път, 
+вместо с относителен):
+
+\begin{verbatim}
+Not downloading .template file - `sarge-alpha-1.template' already present
+\end{verbatim}
+
+За \texttt{debian/} и \texttt{debian-non-US/} миръри на пакети посочваме първо българските,
+като дори и на тях да няма пакети за \texttt{alpha}, то най-малко ще бъдат изтеглени
+архитектурно независимите пакети и \texttt{jigdo-lite} ще ни съобщи колко няма да могат да
+бъдат изтеглени, при което имаме следните възможности:
+
+\begin{itemize}
+\item jigdo-lite ще опита сам да изтегли ненамерените файлове 
+от алтернативни източници. Например:
+
+\begin{verbatim}
+-----------------------------------------------------------------
+4 files not found in previous pass, trying
+alternative download locations:
+
+--14:39:42--  ftp://ftp.fsn.hu/pub/debian-superseded/aOK458Q62Cmdpj2HW1ObrQ
+           => `debian-20031230-i386-binary-2.iso.tmpdir/ftp.fsn.hu/pub/debian-superseded/aOK458Q62Cmdpj2HW1ObrQ
+\end{verbatim}
+
+Вижте също и \hlink{fallback servers}{http://lists.debian.org/debian-cd/2003/debian-cd-200312/msg00157.html}.
+
+\item да опитаме отново от същите сървъри.
+\item да опитаме с други \texttt{debian} и \texttt{debian-non-US} сървъри - при което
+посочваме някои извън страната и стартираме пак \texttt{jigdo-lite} при което ще продължи от
+там докъдето е стигнато.
+\item продължаваме с \texttt{rsync} на съответния недоизтеглен \texttt{ISO image} след като 
+го намерим на някой сървър.
+\end{itemize}
+
+Подробности на:
+\hlink{http://www.debian.org/CD/jigdo-cd/\#faq}{http://www.debian.org/CD/jigdo-cd/\#faq} и 
+\hlink{http://atterer.net/jigdo/}{http://atterer.net/jigdo/}
+
+
+
+\section{\textit{Tilix}: българизиран Knoppix}
+
+\hlink{Tilix}{http://tilix.slaveinostudios.com} 
+\hlink{ftp://ftp.uni-sofia.bg/cd-images/linux/tilix/}{ftp://ftp.uni-sofia.bg/cd-images/linux/tilix/}
+
+\section{Други Knoppix-live LiveCD's}
+
+Появиха се цял рояк малко или много променени Knoppix LiveCD-та, това е т.н. 
+knoppix ефект ;-) 
+
+\begin{itemize}
+\item \hlink{Gnoppix}{http://www.gnoppix.org} - KDE е заменено с GNOME.
+\item \hlink{Knoppix MiB Privacy Edition}{http://www.bouissou.net/knoppix-mib/doc-html/Knoppix-Mib.html}
+\item \hlink{ClusterKnoppix}{http://bofh.be/clusterknoppix/}
+\hlink{Custom Debian Knoppix}{http://www.linuxgazette.com/issue87/sunil.html} - как да
+променим Knoppix image.
+\hlink{knoppix-customize}{http://download.linuxtag.org/knoppix/knoppix-customize/ANNOUNCE.txt} - пакет 
+улесняващ промяната на Knoppix image.
+\end{itemize}
+
+\section{Gibraltar LiveCD}
+
+Съществуват и други проекти за LiveCD's, но целта им може да бъде 
+по-специализирана. Такъв например е проекта \hlink{http://www.gibraltar.at}{http://www.gibraltar.at}. 
+Това е базирана на Debian router/firewall дистрибуция инсталирана на CDROM, 
+т.е. имаме LiveCD. Големите файлове могат да се съхраняват на хард-диска, а конфигурационните
+данни могат да се записват на флопи и да се съхраняват в RAM паметта по време на работа.
+Българския мирър за ISO файлове е 
+\hlink{http://mirrors.ludost.net/cd-images/linux/gibraltar}{http://mirrors.ludost.net/cd-images/linux/gibraltar}).
+
+В официалния архив на Debian има пакети които могат да са ви от полва ако използвате това
+LiveCD. Такъв например е пакета \deb{gibraltar-bootsupport}. С негова помощ можете да
+управлявате съдържанието на директориите \texttt{/etc} и \texttt{/var} внасяйки промени в
+тях, запазвайки ги и впоследствие може да възстановите от там. Поради тази причина този пакет
+трябва да се инсталира на master copy което ще бъде използвано като live filesystem на CDROM. Не
+инсталирайте този пакет на система която се зарежда от дял на някой хард-диск (т.е. на
+системата на която разработвате и съсдавате bootable CDROMs).
+
+\section{Публично достъпни Debian машини}
+
+Има и още един начин да погледнете в Debian система, без да е инсталирана на вашия компютър.
+Можете да погледнете в някоя публично достъпна система като тези обявени в тази новина 
+\hlink{http://www.debian.org/News/2003/20030102}{http://www.debian.org/News/2003/20030102}. 
+Чрез програмата Test Drive, Hewlett-Packard (HP) 
+предлага публичен достъп до няколко машини на които има Debian GNU/Linux. 
+Потребителите могат да получат акаунт, да надникнат в тези машини и да придобият представа
+как се представя Debian GNU/Linux на хардуердуерните архитертури от HP -  поддържат се четири
+такива архитектури - Alpha, PA-RISC, IA-32 и IA-64 (може би това ще е уникална възможност да
+наблюдавате Debian GNU/Linux на платформа различна от познатото до болка x86 PC). Има инсталирани
+компилатори на тези платформи, така, че потребителите ще могат да тестват дали даден софтуер
+се компилира на тези платформи.

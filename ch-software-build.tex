@@ -1,0 +1,646 @@
+\chapter{Компилиране и инсталиране на софтуера - проблеми и решения}
+
+\section{Local APT Repositories}
+
+\subsection{Създаване и управление на локално apt-хранилище с готови \texttt{deb}-файлове}
+
+
+Ако разполагате с \textit{.deb}-файлове в някоя локална директория, за
+да ги инсталирате, единият от начините е да се изпълни \texttt{dpkg
+  -i} по реда на зависимостите, което може да бъде и досадно. За това
+ще е по-културно да се впрегне \deb{apt} да свърши това вместо нас.
+
+
+\begin{itemize}
+\item Създайте файл \texttt{overridefile}, съдържащ списък на
+  файловете в директория с пакети,т.е.  списък на файловете
+  \textit{.deb} намиращи се там:
+
+\begin{verbatim}
+$ cd /usr/local/mypackages
+$ find . -name "*.deb" > overridefile
+\end{verbatim}
+
+
+Сега файлът \texttt{overridefile} ще има съдържание, подобно на това:
+
+\begin{verbatim}
+./aalib1_1.2-helix1_i386.deb
+./abiword_0.7.10-helix1_i386.deb
+./bonobo_0.23-helix4_i386.deb
+./codecommander_0.9.7-helix1_i386.deb
+./eog_0.5-helix1_i386.deb
+\end{verbatim}
+
+
+Има, разбира се, и други опции, които можете да укажете при
+създаването на \texttt{overridefile}, които за момента не са ни
+необходими. За повече информация, прегледайте съответно
+\man{dpkg-scanpackages}{8} за \textit{debian binary packages} и
+\man{dpkg-scansources}{8} за \textit{debian source packages}.
+
+\item 
+\begin{verbatim}
+$ dpkg-scanpackages . overridefile > Packages
+\end{verbatim}
+  
+\item Добавете тази директория като източник във файла
+  \texttt{/etc/apt/sources.list}:
+
+\begin{verbatim}
+deb file:/usr/local/mypackages ./
+\end{verbatim}
+  
+\item Обновете \deb{apt}, така че и този източник да се прибави в
+  списъка му:
+
+\begin{verbatim}
+# apt-get update
+\end{verbatim}
+  
+\item Сега вече можете да инсталирате който и да е пакет от тази
+  директория, като естествено трябва да бъдат достъпни всички пакети,
+  от които той зависи и които ще бъдат предложени от \deb{apt}
+  автоматично:
+
+\begin{verbatim}
+# apt-get install abiword
+\end{verbatim}
+
+\end{itemize}
+
+\subsubsection{\textit{debuild}: debian binary пакети от source пакети}
+
+
+В пакета \deb{devscripts} ще намерите една много полезна Perl програма
+наречена \man{debuild}{1}. Използва се за получаване на debian binary
+packages (deb-файлове) от debian source packages:
+
+\begin{verbatim}
+# debuild -b -uc -us
+\end{verbatim}
+
+\subsubsection{\textit{sbuild}: debian binary пакети от source пакети}
+
+
+За разлика от \deb{debuild} програмката от едноимения пакет \deb{sbuild} разбира и от
+\texttt{source dependencies}.
+
+\subsubsection{\textit{cvs-buildpackage}: debian binary пакети от CVS хранилище}
+
+
+Управлява build процеса за получаване на \texttt{deb} пакет от сорсове съхранявани в
+произволно CVS хранилище (да не си помисли някой, че сорса трябва да е на cvs.debian.org;-). 
+Много яка утилка.
+
+\subsection{\textit{apt-build}: Инсталиране на пакети от сорс}
+
+\subsubsection{Накратко}
+
+
+Колкото и странно да звучи на някои, ако искате да имате винаги
+възможно най-актуалните версии на софтуера за \textit{GUN/Linux},
+най-лесният път към това е използването на
+\hlink{Debian}{http://www.debian.org}. Противно на общоприетото
+схващане, тази дистрибуция се снабдява най-пъргаво с всички нови
+програми и ви предоставя достатъчно гъвав и лесен начин за тяхното
+управление с помощта на серия инструменти.
+
+
+Добре е известно, че \hlink{Debian}{http://www.debian.org} се дели на
+три --- да ги наречем условно --- издания: \textit{stable},
+\textit{testing} и \textit{unstable} (има и
+\textit{project/experimental}, но там нещата са наистина за
+експерименти). В \textit{stable} влиза проверен от времето (и
+хакерите) софтуер, на който можете да разчитате за сериозни задачи,
+изискващи максимална сигурност и стабилност. Логично е, софтуерът в
+\textit{stable} да е по-старичък. Официалните ISO-имиджи на
+\textit{stable} можете да изтеглите от Интернет и с тяхна помощ да си
+направите една базова инсталация, която впоследствие да надградите и
+актуализирате до \textit{testing}, където влизат по-нови неща,
+подлежащи на усилено тестване и кандидати за \textit{stable}, или
+направо да преминете към \textit{unstable}, където буквално има
+всичко, което е излязло на бял свят към момента. Имате и друга
+възможност: част от пакетите да държите от \textit{stable} (например,
+ядрото, базовата система), а друга част, която е по-клиентски
+ориентирана (като KDE и GNOME), да вземете от \textit{unstable}. Много
+хора се оплакват, че \textit{Debian stable} е толкова стар, че дори се
+инсталира с ядро 2.2.x. Така е по подразбиране, но ако четат
+внимателно, ще видят, че инсталацията на Debian предлага широк набор
+от ядра, между които и 2.4.х. В този текст няма да се занимаваме с
+основните команди на програмата \man{apt-get}{8}, с които би трябвало
+да е запознат всеки любител на тази дистрибуция, а ще обърнем внимание
+на един друг инструмент --- \man{apt-build}{1}. С негова помощ можете
+напълно автоматизирано да си направите собствено
+\textit{apt-хранилище} (или \textit{local apt repository}), смисълът
+от което е познат на всеки почитател на сорс-базираните дистрибуции.
+Ползата от подобно хранилище е огромна: избирате компилатор по
+собствено желание и опции за оптимизация също по свой вкус, като така
+постигате максимална производителност за цялата система, управлявате
+хранилището със стотиците компилирани от вас пакети с
+\man{apt-get}{8}, подобно на всеки друг дебиански източник. Като
+собственик на преклонно стар компютър, аз не мога да си позволя лукса,
+предоставян например от \hlink{Gentoo}{http://www.gentoo.org}, да
+компилирам от изходен код цялата си дистрибуция.  А и това не е
+необходимо. Оставяме настрана ядрото, за което има специален
+инструмент \man{kernel-package}{5}.  Съсредоточаваме се само върху
+най-често използваните потребителски приложения, за да не губим
+излишно време в безкрайни компилации, като съобразяваме нуждите си с
+възможностите на самия компютър.
+         
+\subsubsection{Какво е необходимо}
+
+
+Първо трябва да се уверим, че във файла, в който се описват
+източниците на дебианския софтуер, сме въвели и пътя към сорсовете. Би
+трябвало в \texttt{/etc/apt/sources.list} да виждаме нещо такова:
+
+\begin{verbatim}
+deb ftp://ftp.bg.debian.org/debian stable main contrib non-free
+deb ftp://ftp.bg.debian.org/debian unstable main contrib non-free
+deb http://security.debian.org/ stable/updates main
+deb http://security.debian.org/ testing/updates main
+deb-src http://security.debian.org/ stable/updates main
+deb-src http://security.debian.org/ testing/updates main
+deb-src ftp://ftp.bg.debian.org/debian stable main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian unstable main contrib non-free
+\end{verbatim}
+         
+
+След това, трябва да инсталираме \deb{apt-build}:
+
+\begin{verbatim}
+# apt-get install apt-build
+\end{verbatim}
+
+
+При самата инсталация ще бъдем попитани къде искаме да бъде създадена
+директорията, в която ще се съхраняват пакетите от нашето хранилище,
+кой компилатор предпочитаме (например, \deb{gcc-3.2}), дали искаме да
+се прилагат някакви специални опции за оптимизация. По подразбиране
+директорията на нашето хранилище е
+\texttt{/var/cache/apt-build/repository}.  Накрая ще бъдем попитани
+дали искаме въпросната директория да бъде описана във файла с
+дебиански източници, на което ние отговаряме утвърдително.
+
+\subsubsection{Създаване на собствени пакети с \textit{apt-build}}
+
+
+Можете да се изненадате колко е просто, но всъщност цялата процедура
+се свежда до една единствена команда. Пакетите със сорсове носят
+същото наименование като бинарните. Да речем, че искате да си
+инсталирате последната версия на
+\hlink{Mozilla}{hppt://www.mozilla.org}.
+         
+\begin{verbatim}
+# apt-build install mozilla-browser
+\end{verbatim}
+         
+
+Оттук нататък \deb{apt-build} ще се погрижи да си изтегли и инсталира
+всички необходими за компилацията пакети, за да компилира успешно
+\deb{mozilla}, ще съхрани новите бинарита в хранилището, откъдето ще
+ги инсталира и вие ще можете да ги управлявате вече по стандартния
+начин с \man{apt-get}{8}.
+
+\subsubsection{Създаване на \textit{.deb} пакети и добавяне в хранилището}
+
+
+Добре, няма нищо по-лесно от това да инсталирате от официалните
+източници на \textit{Debian} пакети, като ги компилирате локално с
+\man{apt-build}{1}. Но, да речем, че искаме да пипнем тук-там в сорса
+или да компилираме пакет, който не влиза никъде в Debian, след което
+ще го добавим в нашето хранилище. В първия случай можем да изтеглим
+само сорса с \man{apt-get}{8}:
+         
+\begin{verbatim}
+# apt-get source mozilla-browser
+\end{verbatim}
+
+Можете да посочите и конктерна версия на сорса на пакета, например:
+\begin{verbatim}
+# apt-get source diff=2.8.1-6
+\end{verbatim}
+
+където \texttt{diff} е името на пакета, а \texttt{2.8.1-6} е неговата версия.
+Общия формат на версията е: \texttt{Epoch:UpstreamVersion-DebianPackageVersion} 
+или например texttt{4:1.2.3-8}. \texttt{Epoch} и \texttt{DebianPackageVersion} са 
+опционални и не винаги се ползва. Наличните версии можете да намирате чрез:
+
+\begin{verbatim}
+# apt-cache policy package
+\end{verbatim}
+
+
+Сорсът ще се изтегли и разархивира в текущата директория. Можем да
+направим каквото искаме по него и след това да го компилираме с
+\man{dpkg-buildpackage}{1}. В резултат ще получим отново дебиански
+бинарита (deb-файлове), които можем да копираме в нашето хранилище.
+След като ги копираме, трябва да кажем на \man{apt-build}{1} да
+актулизира съдържанието на файловете \texttt{Packages.gz} и
+\texttt{Sources.gz}, от които чете пък \man{apt-get}{8}, за да се
+ориентира къде какви пакети има.
+
+\begin{verbatim}
+# apt-build update-repository
+\end{verbatim}
+
+\subsubsection{Полезни процедури с \textit{apt-build}}
+
+\begin{itemize} 
+\item \textit{Изчистване на работната директория}
+
+
+Когато \man{apt-build}{1} комипилира пакети, сваля на хард диска много
+\textit{devel} библиотеки и сорсове. Бързо ще почувствате липсата на
+дисково пространство, ако не разчиствате редовно работното
+пространство на компилатора, което по подразбиране се намира в
+директорията \texttt{/var/cache/apt-build/build}:
+
+\begin{verbatim}
+# apt-build clean-build
+\end{verbatim}
+         
+
+По същия начин можете да разчиствате и локалния кеш на \man{apt-get}{8}:
+
+\begin{verbatim}
+# apt-get clean
+\end{verbatim}
+         
+\item \textit{Премахване на devel библиотеките и разчистване на ненужния софтуер с \man{debfoster}{8}}
+         
+
+Знаем, че за компилацията на софтуера \man{apt-build}{1} инсталира
+допълнително много хедърни файлове и \textit{devel} библиотеки, които
+бързо запълват дисковото пространство, а в същото време нямаме нужда
+от тях, освен по време на самата компилация. За разрешаването на този
+проблем \textit{Debian} предлага още един много удобен инструмент ---
+\man{debfoster}{8}. Достатъчно е само да го стартирате, за да
+разберете какво прави: пита ви за всеки пакет, който е възможно да
+бъде премахнат безболезнено, и грижливо "измита" отпадъците.
+         
+\end{itemize}
+
+\subsection{\textit{apt-src}}
+
+FIXME: Съдържание трябва да има тука ;-)
+
+\subsection{\textit{pbuilder}}
+
+FIXME: Съдържание трябва да има тука ;-)
+
+\subsection{\textit{apt-fu}}
+
+\hlink{Описание}{http://www.yhbt.net/normalperson/debian/html/}
+
+\begin{verbatim}
+deb http://www.yhbt.net/normalperson/debian ./
+deb-src http://www.yhbt.net/normalperson/debian ./
+\end{verbatim}
+
+\subsection{\textit{kernel-package}: Компилиране на ядро по дебиански}
+
+\subsubsection{Накратко}
+
+
+По желание на потребителя ядрото може да бъде и като \textit{debian
+  package}, взет наготово от Debian archive-a или получен при
+потребителя, който освен изтегляне на \textit{kernel sources} от
+където пожелае, четене на \textit{Documentation/Changes} за евентуален
+upgrade на някои \textit{user space utils}, като \deb{gcc},
+\deb{make}, \deb{binutils} и т.н., конфигуриране, компилиране и
+инсталиране както намери за добре, може да използва и
+\man{kernel-package}{5}, предоставящ \textit{Perl scripts}, чрез които
+може да се получи собствен \textit{(custom) debian kernel package(s)}
+за \textit{kernel images} и евентуално и \textit{kernel modules} от
+\textit{upstream kernel sources} (изтеглени напимер от
+\hlink{kernel.org}{http://www.kernel.org}) или от \textit{debian
+  packages} като \textit{kernel-source-*}, \textit{kernel-patch-*},
+\textit{kernel-image-*}, \textit{kernel-headers-*}. За повече
+подробности се обърнете към \textit{man} \man{kernel-package}{5} или
+документацията в \textit{/usr/share/doc/kernel-package/}, както и статията 
+\hlink{http://www.osnews.com/story.php?news\_id=2949}{http://www.osnews.com/story.php?news\_id=2949}
+
+
+Ето как се използва инструмента \man{kernel-package}{5}, който е
+характерен за \textit{Debian GNU/Linux}. Разбира се,
+първо инсталираме самия \man{kernel-package}{5} :
+         
+\begin{verbatim}
+# apt-get install kernel-package
+\end{verbatim}
+         
+
+След като се инсталира, можете да въведете личните си данни в
+\texttt{/etc/kernel-package.conf}, така, че създаденият от вас
+\textit{.deb} пакет с новото ядро ще носи информация за онзи, който го
+е създал (ставате maintainer:)). След като изтеглите сорса на ядрото и
+го компилирате и пакетирате в удобен за управление формат, можете да
+инсталирате новото ядрото по официалния за дистрибуцията начин, като
+по този начин го направя част от системата. Именно тези възможности
+предоставя инструментът \man{kernel-package}{5}. Разбира се, това е един
+вариант, който е опционален, а не задължителен.
+
+\subsubsection{Основни процедури}
+
+
+В Debian можете да си инсталирате сорса на избраното от вас ядро, леко
+пачнат от авторите на дистрибуцията (т.е. добавена е директория
+\texttt{debian/} с \textit{maintainer scripts}, иначе сорса си е същия
+като \textit{upstream}, или да си разпакетирате \textit{upstream}
+архива от \hlink{kernel.org}{http://www.kernel.org}, т.е. официалния
+изходен код. Да речем, че го вземем от архива на Debian:
+
+\begin{verbatim}
+# apt-get install kernel-source-x.x.x
+\end{verbatim}
+         
+
+В \texttt{/usr/src} ще се появи архивът със сорса, който вие трябва да
+разпакетирате. В резултат ще се появи нова директория
+\texttt{/usr/src/kernel-source-x.x.x}, към която е добре да създадете
+символна връзка:
+
+\begin{verbatim}
+# ln -s /usr/src/kernel-source-x.x.x /usr/src/linux
+# cd /usr/src/linux
+\end{verbatim}
+
+
+\textbf{\textit{За нетърпеливите}}
+
+
+Командата, с която можете да зададете комплексно цялата процедура по
+конфигурацията и компилацията, е следната:
+         
+\begin{verbatim}
+# make-kpkg --config menuconfig kernel_image
+\end{verbatim}
+         
+
+Така, все едно сте изпълнили едновременно \textit{make menuconfig},
+\textit{make dep bzImage modules}. След цялата процедура в
+\texttt{/usr/src} ще се появи \textit{.deb} пакет с новото ядро, който
+можете да инсталирате по стандартния начин, а това ще ви спести и
+ровенето в \texttt{/etc/lilo.conf}, е разбира се, вие можете да
+погледнете все пак и в този файл какво е положението. Предишното ядро
+ще бъде описано със суфикса \texttt{.old} и ще можете да го заредите
+като резервен вариант, ако сте объркали настройките преди компилацията
+на новото ядро. В случай, че използвате \man{initrd}{4}, ще трябва да
+добавите още опция към командата:
+         
+\begin{verbatim}
+# make-kpkg --config menuconfig --initrd kernel_image
+\end{verbatim}
+         
+
+\textbf{Внимание!} Ако ползвате оригиналния сорс, преди цялата
+процедура трябва създадете стандартната директория \texttt{debian/},
+без която автоматизацията е немислима.
+
+\begin{verbatim}
+# make-kpkg debian
+\end{verbatim}
+
+
+\textbf{\textit{За любознателните}}
+
+
+Самата процедура на изграждане на ядрото е следната:
+
+
+\begin{enumerate}
+\item Редактира се файла \texttt{.config}, намиращ се в директорията със сорса на
+ядрото. Това може да се извърши по няколко начина:
+\begin{itemize}
+\item Първият е като ръчно се редактира файла - рядко използван.
+
+\item Вторият е да изпълните командата
+\begin{verbatim}
+# make config
+\end{verbatim}
+Ще Ви бъдат зададени цял куп въпроси, а при това не можете да се връщате назад, за
+да промените някой отговор. Не се препоръчва също така, защото трябва да преминете
+през всяка една опция, което е ненужно.
+
+\item Третият е да изпълните
+\begin{verbatim}
+# make menuconfig
+\end{verbatim}
+Разполагате с подредено меню в текстов режим. Според мен това е най-удобният начин.
+(нужен е пакета \deb{libncurses5-dev} и тези, от които зависи{\ldots} освен ако ги имате
+предварително инсталирани).
+
+\item Четвъртият е като използвате
+\begin{verbatim}
+# make xconfig
+\end{verbatim}
+Графичен конфигуратор, предназначен за употреба под X. Прилича до някаде на
+\texttt{menuconfig}, но има малко объркваща подредба (може да Ви се наложи да
+инсталирате пакета \deb{tk8.3}).
+\end{itemize}
+
+\item Следва компилирането и пакетирането. То може да бъде изпълнено с
+командата:
+\begin{verbatim}
+# make-kpkg kernel-image
+\end{verbatim}
+
+\end{enumerate}
+
+
+Ядрото и избраните от Вас модули ще бъдат компилирани и след това ще бъде изграден
+Debian пакет с име \texttt{kernel-image-<версия>\_<архитектура>.deb}, който ще се
+появи в \texttt{/usr/src/}.
+
+
+За повече информация относно конфигурирането на ядрото и значението на
+най-използваните и нужни опции, можете да погледнетe статията на Никола Антонов и
+съответните й части на адрес - 
+\hlink{http://www.linux-bg.org/cgi-bin/y/index.pl?page=article\&id=advices\&key=340742097}{http://www.linux-bg.org/cgi-bin/y/index.pl?page=article\&id=advices\&key=340742097}.
+
+
+Следва да инсталирате пакета с новото Ви, намиращ се в \texttt{/usr/src}:
+\begin{verbatim}
+# dpkg -i kernel-image-<версия>_<архитектура>.deb
+\end{verbatim}
+
+
+Най-вероятно ще бъдете запитани дали искате да бъде направена boot дискета с новото
+ядро (не е проблем да откажете). Също тако, ако използвате \texttt{LILO} за
+зареждане на системата (подразбиращия се в Debian Woody), ще Ви се предложи да бъде
+направен нов запис според съществуващия вече \texttt{/etc/lilo.conf}. Не се
+притеснявайте да отговорите с "Yes", тъй като \man{kernel-package}{5} ще се погрижи
+новото ядро да бъде добавено в \texttt{/etc/lilo.conf}, а старото също така да е
+налично, в случай, че сте объркали нещо с конфигурацията на новото ядро и то откаже
+да зареди. Така при проблем можете да заредите старото (по подразбиране е именувано
+LinuxOLD) и пак да имате функционираща система.
+
+
+\textbf{\textit{Допълнителна информация}}
+
+
+Освен описаните до тук основни функции на \man{kernel-package}{5}, нужни за да
+компилирате набързо едно ядро, има и някои други тънкости. Информация за тях можете
+да намерите във файла \texttt{/usr/share/kernel-package/README} или като изпълните
+командата \textit{man} \man{make-kpkg}{1}. Също така можете да хвътлите един поглед
+на \textit{man} \man{kernel-img.conf}{5} и \textit{man} \man{kernel-pkg.conf}{5}.
+
+
+Също така можете да обърнете внимание на следните две неща:
+\begin{enumerate}
+\item "Проблемът", който се получава при използването на автоматичната редакция на
+\texttt{/etc/lilo.conf}: при този метод скриптовете на \man{kernel-package}{5} се
+грижат \texttt{/vmlinuz} да сочи към най-новото ядро, а \texttt{/vmlinuz.old} към
+следващото по "новост". При система с повече от две компилирани ядра се получава
+така, че не са налични всички ядра в списъка на LILO за зареждане, а само
+последните две. Всеки индивидуално може да намери решение на "проблема" (било то да
+се направи друга символна връзка към по-старо ядро, което обезателно трябва да
+присъства в списъка на LILO освен най-новите, или нещо друго)
+
+\item Използването на опцията \textit{--append\_to\_version} (разгледайте и
+\textit{--revision}). Да речем, че имате сорса на ядро 2.4.18 и искате да
+компилирате няколко нови ядра от този сорс. Ако не се направят някакви промени,
+модулите на стари и нови ядра ще се озоват в една и съща директория
+(\texttt{/lib/modules/2.4.18}) и ще се получи бъркотия от различни модули. Едно от
+решенията на проблема е да се използва следната процедура за компилиране:
+\end{enumerate}
+
+\begin{verbatim}
+# make-kpkg clean
+# make menuconfig
+# rm -rf include/linux/version.h
+# make-kpkg --append_to_version -1mykernel kernel_image
+\end{verbatim}
+
+
+По този начин се избягва горепосоченият проблем, а новото ядро ще бъде именувано
+\texttt{vmlinuz-2.4.18-1mykernel}. Можете да сменяте стойността на
+\textit{--append\_to\_version} при всяко компилиране, но трябва да се съобразявате с
+вече указаната процедура. Повече информация относно този проблем можете да намерите
+в съответните секции на \texttt{/usr/share/kernel-package/README} и \textit{man} \man{make-kpkg}{1}.
+
+         
+\subsubsection{Инсталиране на драйвери за \textit{ALSA} и \textit{NVidia} с \textit{kernel-package}}
+         
+
+Нека да компилираме драйверите на NVidia и ALSA :
+
+\begin{verbatim}
+# apt-get install nvidia-glx-src nvidia-kernel-src alsa-source
+\end{verbatim}
+
+
+Добре е да добавите в списъка и пакетите \deb{alsa-base} (задължителен
+е!), \deb{alsa-utils} и \deb{alsaconf} (ако случайно притрябва). При
+инсталацията на пакета \deb{alsa-source} ще бъдем попитани дали искаме
+да се компилират всички драйвери или само за конкертна звукова платка.
+         
+
+В \texttt{/usr/src} се появава една директория
+\texttt{nvidia-glx-x.x.x}, в която има само поддиректорията
+\texttt{debian/} и нищо друго. Намираме и архив
+\texttt{nvidia-kernel-src.tar.gz}, който след като разархивираме, дава
+директория \texttt{modules}, в която сякаш също няма коя знае какво.
+Всъщност, това не са самите сорсове. Тези архиви съдържат само
+информацията, необходима за изтеглянето и компилирането на самите
+сорсове. А самите сорсове са все още на сървъра на \textit{NVidia}. Те
+не могат да влязат в състава на дистрибуцията, защото конфликтират с
+\hlink{DFSG}{http://www.debian.org/social\_contat\#guidelines}. Не е
+така с архива \texttt{alsa-driver.tar.gz}. Той съдържа необходимите
+сорсове, който разархивираме, за да ги добави в
+\texttt{/usr/src/modules}.
+         
+
+Следва рутинната процедура:
+
+\begin{verbatim}
+# cd /usr/src/nvidia-glx-x.x.x
+# dpkg-buildpackage -us -uc
+\end{verbatim}
+         
+
+Тази команда дава като резултат \textit{.deb} пакет с \textit{glx}
+модула на \textit{NVidia}.  Обърнете внимание как инсталиращия пакет
+ще се свърже със сървъра на \textit{NVidia}, ще си изтегли сорса на
+модула и ще го компилира пред очите ви. Същото ще направи и с
+\textit{kernel} драйвера.
+         
+\begin{verbatim}
+# cd /usr/src/linux
+# make-kpkg modules_image
+\end{verbatim}
+         
+
+Това е. След малко ще имате два \textit{.deb} пакета с \textit{ALSA}
+драйверите за избраната от вас звукова платка и с драйвера на
+\textit{NVidia}. Инсталирате пакетите по стандартния начин и
+рестартирате системата или просто само скрипта
+\textit{/etc/init.d/modutils restart}.  Да, рестартирате. Не
+редактирате никакви конфигируцаионни файлове, не пипате
+\textit{/etc/modules} и пр. --- за всичко това се е погрижил вече
+Debian.
+
+
+Можете да конфигурирате драйверите за \textit{ALSA} (ако вече това не
+е станало при инсталирането на пакета) с помощта на инструмента
+\manx{alsaconf}{1}, който подобно на \manx{sndconfig}{1} за
+\textit{OSS} просто редактира \texttt{/etc/modules.conf} по индиректен
+начин, чрез добавяне на информация в \texttt{/etc/modutils}. В Debian
+\texttt{/etc/modules.conf} се редактира от \deb{debconf}, и не се
+препоръчва да се редактира от потребителя, освен ако наистина знае
+какво прави, за ръчни указания относно заежданите модули за ядото е
+предвиден \texttt{/etc/modules}. Но това вече е друга тема.
+         
+
+Само за \textit{NVidia} остава задължителното и познато на всеки
+редактиране на \texttt{/etc/X11/XF86Config-4}. Там, все пак,
+\man{kernel-package}{5} няма власт:)
+
+
+\section{\textit{stow}: Управление на upstream sources}
+
+
+Колкото и голяма да е дадена дистрибуция, то може да се очаква, че не
+всичко може да бъде пакетирано за нея или в нейния формат към даден
+момент. Съвсем в реда на нещата е да инсталирате и софтуер който идва
+просто като upstream tar архив, без каквито и да се maintainer's
+scripts (обикновено като \texttt{tar.gz} или като \texttt{tar.bz2}
+архив). Всичко това естествено може да се прави паралелно с инсталации
+на пакети които предлага дистрибуцията като всеки трябва да си знае
+мястото. В такива случай може да опитате дали ще ви хареса програмата
+\deb{stow}.
+
+
+Програмата \texttt{stow} е част от проекта
+\hlink{GNU}{http://www.gnu.org} и е пакетирана за много системи.
+Подобни програми за административни цели обикновено се пишат на
+\texttt{Perl} както е и в случая с \texttt{stow}.
+
+\begin{itemize}
+\item \hlink{Официален сайт}{http://www.gnu.org/software/stow/}
+\item \hlink{Savannah}{http://savannah.gnu.org/projects/stow/}
+\item \hlink{FTP достъп}{ftp://ftp/gnu.org/pub/gnu/stow/}
+\item \hlink{дебиански пакет}{http://packages.debian.org/stow}
+\end{itemize}
+
+
+upstream авторът (този който е създал софтуера) и debian maintainer за
+този debian package в случая е един и същи човек. Програмата
+естествено не е специфична за Debian, може и е добре да се ползва и от
+други Unix системи. За Debian инсталацията на едноимения пакет
+\deb{stow} е безкрайно лесна:
+
+\begin{verbatim}
+# apt-get install stow 
+\end{verbatim}
+
+
+Освен \texttt{man} \man{stow}{8} може да разгледате и някои статии
+описващи работата със тази програмка:
+
+\begin{itemize}
+\item \hlink{Manage packages using stow}{http://www-106.ibm.com/developerworks/linux/library/l-stow/?ca=dgr-lnxw02STOW} 
+\item \hlink{Simple package management using stow}{http://www.linuxgazette.com/issue75/peda.html}
+\end{itemize}

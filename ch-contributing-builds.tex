@@ -1,0 +1,82 @@
+\chapter{Как да генерираме PDF, DVI, Postscript, HTML}
+
+
+За да получите \textbf{PDF-изхода}, в директорията \texttt{src/} изпълнете:
+
+\begin{verbatim}
+$ make pdf
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+DVI и Postscript засега не са предвидени в Makefile-a, но можете да
+ги получите чрез командите:
+
+\begin{verbatim}
+$ latex debian-book.tex
+$ dvips debian-book.tex
+\end{verbatim}
+
+
+\textbf{Внимание}: поради това, че обемът на книгата доста нарасна,
+може би ще се наложи да разрешите на програмите от пакета teTex да
+ползват по-голямо количествxо памет от зададено по-подразбиране.  Това
+става от \texttt{pool\_size} стойността във файла \texttt{texmf.cnf}.
+Намира се в \texttt{/etc/texmf/texmf.cnf} или го потърсете с някоя от
+командите:
+
+\begin{verbatim}
+$ locate texmf.cnf
+$ find / -name texmf.cnf
+\end{verbatim}
+
+
+Намерете в него реда:
+
+\begin{verbatim}
+pool_size = 125000
+\end{verbatim}
+
+
+И увеличете тази стойност няколко пъти, примерно на 625000.
+
+
+Дръпнете си последната версия на \deb{latex2html} от:
+\hlink{http://saftsack.fs.uni-bayreuth.de/\textasciitilde latex2ht/current/latex2html-2K.1beta.tar.gz}{http://saftsack.fs.uni-bayreuth.de/\textasciitilde latex2ht/current/latex2html-2K.1beta.tar.gz}
+
+
+Ако разполагате с Debian:
+
+\begin{verbatim}
+# apt-get install latex2html
+\end{verbatim}
+
+
+За да получите \textbf{HTML изходите}, изпълнете:
+\begin{verbatim}
+$ cd debian-book/src
+$ make html
+\end{verbatim}
+
+
+или
+
+\begin{verbatim}
+$ make htmlsplit
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+\textbf{Забележка}: Когато пишете на \LaTeX~и не сте убедени, че сте се
+справили много добре, е хубаво да коментирате първия ред в
+\texttt{debian-book.tex}, т.е. да изключите batch режима.  Така ще
+можете да виждате грешки си.
+
+
+Ако искате да компилирате всичко:
+\begin{verbatim}
+$ cd src/
+$ make clean dists-clean
+$ make dists
+$ make all
+\end{verbatim}

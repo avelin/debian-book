@@ -1,0 +1,336 @@
+\section{\textit{apt-dpkg-ref}: Справочник на опциите на \textit{apt} и \textit{dpkg}}
+
+
+Превод на \hlink{APT and Dpkg Quick Reference
+  Sheet}{http://people.debian.org/\textasciitilde%
+  mrd/deb-ref/apt-dpkg-ref.html}.  Пакетът \deb{apt-dpkg-ref} съдържа
+този документ.  След инсталацията му може да намерите различните
+формати на документа в директорията
+\texttt{/usr/share/doc/apt-dpkg-ref/}.
+
+\subsection{\textit{apt}}
+
+\bigskip
+\begin{verbatim}
+# apt-get install пакет
+\end{verbatim}
+
+
+Изтегля \textit{пакет} и всички негови зависимости, и ги инсталира или
+ъпгрейдва.  Това също ще изкара пакета от състояние \textit{hold}, ако
+преди това е било в него.  Вижте по-долу за повече информация за
+\textit{hold}.
+
+\bigskip
+\begin{verbatim}
+# apt-get remove [--purge] пакет
+\end{verbatim}
+
+
+Премахва \textit{пакет} и всички пакети, които зависят от него.
+\texttt{--purge} определя пакетите да бъде напълно изтрити
+(\textit{purged}), вижте \texttt{dpkg -P} за повече информация.
+
+\bigskip
+\begin{verbatim}
+# apt-get update
+\end{verbatim}
+
+
+Обновява списъците на пакети от мирорите.  Трябва да бъде стартирана
+поне веднъж на ден, ако инсталирате нещо същия ден, а също и всеки
+път, когато \texttt{/etc/apt/sources.list} е променен.
+
+\bigskip
+\begin{verbatim}
+# apt-get upgrade [-u]
+\end{verbatim}
+
+
+Ъпгрейдва всички инсталирани пакети до най-новите им налични версии.
+Няма да инсталира нови или да премахва стари пакети.  Ако някой пакет
+промени зависимостите си и изисква инсталация на нов пакет, тогава
+няма да бъде ъпгрейднат.  Вместо това ще бъде третиран все едно е в
+състояние \textit{hold}.  \texttt{apt-get upgrade} няма да ъпгрейдне
+пакети, поставени в състояние \textit{hold} (това е всъщност смисъла
+на \textit{hold}).  Вижте по-долу за ръчното поставяне на пакети в
+състояние \textit{hold}.  Препоръчваме ви и опцията \texttt{-u},
+защото тогава можете да видите кои пакети ще бъдат ъпгрейднати.
+
+\bigskip
+\begin{verbatim}
+# apt-get dist-upgrade [-u]
+\end{verbatim}
+
+
+Същото като \texttt{apt-get upgrade}, само че \textit{dist-upgrade} ще
+инсталира или премахва пакети, за да удовлетвори зависимостите на
+новите версии на пакетите.
+
+\bigskip
+\begin{verbatim}
+# apt-cache search шаблон
+\end{verbatim}
+
+
+Търси \textit{шаблон} в имената и описанията на пакетите.  Могат да
+бъдат зададени няколко шаблона, като тогава трябва всеки от шаблоните
+да участва в името или описанието на всеки изведен пакет.
+
+\bigskip
+\begin{verbatim}
+# apt-cache show пакет
+\end{verbatim}
+
+
+Показва пълното описание на \textit{пакет}.
+
+\bigskip
+\begin{verbatim}
+# apt-cache showpkg пакет
+\end{verbatim}
+
+
+Показва различни детайли за \textit{пакет}, както и зависимостите му с
+други пакети.
+
+\bigskip
+\man{dselect}{8}, \deb{console-apt}, \deb{aptitude}, \deb{gnome-apt},
+\deb{synaptic}, \deb{stormpkg}
+
+Графични интерфейси за  \textit{APT}. \texttt{dselect} е най-мощният
+от тях, но и най-старият и най-труден за употреба.  Най-добрият е
+\deb{aptitude}.
+
+
+\subsection{\textit{dpkg}}
+
+\bigskip
+\begin{verbatim}
+# dpkg -i пакет.deb
+\end{verbatim}
+
+
+Инсталира дебиански пакет.  Например такъв, който ръчно сте изтеглили.
+
+\bigskip
+\begin{verbatim}
+# dpkg -c пакет.deb
+\end{verbatim}
+
+
+Показва съдържанието (списъкът на файловете, които ще се инсталират)
+на \texttt{пакет.deb} (\texttt{.deb} файл).
+
+\bigskip
+\begin{verbatim}
+# dpkg -I пакет.deb
+\end{verbatim}
+
+
+Показва разнообразна метаинформация, съдържаща се в \texttt{пакет.deb}.
+
+\bigskip
+\begin{verbatim}
+# dpkg -r пакет
+\end{verbatim}
+
+
+Премахва \textit{пакет}.  Не може да премахне пакетите, които зависят
+от \textit{пакет}.
+
+\bigskip
+\begin{verbatim}
+# dpkg -P пакет
+\end{verbatim}
+
+
+Напълно изтрива (purge) \textit{пакет}. Разликата между \texttt{-r}
+(\texttt{-{}-remove}) и \texttt{-P} (\texttt{-{}-purge}) е, че докато
+\texttt{-{}-remove} изтрива файлове с данни и изпълними файлове,
+\texttt{-{}-purge} допълнително изтрива всички конфигурационни
+файлове.
+
+\bigskip
+\begin{verbatim}
+# dpkg -L пакет
+\end{verbatim}
+
+
+Показва списък на всички файлове, инсталирани от \textit{пакет}.
+Вижте също \texttt{dpkg -c} за начин, по който тази информация може да
+се извлече от \texttt{.deb} файл.
+
+\bigskip
+\begin{verbatim}
+# dpkg -s пакет
+\end{verbatim}
+
+
+Показва информация за инсталиран \textit{пакет}.  Вижте също
+\texttt{apt-cache show} за показване на информация за пакет от
+дебианския архив (местата, описани в \texttt{/etc/apt/sources.list}) и
+\texttt{dpkg -I} за показване на тази информация, извличайки я от
+\texttt{.deb} файл.
+
+\bigskip
+\begin{verbatim}
+# dpkg-reconfigure <package>
+\end{verbatim}
+
+
+Наново конфигурира инсталиран пакет, ако той използва \deb{debconf}
+(\deb{debconf} доставя консистентния конфигуриращ интерфейс по време
+на инсталация на пакет).  Можете и да конфигурирате наново самия
+\deb{debconf}, ако искате да смените потребителския интерфейс или да
+промените доколко детайлно да бъдете разпитвани от конфигурацията
+(question priority).  Например, за да преконфигурирате \deb{debconf}
+да използва диалоговия потребителски интерфейс (\deb{dialog}), просто
+изпълнете:
+
+\begin{verbatim}
+# dpkg-reconfigure --frontend=dialog debconf
+\end{verbatim}
+
+\bigskip
+\begin{verbatim}
+# echo 'пакет hold' | dpkg --set-selections
+\end{verbatim}
+
+Поставя \textit{пакет} в състояние \textit{hold}.
+
+\bigskip
+\begin{verbatim}
+# dpkg --get-selections пакет
+\end{verbatim}
+
+Извежда какво е състоянието (install, hold и др.) на \textit{пакет}.
+
+\bigskip
+\begin{verbatim}
+# dpkg -S файл
+\end{verbatim}
+
+Търси \textit{файл} в базата данни с пакети, извеждайки в кои пакети
+се намира този файл.
+
+
+\subsection{Компилиране на Debian \textit{binary packages} от \textit{source packages}}
+
+\bigskip
+\begin{verbatim}
+# apt-get source [-b] пакет
+\end{verbatim}
+
+Изтегля сорса на \textit{пакет}.  Трябва да имате необходимите
+\texttt{deb-src} редове в \texttt{/etc/apt/sources.list}, за да работи
+тази команди.  Ако добавите опцията \texttt{-b} и изпълните командата
+като root, пакетът ще бъде компилиран автоматично (ако това е възможно).
+
+\bigskip
+\begin{verbatim}
+# apt-get build-dep пакет
+\end{verbatim}
+
+Изтегля и инсталира пакетите, необходими за компилирането на
+\textit{пакет} от сорс.  Тази способност е налична само в apt версия
+0.5 или по-нова.  Woody и всички следващи издания на Debian притежават
+тази способност.  Често командата се използва в комбинация с
+\texttt{apt-get source -b}.  Например (като root):
+
+\begin{verbatim}
+apt-get build-dep пакет
+apt-get source -b пакет
+\end{verbatim}
+
+
+Ще изтегли сорса на пакета, ще инсталира всички зависимости, нужни за
+компилиране, и ще се опита да компилира сорса.
+
+\bigskip
+\begin{verbatim}
+# dpkg-source -x пакет.dsc
+\end{verbatim}
+
+
+Ако сте изтеглили ръчно сорс-пакет за програма, която включва няколко
+файла, като \texttt{.orig.tar.gz} (\texttt{.tar.gz}, ако програмата
+поддържа Debian), \texttt{.dsc} и \texttt{.diff.gz} (кръпки, нужни ако
+програмата не поддържа Debian), то тази команда разпакетира сорса,
+използвайки \texttt{.dsc} файла.
+
+\bigskip
+\begin{verbatim}
+# dpkg-buildpackage
+\end{verbatim}
+
+
+Компилира дебиански пакет.  Трябва да сте в главната директория на
+сорса.  Примерна употреба:
+
+\bigskip
+\begin{verbatim}
+dpkg-buildpackage -rfakeroot -uc -b
+\end{verbatim}
+
+Където \texttt{-rfakeroot} инструктира командата да използва
+\deb{fakeroot}, която симулира root права, \texttt{-uc} означава "`Не
+подписвай changelog-а"', а \texttt{-b} означава "`компилирай само
+binary package"'.
+
+\bigskip
+\begin{verbatim}
+# debuild
+\end{verbatim}
+
+Удобна обвивка на \texttt{dpkg-buildpackage}, която ще поеме грижата
+по използването на \deb{fakeroot}, както и стартирането на
+\deb{lintian} и \deb{gpg}.
+
+
+\subsection{Решаване на dependencies проблеми - \textit{автоматично}}
+
+\bigskip
+\begin{verbatim}
+# dpkg --configure --pending
+\end{verbatim}
+
+Ако \texttt{dpkg} прекъсне изпълнението си поради грешка докато се
+изпълнява някоя от командите
+
+\begin{verbatim}
+# apt-get install пакет
+# apt-get upgrade
+# apt-get dist-upgrade
+\end{verbatim}
+
+опитайте тази команда:
+
+\begin{verbatim}
+# dpkg --configure --pending
+\end{verbatim}
+
+за да конфигурирате пакетите, които все пак са
+разпакетирани, но не и конфигурирани.  След това опитайте
+
+\begin{verbatim}
+# apt-get install -f 
+# apt-get upgrade -f 
+# apt-get dist-upgrade -f
+\end{verbatim}
+
+И след това първата команда (без \texttt{-f}) отново.  Продължавайте,
+колкото е необходимо.  Обикновено голяма част от конфликите могат да
+се решат по този начин.  Ако се споменават проблемни пакети, можете да
+пробвате и да ги премахнете.
+
+\bigskip
+\begin{verbatim}
+# apt-get install -f 
+# apt-get upgrade -f 
+# apt-get dist-upgrade -f
+\end{verbatim}
+
+
+Опитват се да разрешат зависимостите докато се изпълнява операцията.
+Забележете, че \texttt{apt-get install -f} не иска други аргументи.

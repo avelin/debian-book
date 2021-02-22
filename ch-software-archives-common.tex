@@ -1,0 +1,194 @@
+
+\section{Официалният архив}
+
+
+Нека като за начало да хвърлим малко светлина (ама това наистина е
+много набързо) към неговата структура. Не е важно колко е актуална
+информацията в тази таблица (а тя не е, и едва ли има смисъл да е),
+важното е да се види структурата (за да не бъркаме понятията;-), която
+хич не е сложна и е логична (разгладейте някой официален Debian mirror
+за справка).
+
+
+Забележка: Понеже таблицата е стара, имайте предвид, че сегашният
+stable е Woody, а не Potato.  Също така сегашният testing е Sarge, а
+не Woody. Unstable винаги ще си е Sid. (виж малко по-надолу)
+
+\begin{center}
+
+\begin{tabular}{|p{0.7in}|p{2.2in}|p{2.2in}|p{2.2in}|}
+
+\hline  \textbf{Origin} & Debian & Debian & Debian \\
+
+\hline  \textbf{Label}  & Debian & Debian & Debian \\
+
+\hline  \textbf{Suite}  & Stable & Testing & Unstable \\
+
+\hline  \textbf{Codename} & Potato & Woody & Sid \\
+
+\hline  \textbf{Components} & main, contrib, non-free & main, contrib, non-free & main, contrib, non-free \\
+
+\hline  \textbf{Arch} & alpha, arm, i386, m68k, powerpc, sparc & alpha, arm, i386, m68k,
+powerpc, sparc, sparc64, ia64, hppa {\ldots} & alpha, arm, i386, m68k, powerpc, sparc,
+sparc64, ia64, mips, mips64 {\ldots} hurd-i386 {\ldots} \\
+
+\hline  \textbf{Date} & Mon, 16 Apr 2001 & Tue, 04 Sep 2001 & Tue, 04 Sep 2001 \\
+
+\hline  \textbf{Description} 
+        & 
+	Debian 2.2r3 
+	Released 16 Apr 2001 (обновява се само за 
+	security и point releases, т.е.\ revisions) 
+        & 
+        Not Released (release-ва се директно от Testing, 
+        евентуално след известен период на freeze, след 
+	решаване на всички Release Critical Bugs) 
+        & 
+        Not Released (не се release-ва директно от 
+        Unstable, тук се правят разни по-сериозни package 
+        transitions и подобни. Всичко минава първо от тук) \\
+
+\hline  \textbf{Version} &   2.2r3  &    -     &     -    \\
+
+\hline  \textbf{md5sum}  & {\ldots} & {\ldots} & {\ldots} \\
+\hline
+
+\end{tabular}
+
+\end{center}
+        
+\begin{itemize}
+  
+\item \textbf{Stable}, \textbf{Testing} и \textbf{Unstable} са ясни за
+  какво са{\ldots} Софтуерът (\texttt{.deb} файловете, както и сорсовете)
+  влиза в \hlink{http://incoming.debian.org}{http://incoming.debian.org}, след това в Unstable,
+  после в Testing и оттам --- в Stable (има и
+  \hlink{\texttt{project/experimental}}{ftp://ftp.debian.org/debian/project/experimental},
+  който е non-automatic, но това е за по-опасни експерименти). На тези
+  Suites се присвояват кодови имена, като Unstable винаги остава с
+  името Sid, другите се променят. Към момента Stable е Woody, Testing
+  е Sarge, и Unstable винаги е Sid.  (Ха да видим дали ще откриете на
+  някой \hlink{Debian mirror}{http://www.debian.org/mirror/} къде се
+  намират съответните binary \& source packages \& lists files.)
+  Официалния release е Stable, като освен кодово име, което е имал до
+  сега, му се присвоява версия (2.1, 2.2, 3.0 и т.н.) и по-късно се
+  правят само т.н. point releases на този release, или това са
+  revisions (r1, r2, r3 и т.н{\ldots}) оттук идва и пълното име,
+  например Potato 2.2r3 и т.н.  Като се издаде нов release, старият
+  заминава в \hlink{http://archive.debian.org}{http://archive.debian.org}, като се поддържа и
+  още известно време (разбирай security updates, и т.н.).
+ 
+\item \textbf{Arch} --- освен binary builds за съответните архитектури
+  се предоставят и sources, които са архитектурно независими разбира
+  се.  Естествено, съответните binary packages (\texttt{.deb}
+  файловете) се получават от тези source packages на \hlink{машините
+    на проекта}{http://db.debian.org/machines.cgi} ---
+  Debian autobuild system \hlink{http://buildd.debian.org}{http://buildd.debian.org}, 
+  \hlink{http://www.buildd.net}{http://www.buildd.net} като потребителят също може да
+  направи build от debian source packages. Съществуват и архитектурно
+  зависими или архитектурно специфични packages, съдържащи програми,
+  които са създадени специално за дадена архитектура и които са
+  безпредметни за други: като \texttt{cpuid} специално и само за i386
+  (x86), \texttt{aboot} за Alpha и т.н.  Каква част от пакетите имат
+  build за всяка архитектура, може да видите на
+  \hlink{http://buildd.debian.org/stats/}{http://buildd.debian.org/stats/}. Интересно би било да погледнете и 
+  \textbf{The Common Debian Build System} намираща се на: 
+  \hlink{http://build-common.alioth.debian.org/}{http://build-common.alioth.debian.org/} и 
+  \hlink{http://alioth.debian.org/projects/build-common/}{http://alioth.debian.org/projects/build-common/}.
+         
+\item \textbf{hurd-i386} --- \hlink{The
+    Hurd}{http://www.gnu.org/software/hurd/hurd.html} е набор от
+  сървърски програми, които работят върху микроядрото
+  \hlink{GnuMach}{http://www.gnu.org/software/hurd/gnumach.html} (поне
+  за сега само върху това микроядро и само на x86) и които
+  реализират драйвер на файлова система, мрежови протоколи и всякакви
+  други способности, които се срещат в стандартните монолитни Unix
+  ядра. Усилено се говори (ъ-ъ, работи) по използванете на микроядрото
+  \hlink{L4Ka::Pistachio}{http://l4ka.org/projects/pistachio/}, което
+  чувствително ще подобри бързодействието на The Hurd. Още информация 
+  по-въпроса можете да намерите на:
+  \begin{itemize}
+  \item \hlink{GNU Project}{http://www.gnu.org/}
+  \item \hlink{Linux and GNU}{http://www.gnu.org/gnu/linux-and-gnu.html}
+  \item \hlink{GNU Hurd fans}{http://hurd.gnufans.org/}
+  \item \hlink{И естествено българското участие в лицето на Оги
+  Кулев}{http://debian.fmi.uni-sofia.bg/\textasciitilde ogi/hurd/ext3fs/}
+  \end{itemize}
+
+\item Към момента единственото ядро, с което се правят издания
+  (releases) на Debian, е \hlink{Linux}{http://www.kernel.org}, т.е.
+  това е Debian GNU/Linux, с това ядро се поддържат и сървърите на
+  проекта, които хич не са едни от най-разтоварените на света, но се
+  работи и по портиране на дистрибуцията към \hlink{The
+    Hurd}{http://www.gnu.org/software/hurd/hurd.html}, който за сега
+  стои само в Sid, работещ върху микроядро
+  \hlink{GnuMach}{http://www.gnu.org/software/hurd/gnumach.html}, при
+  което се получава \hlink{Debian
+    GNU/Hurd}{http://www.debian.org/ports/hurd/}.
+
+  
+  Следват евентуално и монолитните *BSD ядра, при което се получават
+  \hlink{Debian GNU/NetBSD}{http://www.debian.org/ports/netbsd/},
+  \hlink{Debian GNU/FreeBSD}{http://www.debian.org/ports/freebsd/},
+  Debian GNU/OpenBSD (но последното като че ли е \hlink{временно
+    изоставено}{http://lists.debian.org/debian-bsd/2002/debian-bsd-200210/msg00063.html})
+  за евентуално няколко хардуерни архитектури. Всъщност погледнете и
+  \hlink{Debian on the Go}{http://www.debian.org/misc/laptops/}
+  (laptops) и \hlink{Debian
+    Beowulf}{http://www.debian.org/ports/beowulf/} (MPI clusters).
+
+\end{itemize}
+         
+\subsection{Поддръжка}
+
+
+Както се досещатe, това, което идва от официалния архив, идва директно
+и се поддържа от проекта Debian и може да бъде намерено по официалните
+огледални хостове.  За този софтуер, освен че се поддържат builds за
+всички архитектури, поддържани от проекта, се възползва и от:
+\hlink{Bug Tracking System}{http://bugs.debian.org}, \hlink{Package
+  Tracking System}{http://packages.qa.debian.org}, отчитат се
+\hlink{Release Critical
+  Bugs}{http://bugs.debian.org/release-critical/} и \hlink{Quality
+  Assurance}{http://qa.debian.org} за
+\hlink{Base}{http://base.debian.net} и
+\hlink{Standard}{http://standard.debian.net} и т.н.
+         
+\section{Неофициалните архиви} 
+
+Неофицалните архиви се поддържат от любители от цял свят, като в
+подобни начинания могат да участват и официални debian maintainers
+дори for fun \& tests.  Структурата на подобни неофициални архиви може
+да наподобява тази на официалния архив напълно или частично.  Т.е. в
+най-простия случай може да е една директория с насипани вътре debian
+binary \& source packages заедно с list files, че дори и само binary
+packages (но това би било нарушение на GPL например, ако софтуера е
+GPL'ed).  Например:
+
+\begin{itemize}
+
+\item \hlink{http://www.apt-get.org}{http://www.apt-get.org} е един
+източник, където се събират (и проверяват) подобни неофициални
+източници.  
+
+\item \hlink{http://apt.heanet.ie}{http://apt.heanet.ie} - HEAnet aptable 
+debian package repository - Ireland's National Education \& Research Network.
+
+\item \hlink{http://openfmi.net/projects/debian-addons-bg}{http://openfmi.net/projects/debian-addons-bg} 
+Поддържа се от български участници.
+
+\item Подобни неофициални архиви могат и да се поддържат от проекти 
+като \hlink{KDE}{http://www.kde.org}, \hlink{Mozilla}{http://www.mozilla.org} 
+и много други.  
+
+\end{itemize}
+
+Имайте предвид, обаче, че на подобни неофициални архиви обикновено се
+поддържат пакети само за x86 (i386) архитектурата, няма я официалната
+поддръжка на \hlink{Bug Tracking System}{http://bugs.debian.org},
+\hlink{Package Tracking System}{http://packages.qa.debian.org},
+електронен подпис на официалния debian maintainer в debian source
+package, дори може да няма и md5sum на файловете и т.н..  Така че вие
+си решавате кое да ползвате и по колко ;-).
+         
+

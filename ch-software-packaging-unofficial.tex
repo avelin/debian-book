@@ -1,0 +1,581 @@
+\section{Packaging - \textit{at home}}
+         
+\smallskip
+
+\textbf{\textit{Пример 2.2:} Пример за бързо и dirty получаване на
+  \textit{binary packages}}
+
+
+Нека да получим deb-файлове по-възможно най-краткия път за
+малка програма, която се получава от един единствен сорс-файл, 
+изискващ само наличието на основната C-библиотека, която
+всички имат, и освен това не конфликтира с нищо, така че нашите
+maintainer scripts ще са възможно най-прости.  По-лесен случай май не
+може да се измисли ;-). Нека имаме \hlink{сорса на една такава 
+програмка}{http://danchev.fccf.net/files/wsver/wsver.c}
+  
+\begin{verbatim}
+/*
+ * In terms of GNU GPL
+ * by <zimage@delbg.com>
+ * 1995-2000 Davidov Electric Ltd.
+ */
+
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+
+#define DATASIZE 1024
+
+int main (int argc, char *argv[]){
+  int sockfd, bytesRecv, bytesSent;
+  char *sendHeader, rData[DATASIZE];
+  char *addr;
+  struct hostent *wsHost;
+  struct sockaddr_in wsAddr;
+  struct in_addr wsIP;
+
+  sendHeader = "HEAD / HTTP/1.0\n\r\n\r\n\r";
+
+  if (argc < 2)
+  {
+    printf ("wsver v1.1 by zImage <zimage@delbg.com>\n\n\t");
+    printf ("Usage: %s <ipaddress | hostname>\n\n", argv[0]);
+    exit (0);
+  }
+
+
+  addr = argv[1];
+  
+  if((wsIP.s_addr = inet_addr(addr)) == -1)
+  {
+        printf("Lookin' up %s...\t", addr);
+        fflush(stdout);
+        if((wsHost = gethostbyname(addr)) == NULL)
+        {
+          printf("Failed.\n");
+          herror(NULL);
+          exit(1);
+        }
+        wsIP = *(struct in_addr *)wsHost->h_addr_list[0];
+        printf("%s\n", inet_ntoa(wsIP) );
+  }
+
+  if ((sockfd = socket (PF_INET, SOCK_STREAM, 0)) == -1)
+  {
+    printf ("Error: %i", errno);
+    perror(NULL);
+    exit (1);
+  } else {
+    printf ("Connecting to %s...\t", inet_ntoa(wsIP));
+    fflush(stdout);
+  }
+
+  wsAddr.sin_family = PF_INET;
+  wsAddr.sin_port = htons (80);
+  wsAddr.sin_addr.s_addr = wsIP.s_addr;
+  bzero (&(wsAddr.sin_zero), 8);
+
+  if ((connect(sockfd, (struct sockaddr *) &wsAddr, sizeof (struct sockaddr))) == -1)
+  {
+      printf ("Failed.\n");
+      perror (NULL);
+      exit (1);
+  } else {
+      printf ("OK.\n");
+  }
+
+  printf ("Sending header...\t");
+  fflush(stdout);
+  if ((bytesSent = send (sockfd, sendHeader, strlen (sendHeader), 0)) == -1)
+  {
+      printf ("Failed.\n");
+      perror (NULL);
+      exit (1);
+  } else {
+      printf ("OK - %i bytes sent.\n", bytesSent);
+  }
+
+  printf ("Reading header...\t");
+  fflush(stdout);
+  if ((bytesRecv = recv (sockfd, rData, DATASIZE, 0)) == -1)
+  {
+    printf ("Failed.\n");
+    perror (NULL);
+    exit (1);
+  } else {
+    printf ("OK - %i bytes read\n", bytesRecv);
+  }
+
+  rData[bytesRecv] = '\0';
+
+  printf (" \n- - - Header received - - -\n%s- - - end of header - - -\n", rData);
+
+  return 0;
+}
+
+\end{verbatim}
+
+която се компилира с:
+\begin{verbatim}
+gcc -o wsver wsver.c
+\end{verbatim}
+
+и сме получили динамично свързан изпълним файл \texttt{wsver}, 
+за който проверяваме и се убеждаваме, че наистина не е претенциозен:
+        
+\begin{verbatim}
+# ldd ./wsver
+libc.so.6 => /lib/libc.so.6 (0x40026000)
+/lib/ld-linux.so.2 => /lib/ld-linux.so.2 (0x40000000)
+
+# dpkg -S /lib/libc.so.6 /lib/ld-linux.so.2
+libc6: /lib/libc.so.6
+libc6: /lib/ld-linux.so.2
+
+# apt-cache show libc6 | grep Section
+Section: base
+\end{verbatim}
+         
+
+Идеално\ldots Всички имат \deb{libc6}, защото е в base, така че
+спокойно можем да прескочим описването на каквито и да са зависимости
+и конфликти и минаваме напряко, прескачайки целия \hlink{Debian New
+  Maintainers' Guide}{http://www.debian.org/doc/maint-guide/}.
+
+\begin{verbatim}
+# mkdir -p wsver/usr/bin wsver/DEBIAN
+# cp wsver wsver/usr/bin
+# echo "Package: wsver" > wsver/DEBIAN/control
+# echo "Version: 1" >> wsver/DEBIAN/control
+# echo "Architecture: i386" >> wsver/DEBIAN/control
+# echo "Maintainer: You <you@some.net>" >> wsver/DEBIAN/control
+# echo "Description: Check web server version" >> wsver/DEBIAN/control
+# dpkg-deb -b wsver
+dpkg-deb: building package `wsver' in `wsver.deb'.
+# dpkg -i wsver.deb
+# whereis wsver 
+wsver: /usr/bin/wsver
+# apt-cache show wsver
+Package: wsver
+Status: install ok installed
+Maintainer: You <you@some.net> 
+Version: 1
+Description: Check web server version
+# wsver localhost
+\end{verbatim}
+         
+
+Подобно пакетиране не се прави от debian maintainers и е само като
+пример, който едва ли ще срещнете някъде. Това е fast \& dirty home
+made packaging на специално подбран, възможно най-непретенциозен сорс-код. 
+Понякога дори и fast \& dirty може да се окаже, че е
+по-приемливо за самия потребител. Ако го компилирате за i386, можете
+спокойно да споделите този deb-файл с други x86 потребители, както
+можете да го компилирате за произволна друга хардуерна архитектура. В
+случая не сме оформили \textit{debian source package}, от който да се
+получават един или няколко binary packages за различните хардуерни
+архитектури, също така не сме направили проверка с програми като
+\deb{lintian}, \deb{linda} и т.н.
+         
+\smallskip \textbf{\textit{Пример 3:}
+  \hlink{Mplayer}{http://www.mplayerhq.hu} --- директорията
+  \texttt{debian/} идва с upstream sources}
+
+
+Нека бъде от current CVS и отделните му Releases, които ако сте
+мързеливи, може да получите барабар с шрифтове, кожи и кодеци с
+помощта на този красив
+\hlink{Makefile}{http://danchev.fccf.net/files/mplayer/Makefile},
+който да кажем сте съхранили в \texttt{/usr/local/src/MPlayer/} и сте
+разгледали какво точно прави, разбира се. Макар и все още невключен в
+официалния Debian-архив, тези сорсове дефакто са оформени като
+\textit{debian source packages}. В \texttt{main/} директорията
+разгледайте съдържанието на директорията \texttt{debian/}, за да
+добиете идея за \textit{maintainer scripts}, които в момента са такива
+и които могат да бъдат промени впоследствие.  Изпълнявайки от
+\texttt{main/}:
+         
+\begin{verbatim}
+# fakeroot debian/rules binary
+\end{verbatim}
+        
+
+или:
+       
+\begin{verbatim}
+# DEB_BUILD_OPTIONS="--compile-options-here" debian/rules binary
+\end{verbatim}
+
+
+Имайте предвид, че в глава 10.1 на debian-policy е указано, че променливата 
+DEB\_BUILD\_OPTIONS е запазена за други цели и официално приема \textit{noopt} 
+и \textit{nostrip} стойности. Така, че ако MPlayer ще влиза в официалния 
+Debian архив, то в неговия \textit{debian/rules} ще се ползва друга променлива 
+за целта за която сега се ползва DEB\_BUILD\_OPTIONS.
+
+
+Ще получите съответния \textit{binary package}, можете да генерирате
+\textit{list files} за \textit{apt repository}
+(\man{dpkg-scanpackages}{8}, \man{dpkg-scansources}{8} и т.н.) Нека за
+момент предположим, че нямате инсталирана библиотеката SDL и съответно
+сте получите изпълним файл на Mplayer, който е без такава поддръжка,
+което не е фатално, но пък може да се получи така, че да имате липса
+на нещо (най-често някоя библиотека), поради което компилацията на
+Mplayer няма да завърши успешно. Освен това нямате никакви
+\textit{list files}, които да подскажат \texttt{Build-Depends}
+информация (т.е. какво е нужно като файлове и в кои пакети са те, за
+да се изкомпилират изходните кодове успешно) за Mplayer на командата
+\texttt{apt-get build-dep}, т.е.  разполагаме само с upstream
+сорсовете на Mplayer, в които има и \texttt{debian/} директория,
+съдържаща \textit{maintainer scripts}. Тогава ако нямаме
+\deb{auto-apt}, го инсталираме и конфигурираме:
+         
+\begin{verbatim}
+# apt-get install auto-apt
+# auto-apt update updatedb update-local
+# fakeroot auto-apt run debian/rules binary
+\end{verbatim}
+         
+
+Ще бъдете запитани за всичко, което бъде потърсено и ненамерено в
+момента във вашата система, и вие ще решите кое да бъде изтеглено и
+инсталирано и кое да бъде отказано{\ldots} \texttt{debian/rules} е
+най-обикновен файл за програмата \man{make}{1}, разгледайте го.
+        
+
+Нещо повече: ако предположим, че имаме \textit{upstream sources} на
+Mplayer без \textit{maintainer scripts}, намиращи се в
+\textit{debian/} директорията, то \deb{auto-apt} пак ще свърши работа:
+         
+\begin{verbatim}
+# auto-apt run ./configure --prefix=/usr/local/somewhere --more-options-here 
+# auto-apt run make
+\end{verbatim}
+         
+
+Отново, ако има липси, необходими за компилационния и свързващия
+процес, ще бъдете запитани дали искате да ги инсталирате. Това важи,
+разбира се, и за произволни сорсове, за които \deb{auto-apt} ще може
+да намери необходимото в рамките на източниците от пакети, до които
+има достъп, за да търси съответните липсващи файлове. Как да
+инсталираме необходимото при поискване, е описано в
+\hlink{APT-HOWTO}{http://debian.gabrovo.com/docs/apt-howto/}.
+         
+
+Може да продължите с по-сложни експерименти, следвайки горните
+официални документи, за сорсове, изискващи по-задълбочено
+конфигуриране.  Добър пример е даден в \hlink{Debian New Maintainers'
+  Guide}{http://www.debian.org/doc/maint-guide/}. Ще видите, че нещата
+невинаги са толкова лесни и прости. Ето например следващото може да е
+доста полезно за тези "`advanced"' или "`power"' root потребители,
+които обичат да компилират и инсталират system-wide, без да разбират и
+осъзнават какво всъщност правят и докарват своите \textit{GNU/Linux}
+дистрибуции до състояние на омазан до безпомощност виндовс:
+\hlink{библиотеки}{http://www.debian.org/doc/debian-policy/ch-files.html\#s11.2},
+\hlink{поделени
+  библиотеки}{http://www.debian.org/doc/debian-policy/ch-files.html\#s11.3},
+\hlink{Debian Library Packaging
+  guide}{http://www.netfort.gr.jp/\textasciitilde%
+  dancer/column/libpkg-guide/libpkg-guide.html}
+         
+
+Точно обратното, може да се наложи тотален контрол върху инсталирания
+софтуер в системата, така че да се предотвратява наличието на broken
+stuff. Налага се да се контролират зависимостите и конфликтите при
+многобройните парчета софтуер, които имате в системата, особено при
+споделените библиотеки. Например, защо се налага и как се пресмятат
+shared library dependencies: \man{dpkg-shlibdeps}{1},
+\man{dh\_shlibdeps}{1} или опитайте на
+\hlink{http://www.fifi.org/doc/HTML/}{http://www.fifi.org/doc/HTML/}.  
+Като че ли няма аналог извън Debian ;-) За това се грижи дистрибуцията 
+или \deb{package maintainers}, но вие ако знаете повече или искате някакво 
+по-custom решение, разбира се, че ще се намесите. 
+Ето няколко случайни примера:
+         
+\smallskip
+\textbf{\textit{Пример 4:} Промяна на Depends and Conflicts} 
+
+Ако чувствате, че знаете какво правите, можете спокойно да дръпнете
+интересуващите ви \textit{debian source packages}.  От всеки такъв
+пакет се получават по един или няколко \textit{debian binary packages}
+(deb-файлове), всеки от които доставящ по една или няколко изпълними
+програми и/или библиотеки и др., като разни \textit{shared data
+  files}\ldots.  Можете да промените зависимостите и конфликтите между
+тях като редактирате файловете \texttt{debian/control},
+\texttt{debian/rules} и други в директорията \textit{debian/}).  Може
+да се намесите и в самите \textit{upstream sources} и след това да ги
+инсталирате. Трябва да имате предвид, че променянето на дадена опция
+при компилацията или свързването може да даде, или не, отражение върху
+работата на други програми. Променянето на \textit{upstream sources}
+също може да доведе до такова поведение.  Така че мислете глобално,
+когато се намесвате. Изключително голяма радост за очите е да се
+наблюдава как на разни системи "`advanced"' потребители компилират и
+инсталират каквото им дойде на ума и както се сетят, без наличието на
+какъвто и да е мисловен процес. Важното е, че компилират нещо там
+(т.е.  наблюдават как например \texttt{gcc} компилира) и се изживяват
+като "`advanced"', но че после може да има breaks въобще на осъзнават,
+я усетили, я не. Debian учи как да не се правят подобни lame
+изпълнения и то на "`сляпо"', а с механизмите за контрол, които
+предоставя, препоръчва нещата да се правят така, че да може да се
+наложи от потребителя прецизен и тотален контрол върху софтуера, бил
+той като \textit{debian source} или \textit{binary packages}.
+Разбирайки това, вече разбирате и колко много weakness и мъка може да
+има по този свят.  Познаването на \hlink{Debian New Maintainers'
+  Guide}{http://www.debian.org/doc/maint-guide/} и \hlink{Debian
+  Developer's
+  Reference}{http://www.debian.org/doc/developers-reference/} би било
+от изключителна полза, както и познанията за upstream souces, в които
+намесите са задължителни. След като направите промените в сорса и
+получите вашите \textit{custom binary packages} и ги инсталирате,
+можете да се погрижите да ги заковете чрез \textit{pinning feature} на
+\deb{apt}, така че да не upgrade-нете вашата custom версия, без да
+усетите или забележите. Ако при бъдещи промени в системата, като
+\textit{upgrades} или \textit{downgrades}, все пак се наложи да
+\textit{unpin} ("`отковете"') вашия custom pin-нат пакет, за да може
+да бъде upgrade-нат например, то тогава ще бъдете уведомен от
+\deb{apt} и ще помислите кое от двете по ви изнася да изберете, като
+пак може можете да внесете вашите промени (мислейки!) в новата версия
+на вече бившия закован и upgrade-нат package и да го заковете отново.
+         
+\smallskip \textbf{\textit{Пример 5:} Намеса в \textit{upstream
+    sources}, препакетиране и инсталиране}
+
+
+Нека ви се налага по някаква причина (и вие наистина знаете какво
+правите) да промените нещо в сорса на \textit{glibc}.  Да речем,
+съдържанието на някой заглавен файл: искате да увеличите стойността на
+някоя дефиниция в
+\texttt{/usr/include/\textit{директория}/\textit{файл}.h} да
+прекомпилирате \textit{glibc} и да го инсталирате. Прекомпилация може
+да се наложи, за да се отрази тази промяна и в библиотечните файлове в
+\texttt{/usr/lib/} и вероятно на още няколко места, такава може да
+прецените, че не се налага, и просто да се задоволите само с промяна
+на заглавния файл без прекомпилация и инсталация. Да предположим, че
+все пак сте преценили, че се налага прекомпилация на сорса на glibc с
+последваща инсталация. Няма да преоткриваме колелото и да обясняваме,
+че изтеглянето на чистите \textit{upstream sources}, разпакетирането
+им, компилирането им и инсталирането им system-wide с
+\texttt{./configure; make; make install}, без да се проверява и
+осъзнава кой файл точно къде се инсталира, е пълна глупост и може да
+нанесе големи проблеми на системата най-малко поради факта, че трябва
+да има гаранция, че старите файлове ще бъдат напълно заменени от
+новите, както и че няма да останат стари \textit{stalled files}, които
+да пречат по някакъв начин. Ако имате желание, може да се занимаете с
+въпроса, проверявайки кое къде отива при новата компилация и как да
+отстраните старата ;-) Ето как ще го направим бързо и безопасно като
+оставим горната рутинна и тежка работа по "`бройкането"' на стари/нови
+файлове на \deb{dpkg}.  Той знае как да премахне старите и да
+инсталира новите файлове и няма смисъл ние да си бодем очите с подобна
+досадна и незаслужаваща времето ни задачка.  Няма да вадим корен
+крадратен от голямо число с лист и молив, я. Това, че знаем
+алгоритъма, не е основание да го правим с беден инструментариум.
+Първо, проверяваме в кои binary package е интересуващият ни файл
+\texttt{/usr/include/\textit{директория}/\textit{файл}.h}:
+
+\begin{verbatim}
+# dpkg -S /usr/include/somedir/somefile.h
+\end{verbatim}
+         
+
+да кажем, че \deb{dpkg} отговори, че този файл идва с пакета \deb{libc6-dev}.
+         
+
+Изтегляме съответния му \textit{source package}, от който този
+\textit{binary package} е получен, защото от един \texttt{source
+  package} могат да се получат един или няколко \textit{binary
+  packages}, но това не е задължително, разбира се, винаги да е точно
+така, като преди това проверяваме дали имате необходимото, за да може
+да бъде компилиран успешно този \textit{source package}:
+         
+\begin{verbatim}
+# apt-get build-dep libc6-dev
+# apt-get source libc6-dev
+\end{verbatim}
+         
+ 
+В текущата директория, забележете, получаваме: \texttt{glibc-2.3.1/},
+\texttt{glibc\_2.3.1-5.diff.gz}, \texttt{glibc\_2.3.1-5.dsc} и
+\texttt{glibc\_2.3.1.orig.tar.gz}.  Няма да обясняваме кое какво е, в
+документацията си пише, например в \hlink{Debian New Maintainers'
+  Guide}{http://www.debian.org/doc/maint-guide/}.
+        
+   
+Променяме сорса. В директорията \texttt{debian/} са конфигуриращите
+скриптове на maintainer-a, всичко останало са чистите \textit{upstream
+  sources}. Забележете, че наименованието на софтуера upstream може да
+не съвпада в имената на пакетите в GNU/Linux дистрибуцията, а също че
+upstream може да бъде разбит на няколко пакета. Трябва да знаем къде
+да търсим и променим това, което ни трябва, в \textit{upstream
+  sources} на \textit{glibc}, променяме и версията на пакета в
+\texttt{debian/changelog}. Забележете, че в \texttt{debian/patches/}
+са предоставени и кръпките които са приложени към \textit{upstream
+  sources} на \textit{glibc}, така че внимавайте вашите промени да се
+"`понасят"' с тях. Не всички \textit{upstream sources}, идващи с
+\textit{debian source packages}, се закърпват.  Такива кръпки,
+специфични за дистрибуцията, се прилагат от maintainers много
+внимателно и само когато това наистина се налага, така че да не се
+"`вадят очи, вместо да се изписват вежди"'.  Понякога това може да се
+наложи поради изискванията, които се поставят от дистрибуцията.
+Например, за по-добра съвместимост с \textit{File Hierachy Standard}
+или \textit{Linux Standard Base}, по-добра съвместимост с различни
+хардуерни архитектури като IA-64, ARM, HPPA, Sparc64, S390x, \ldots, и
+ядра като Hurd-on-GnuMach и т.н. и т.н.\ldots Тези кръпки най-вероятно
+след това влизат и в следващия официален upstream release на glibc или
+който и да е софтуер в дадения случай. По подобен начин дефакто Debian
+служи и се "`експлоатира"' като платформа за пренасянето на XFree86
+(това "`86"', напомнящо x86 или PC в името, е дразнещо определено ;-)
+за GNU/Linux на доста хардуерни архитектури, вкл. и hurd-i386.
+         
+
+Компилираме и получаваме binary package(s), кой(и)то инсталираме:
+        
+\begin{verbatim}        
+# debian/rules binary
+# dpkg -i ../*.deb
+\end{verbatim}
+         
+
+\textit{Допълнение}: тук дори можете ако имате желание да си направите
+\textit{local apt repository} и да го добавите в
+\texttt{/etc/apt/sources.list}, така ще ползвате \deb{apt} да смята
+зависимостите и конфликтите и да подава пакетите в определения ред на
+\deb{dpkg}, вместо просто само \deb{dpkg}.  Един бърз пример как става
+това е \hlink{How to do apt-get install for local
+  debs}{http://www.symonds.net/\textasciitilde rajesh/localdeb.html}
+         
+
+Забележете, че от този \textit{source package} се получават няколко
+\textit{binary packages} (deb-файлове), които ние ще инсталираме. Не е
+задължително от всеки \textit{source package} да се получават по
+няколко \textit{binary} такива. Частен случай е, когато от един
+\textit{source package} се получава един \textit{binary package}.
+Това се контролира от \texttt{debian/control}, в зависимост от
+решенията на maintainer-а, които го е създал или от вас разбира се.
+
+
+Така всичко ще е под пълен и бърз контрол, като рутинната и досадна
+работа по издирването на файловете при инсталацията сме оставили на
+\deb{dpkg}. Това е случая, когато инсталирате вашия си \textit{custom
+  glibc build} system-wide, т.е. по-опасния случай, а иначе в
+\texttt{/usr/local/} в отделни директории може да имате компилирано и
+инсталирано \textit{glibc} колкото пъти се сетите и както се сетите и
+във всеки отделен терминал да export различен
+\texttt{LD\_LIBRARY\_PATH}, за да ползвате различен build на
+\textit{glibc}\ldots ;-). Тази библиотека е основна градивна единица и
+няма да се спираме на това колко динамично свързани програми зависят
+от нея, така че внимателно с custom-изацията. Тук по-наблюдателните ще
+отправят основателен въпрос: как \deb{dpkg}, който е динамично свързан
+и зависи от библиотечни файлове на \textit{glibc}, ги премахва и
+докато инсталира новите, и все пак продължава да работи добре.
+Отговорът е, че докато прави тази операция, \deb{dpkg} заедно със
+старите споделени библиотеки, с които е свързан динамично, е зареден в
+паметта. След като завърши тази операция, на следващото стартиране
+\deb{dpkg} ще се свързва с новите такива споделени библиотеки. Точно
+поради това, че е зареден в паметта (е то няма иначе къде другаде;-),
+\deb{dpkg} може да upgrade-ва или downgrade-ва в момента инсталирания
+\deb{dpkg} на диска (образно казано), така че \texttt{apt-get install
+  dpkg apt} или \texttt{dpkg -i dpkg\_*.deb apt\_*.deb} са операции
+абсолютно в реда на нещата и няма място за опасения. Разбира се, може
+да имате и статично свързан \deb{dpkg}, както и други важни програми.
+Ако изтеглите някой \textit{source package} на \deb{dpkg} от
+\textit{ftp/http mirrors} или пък някой сорс (даден таг) на \deb{dpkg}
+от \hlink{cvs.debian.org}{http://cvs.debian.org} и разгледате
+\texttt{debian/control}, ще видите, че може да се получи и е предвиден
+и \textit{binary package}: \texttt{dpkg-static}.
+\hlink{FreeBSD}{http://www.FreeBSD.org} държи някои такива статично
+свързани програми в отделна директория \textit{/stand}, но те са си за
+\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}, \texttt{/usr/sbin} и
+т.н. но именувани, например, с подходящ суфикс \texttt{-static} или
+подобен, за да е ясно за какво става дума, не че с \man{ldd}{1} не
+може да се провери кое е статично и кое е динамично свързано ---
+въпрос на вкус.
+    
+
+Повечето потребители, наблюдавайки работата на \deb{dpkg} и \deb{apt}
+при себе си, остават с впечатлението, че заслугата е изцяло и
+единствено на тези прогами. Някои дори не забелязват, че \deb{apt},
+след като си свърши своята част от работата, извиква \deb{dpkg}, за да
+прави реално инсталацията. Разбира се, че това са корави програми,
+изпитани и разширявани постепенно с времето. Също така не е случаен и
+фактът, че функционалността е разпределена между тях (и други разбира
+се), а не набутана само в една от тях --- това е по стара
+\textit{Unix} традиция, за да не се достига до \textit{bloatware} при
+претрупване на едно приложение с прекалено голям брой
+\textit{features}, които е трудно да се поддържат реализирани в едно
+единствено приложение.  Всичко това се вижда от потребителите на пръв
+поглед, но като се погледне малко по-обстойно на нещата, се разбира,
+че \deb{dpkg} и \deb{apt} се "`захранват"' и "`разполагат"' със
+страшно много и прецизна информация, без значение какво имате
+инсталирано в системата. Това са \textit{list files} в
+\texttt{/var/lib/apt/lists/}, които вие обновявате при всеки
+\texttt{apt-get update} в зависимост от посочените от вас източници в
+\texttt{/etc/apt/sources.list}. Така те разполагат с пълна информация
+за пакетите, достъпни от споменатите от вас източници, освен
+информацията, която пакетите носят сами със себе си.  Дръпнете някой
+\textit{debian source package} с \texttt{apt-get source пакет},
+разгледайте го, и по-специално директорията \texttt{debian/}, получете
+от него \textit{binary package(s)}, след това разархивирайте един
+\textit{binary package} deb-файл, изпълнявайки \texttt{ar -x
+  \textit{пакет\_версия}.deb}, и след това разгледайте какво има в
+\texttt{control.tar.gz}, в \texttt{data.tar.gz} е самото приложение.
+След това разгледайте тези \texttt{*Packages}, \texttt{*Sources},
+\texttt{*Release} файлове в \texttt{/var/lib/apt/lists/}, защо така са
+именувани при вас и какво съдържат. Grep-вайки небрежно, потърсете
+вашия пакет. Не редактирайте тези файлове, ако не разбирате какво
+правите, но ако ги омажете, можете да ги изтриете и да ги обновите
+пак.  Тази мета-информация идва от файловете \texttt{Packages},
+\texttt{Sources}, \texttt{Release} от Debian архива(ите), съответно
+избрани от вас и посочени в \texttt{/etc/apt/sources.list}. Тя пък е
+получена от контролните файлове в \textit{debian source packages}, от
+които са получени съответните \textit{debian binary packages}. Няма
+как да не се сетите, че \textit{debian source packages}, и по-точно
+контролната информация, която носят те, се създава и поддържа от
+\textit{debian maintainers} и потребителите, ако решат, могат да се
+намесват. Дотук говорихме за една и съща мета-информация,
+разпространявана независимо по няколко "`канала"' и поради наличието
+на която може да се оценява коректността на работа на произволно
+избрана селекция от пакети, налични или неналични в потребителската
+система.  Т.е. всичко в крайна сметка зависи от мета-информацията,
+която тръгва от \textit{debian source packages} (тя трябва да е пълна
+и прецизна), отива в \textit{debian binary packages} и \textit{list
+  files} в архива и впоследствие и в \texttt{/var/lib/apt/lists/} на
+потребителя.  Разбира се, че последната не е задължителна и може да
+имате само \textit{debian binary packages} или \textit{debian source
+  package}, от които да получите \textit{debian binary package(s)}, и
+мета-информацията, идваща с тях.  Това пак ще ви свърши някаква
+работа, но е доста скромен случай, разбира се. Съвсем отделен е
+въпросът, че \deb{dpkg} си поддържа своя база данни за
+състоянието/статуса на пакетите, която вие запитвате с \texttt{dpkg
+  -l}, \texttt{dpkg --get-selections} и т.н.
+         
+
+Съществуват и т.н. \textit{Contents files} (намиращи се на
+\texttt{\textit{огледало}/debian/dists/\textit{издание}/Contents-\textit{архитектура}.gz}),
+които съдържат пълната информация за това, кой файл в кой пакет се
+намира.  Всичко това е за дадената архитуктура, разбира се, понеже
+между тях може да има разлики.  Тази информация е полезна, когато
+знаете файла (или пътя до него) и ви интересува в кой пакет се намира
+той. Например, скриптовете \deb{apt-file} (\texttt{apt-file update}) и
+\deb{auto-apt} (\texttt{auto-apt update updatedb update-local})
+изтеглят тези \textit{Contents files}.
+
+
+Споделят се и аналогични впечатления, като за \deb{dpkg} и \deb{apt}
+пакети, или пакети предоставящи набор от програми, и от работата на
+скрипта \deb{auto-apt}, който прекъсва процеса на компилация или
+свързване за произволни дървета от сорс код, изнамира в кой пакет е
+липсващия \textit{header/lib}, стига този пакет да е в обсега му
+(\texttt{sources.list}) разбира се, предлага го за инсталация, които
+вие може да откажете, и след това \textit{resume}-ва процеса на
+компилацията и/или свързването, от там докъдето е бил временно
+прекъснат. Няма магии тука, има добре обмислен дизайн, който служи
+като добра основа за създаване на едни или други инструменти с една
+или друга функционалност. Тези инструменти също трябва да са на ниво,
+разбира се.
+

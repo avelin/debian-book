@@ -1,0 +1,104 @@
+\chapter{Some Nice Hints and Tricks - Special experience}
+         
+
+Тук следват някои по-специфични предложения или възможности, които са
+(или не са) описани в официалната документация на Debian. Опитът е на
+разработчици или просто на потребители. Добре ще е първо да сте се
+запознали с \hlink{Ръководството за инсталиране за вашата хардуерна
+  архитектура}{http://www.debian.org/releases/stable/installmanual}, а
+също и с базовите инструменти за боравене в Unix среда и в частност
+Debian GNU/Linux.
+
+\section{Да си направим сами LiveCD images}
+
+\subsection{dfsbuild}
+Вместо да използвате готови LiveCD images като Knoppix, можете да използате 
+тази програмка за да изградите свой LiveCD image:
+\hlink{Debian From Scratch}{http://people.debian.org/\textasciitilde jgoerzen/dfs/}
+Огледален сървър в България е:
+\hlink{ftp://ftp.uni-sofia.bg/cd-images/linux/debian/dfs/}{ftp://ftp.uni-sofia.bg/cd-images/linux/debian/dfs/}
+Както обичайно документацията е на сайта на автора и в \texttt{/usr/share/doc/dfsbuild/}. 
+Програмата е доста гъвкава и предлага множество опции в конфигирационния си файл. 
+Примерен конфигурационен файл може да намерите на:
+
+\dbsite{utils/home/danchev/etc/dfsbuild/}
+
+\subsection{debix}
+\textit{debix}: създаване на \texttt{live filesystems} от съществуваща такава или отначало.
+
+\hlink{http://alioth.debian.org/projects/debix}{http://alioth.debian.org/projects/debix}
+
+\section{Debian GNU/Linux chrooted install with \texttt{debootstrap}}
+
+\hlink{Colin Walters shows how to chroot your Universal Operating
+  System}{http://people.debian.org/\textasciitilde%
+  walters/chroot.html}
+
+Ако възнамерявате да ползвате голямо количество пакети от Sid +
+experimental + untrusted unofficial източници, било то и доказано или
+не, че са лоши такива, които да обновявате изключително често и
+едновременно с това да сте сигурни, че веднага можете да се върнете
+към rock solid system, то chrooted система за експерименти в рамките
+на стабилна система е най-безопасният и безболезнен начин да си
+поиграе човек с огъня, и то да го прави с удоволствие, че ще се отърве
+ненаказан отгоре на това ;-).
+
+\section{Debian GNU/Linux с LVM (вкл. root filesystem)}
+\hlink{Използване на Debian GNU/Linux с LVM (вкл. root filesystem)}{http://www.21chouse.com/deb\_lvm.htm}
+
+\section{Debian GNU/Linux TakeOver Installations}
+
+\begin{itemize} 
+\item \hlink{Official cross-install
+    howto}{http://www.debian.org/releases/stable/i386/ch-preparing.en.html\#s-linux-upgrade}
+\item \hlink{Remote install/convert към Debian изцяло през
+    ssh}{http://trilldev.sourceforge.net/files/remotedeb.html}
+\item \hlink{Chrooted Debian install from base
+    image}{http://lists.debian.org/debian-user/2002/debian-user-200204/msg01010.html}
+\end{itemize}
+
+\section{Debian GNU/Linux върху x86 чрез PXE}
+\hlink{Използване на Debian GNU/Linux вурху x86 чрез PXE}{http://www.debianplanet.org/node.php?id=818}
+
+\section{Debian GNU/Linux върху Apple iBook}
+
+Branden Robinson shows Installing Debian 3.0 onto an Apple iBook without using any physical media!
+(fast Internet connection recommended)
+\hlink{Използване на Debian GNU/Linux върху Apple iBook}{http://people.debian.org/\textasciitilde% 
+branden/ibook.html}
+
+\section{Debian GNU/Linux върху Sun Sparc Station or X terminal (netboot)} 
+\hlink{Използване на Debian GNU/Linux върху Sun Box}{http://www.tomun.org/docs/sunbox.html}
+
+\section{Debian GNU/Linux върху Sony Vaio SRX87} 
+\hlink{Sony Vaio SRX87}{http://www.differentpla.net/\textasciitilde% 
+roger/hardware/vaio/linux/}
+  
+\section{Debian GNU/Linux върху Acer Tablet PC} 
+\hlink{Running Debian on an Acer Tablet PC}{http://global.acer.com/products/tablet\_pc/tmc100.htm}.  
+Dean Townsley managed to install Debian GNU/Linux on the Acer Travelmate
+  C100 which is a tablet PC that can also act as normal notebook.
+  Anyone who has setup a few systems and compiled their own kernel
+  before should be able to install and set up Debian on such a
+  machine. He \hlink{described}{http://prometheus.physics.ucsb.edu/\textasciitilde%
+    dean/TmC100/AcerTmC100.html} in detail how the system is booted
+  from the network and how X needs to be configured in order to
+  support the pen.
+  
+\section{Debian GNU/Linux върху MS X-Box}
+
+Инсталация на Debian GNU/Linux върху MS X-Box. Ed's Debian е
+  пълна Debian-базирана GNU/Linux дистрибуция, която съдържа последните
+  предимства на X-Box Linux разработването.
+  \begin{itemize} 
+  \item \hlink{Изтегляне на
+      дистрибуцията}{http://sourceforge.net/project/showfiles.php?group\_id=54192}
+  \item \hlink{Как да инсталираме Debian GNU/Linux на
+      Xbox}{http://xbox-linux.sourceforge.net/articles.php?aid=2002248060056}
+  \item За deb-пакетите поставете в \texttt{/etc/apt/sources.list}
+    следният ред:
+\begin{verbatim}
+deb http://ftp.linux.pt/pub/xbox/debian woody main
+\end{verbatim}
+  \end{itemize}
+

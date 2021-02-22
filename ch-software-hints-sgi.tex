@@ -1,0 +1,470 @@
+\section{Debian GNU/Linux върху SGI MIPS (netboot)}         
+          
+\subsection{Хардуер}
+          
+
+Описаната тук процедура е проведена с:
+
+\begin{verbatim}
+ ARCH: SGI Indy (SGI-IP22) 
+  CPU: MIPS-R4600 V2.0 FPU V2.0 / 100.00 MHz (big endian)
+  RAM: 61100032 bytes
+ ETH0: SGI Seeq8003
+SCSI0: SGI WD93 WD33c93B/13
+  SDA: SGI Model: IBMDSAS-3540 (548 MB)
+  SDB: HP Model: 1.050 GB #A1 (1050 MB)
+\end{verbatim}
+          
+
+По принцип би трябвало със машини от същия модел (Indy) да няма
+особенни разлики.  Предстоят тестове с още няколко машини --- Indy, O2
+(FIXME)
+          
+
+SGI INDIGO (моето е с R4000 процесор) за момента не се поддържа
+(IP-20), но се работи по въпроса, да се надяваме че скоро.. :-)
+          
+
+инсталацията засега е на фаза "`console"' и не включва подкарване на X
+(FIXME)
+
+\subsection{Документация}
+          
+\begin{itemize}
+\item \hlink{Linux/MIPS
+    HOWTO}{http://howto.linux-mips.org/mips-howto.ps}
+\item \hlink{SGI Performance
+    Comparisons}{http://futuretech.mirror.vuurwerk.net/perfcomp.html}
+\item \hlink{SGI Technical Advice and
+    Information}{http://futuretech.mirror.vuurwerk.net/sgi.html}
+\item \hlink{Debian for MIPS}{http://www.debian.org/ports/mips/}
+\item \hlink{How to install Debian GNU/Linux on Indy
+    (MIPS)}{http://www.linux-debian.de/howto/debian-mips-woody-install.html}
+\item \hlink{Indytech --- Hardware technical information for the SGI
+    Indy computer}{http://www.reputable.com/indytech.html}
+\item \hlink{How to install Debian GNU/Linux on Indy (MIPS)}{http://www.pvv.org/\textasciitilde pladsen/Indy/HOWTO.html}
+\item \hlink{Google}{http://www.google.com}
+\end{itemize}
+         
+\subsection{Начало на инсталацията}
+
+
+Изтеглете
+\hlink{\textbf{kernel-а}}{http://ftp.fi.debian.org/debian/dists/woody/main/disks-mips/current/r4k-ip22/tftpboot.img}.
+За съжаление \hlink{ftp.bg.debian.org}{ftp://ftp.bg.debian.org} не
+съдържа \textbf{disks-mips})
+          
+ 
+\textbf{boot server}: Ще ви трябва още една машина (no matter arch),
+за да направите инсталацията (моята е Debian в/у i386, т.e. десктоп 
+PC-то ми), като на нея в кернела трябва да имате:
+         
+\begin{verbatim}
+#
+# Networking options
+#
+
+CONFIG_PACKET=y
+CONFIG_FILTER=y
+\end{verbatim}
+         
+
+Пак на същата сервизна машина инсталвате \textit{DHCP} и \textit{TFTP}
+демони:
+         
+\begin{verbatim}
+# apt-get install dhcp tftpd
+\end{verbatim}
+         
+
+По време на power-on boot на Indy-то има един кратък момент в които се
+вижда едно бутонче "`stop for maintenance"'. Натискате го и ви излиза
+системното меню на Indy-то със следните опции:
+
+\begin{verbatim}
+Start System
+Install System Software
+Run Diagnostics
+Recover System
+Enter Command Monitor
+Select Keyboard Layout
+\end{verbatim}
+         
+
+Е, поне на моето Indy са тези, ще видим по другите SGI машини. (FIXME)
+         
+
+Диагностиката винаги е препоръчителна :) но в случая избирате "`Enter
+Command Monitor"' и ще ви излезе един промпт, който предлага някои
+интересни възможности (вж. "`help"')
+         
+
+пишете \texttt{printenv} и си записвате MAC адреса на мрежовата карта
+на Indy-то. В моя случай --- \texttt{eaddr=08:00:69:08:28:CA}.
+
+         
+
+\textbf{Забележка}: Ако Indy-то има работеща операционна система преди
+нашата намеса (примерно някоя версия на \textbf{IRIX}), MAC адреса
+може да се вземе и като се ping-не машината и после се разгледа
+arp-таблицата{\ldots} въпрос на вкус.
+        
+
+На сервизната машина описваме в \texttt{/etc/dhcpd.conf} запис за
+Indy-то:
+
+\begin{verbatim}
+---
+subnet 192.168.1.0 netmask 255.255.255.0 {}
+
+# Entry for Indy-1 (zirakzigil)
+
+host zirakzigil {
+        hardware ethernet 08:00:69:08:28:ca;
+        fixed-address 192.168.1.5;
+        option host-name "zirakzigil";
+        option domain-name-servers 192.168.1.1;
+        option routers 192.168.1.1;
+}
+---
+\end{verbatim}
+        
+
+Като параметрите имат следния смисъл:
+        
+\begin{itemize}
+\item \textit{hardware ethernet} е MAC адреса на Indy-то
+\item \textit{fixed-address} е IP адреса който ще има Indy-то
+\item \textit{option host-name} е hostname-a на Indy-то
+\item \textit{option domain-name-servers} е адреса на DNS сървъра
+  който ще ползва Indy-то
+\item \textit{option routers} е адреса на gateway-a на Indy-то.
+\end{itemize}
+        
+
+За повече подробности вижте в \man{dhcpd.conf}{8}.
+
+\textbf{Забележка}: В случая съм използвал фалшиви IP адреси, но това
+не значи, че не могат да се ползват и истински. И в двата случая обаче
+е добре да има изградена мрежова структура (т.е. на IP-то на DNS-a
+наистина да има DNS, и gateway-я да работи като gateway :)
+
+
+Изпълнявате на сервизната машина:
+         
+\begin{verbatim}
+# echo 1 > /proc/sys/net/ipv4/ip_no_pmtu_disc
+\end{verbatim}
+        
+
+за подробности:
+\texttt{\textit{<kernelsource>}/Documentation/filesystems/proc.txt},
+\texttt{lkml}, \hlink{google}{http://www.google.com}
+         
+
+След което си пускате DHCP сървъра:
+        
+\begin{verbatim}
+# /etc/init.d/dhcpd start
+\end{verbatim}
+        
+\textbf{Забележка}: Ако в мрежата имате друг DHCP сървър, бъдете
+осторожни :)
+        
+
+Следваща стъпка: редактирате си \texttt{/etc/inetd.conf} файла и
+добавяте нещо от рода на:
+         
+\begin{verbatim}
+tftp dgram udp wait nobody /usr/sbin/tcpd /usr/sbin/in.tftpd /tftpboot
+\end{verbatim}         
+         
+
+Като \texttt{/tftpboot} е директорията, в която ще седят
+boot-image-ите (в нашия случай за Indy-то). Подробности:
+\man{inetd.conf}{8}, \man{tftpd}{8}, \man{tftp}{1}, \man{inetd}{8}.
+        
+
+След което (ре)стартирате inetd:
+         
+\begin{verbatim}
+# /etc/init.d/inetd stop
+# /etc/init.d/inetd start
+\end{verbatim}
+        
+
+или
+        
+\begin{verbatim}
+# kill -HUP `ps auwx |grep inetd |grep -v grep |awk '{print $2}'`
+\end{verbatim}
+         
+
+Ако трябва да рестартирате inetd на машина, която не е debian.. но
+след като сте тръгнали да четете тази документация, предполага се, че
+сте Debian Zealot :-)
+        
+\textbf{Забележка}: Лично мнение: с изключение на случаи като този
+(примерно инсталация на машина, която се нуждае от tfptd или някаква
+друга специфична inetd услуга) по-добре е да нямате пуснат inetd.
+Един service по-малко, малко по-спокоен сън :) Все пак, въпрос на
+личен избор и конкретна ситуация.
+
+
+Копирате кернела за Indy-то в \texttt{/tftpboot}.
+         
+
+Обратно на Indy Command Monitor промпта пишете:
+        
+\begin{verbatim}
+# setenv netaddr $IP
+\end{verbatim}
+         
+
+Като на мястото на \texttt{\$IP} слагате IP-то, което трябва да има
+Indy-то. В моя случай: \texttt{192.168.1.5}.
+         
+\begin{verbatim}
+bootp()/tftpboot/tftpboot.img
+\end{verbatim}
+
+
+натискате Enter и сте в бизнеса :)
+        
+\textbf{Забележка}: добре е да хвърлите един поглед на
+\texttt{/var/log/messages} за възможни грешки, ако нещо не е наред, да
+проверите какви са permission-ите на \texttt{/tftpboot} и
+\texttt{/usr/sbin/tcpd}.
+        
+\subsection{Основни конфигурации}
+         
+
+След като кернелът вече е тръгнал и гледаме debian-installer-а на
+екрана, инсталацията продължава почти като на i386 архитектура. Можете
+да спрете вече dhcpd и inetd сървърите, няма да ви трябват повече.
+        
+
+Следва избор на клавиатура и partitioning на диска или дисковете.
+Лично аз съм фен на класическия вариант с command-line \man{fdisk}{8},
+така че отиваме на втората конзола (Alt-F2) и започваме:
+         
+
+Едно бързо \texttt{dmesg}, за да видим какво си е намерил кернела.
+Ако има нещо важно за процеса на инсталация, което е изпуснато
+(хардове, мрежова карта, etc.), ще трябва да си търсим или правим друг
+boot image, което ще го опишем в някоя от следващите версии (FIXME).
+         
+
+В моя случай съм малко зле с обема на дисковете (1x 500MB и 1x 1GB)
+така че ще разхвърляме различните partition-и на двата диска. След
+като изтрием (по стандартния за fdisk начин :) всички дялове останали
+от добрия стар IRIX, имаме нещо от рода на:
+         
+\begin{verbatim}
+# fdisk -l /dev/sda
+Disk /dev/sda (SGI disk label): 3 heads, 108 sectors, 3314 cylinders
+Units = cylinders of 324 * 512 bytes
+
+----- partitions -----
+----- Bootinfo -----
+Bootfile: /unix
+----- Directory Entries -----
+[...other info here... :-)]
+#
+\end{verbatim}
+        
+
+тука идва tricky part: Indy-то е \textit{Big-Endian} машина, така че
+нещата са малко по-различни от добрия стар i386 (BIOS, MBR, partition
+table) и в частност ще трябва да направим \textit{disklabel}.
+         
+
+Първо една бърза сметка: 3 heads * 108 sectors * 3314 cylinders * 512
+bytes = 549752832 bytes (524MB), колкото е обема на първия ми диск.
+Направете два дяла (root+swap) с големина по ваш избор, те не са
+важни, ще ги използваме само за пример. Ако се съгласите с
+default-ната стоиност за начален цилиндър на първия дял (т.е. 5-ти
+цилиндър) и след това си направите още един дял, освен тези sda1 и
+sda2, ще имаме още два записа в "`partition"' секцията на изхода от
+командата \texttt{p} на fdisk-a, а примерно:
+     
+\begin{verbatim}
+Pt# Device    Info   Start End     Sectors  Id  System
+----------------------------------------------------------
+ 9: /dev/sda3        0     4       1620     0   SGI volhdr
+11: /dev/sda4        0     3313    1073736  6   SGI volume
+\end{verbatim}
+        
+\begin{itemize}
+\item \textit{SGI volume} дяла представлява целия харддиск. В моя
+  случай харда има 3314 цилиндъра, номерирани от 0 до 3313, и
+  \texttt{/dev/sda4} го обхваща целия (1073736 сектора).
+\item \textit{SGI volhdr} дяла (volume header) е сервизен partition за
+  disklabel-a, и въпреки че е sda3 в нашия случай, физически той се
+  намира в началото на диска (цилиндри от 0 до 4).  Ако искате, можете
+  да мислите за него като за един голям MBR :) Интересното е, че в
+  него се записва кернела на машината и firmware-а го чете от там за
+  да boot-не, което означава, че все пак трябва да е достатъчно голям,
+  за да може да събере кернела в себе си. В по горния пример volume
+  header-a e 1620 sectora * 512 bytes - 829440 bytes (810 KB), което е
+  леко недостатъчно. Ако изберем 16MB за volume header дяла, това
+  прави: 16*1024*1024 = 16777216 bytes, или 32768 сектора, и тъй като
+  в един цилиндър имаме 324 сектора, 32768/324 = 101 цилиндъра трябва
+  да е голям този дял.
+\end{itemize}
+        
+
+Приятният момент е, че не трябва да правите на ръка тези два дяла.
+fdisk (донякъде) ще ги направи вместо вас. Изтриваме всички
+partition-и от таблицата и започваме наново:
+         
+
+\texttt{n} за нов partition и като ви попита за начален цилиндър на
+дяла, кажете 101.  По този начин цилиндри от 0 до 100 ще бъдат
+заделени за volume header-a, което са си точно 101 цилиндъра. От там
+нататък създаваме този дял (\texttt{sda1}) по стандартния начин, като
+имате предвид че това трябва да ви бъде Linux native дяла (root), и
+чак след него трябва да е swap дяла. В моя случай на първия ми диск
+(524MB) нямам много място, така че ще се огранича само с root+swap.
+Тук е момента за още малко математика:
+         
+
+Имам около 64 MB RAM и искам да си направя swap дял 128 MB. (Доброто
+старо правило swap-a да е 1x или 2x обема на паметта.  Да не говорим
+че в някои други UNIX-и е почти задължително swap-a да е минимум
+колкото паметта на машината, иначе ако параметъра swapmem\_on е сетнат
+на 0-а, което осигурява директен mapping м/у паметта и swapa, за да се
+избегнат по-тежките операции по адресиране на паметта и за да се
+спести памет от т.нар. псевдо swap, OS-а ще ползва толкова RAM,
+колкото е голям swap дяла. Long story short: правете си swap дяла поне
+два пъти колкото RAM-a, изгражда полезни навици.
+         
+
+И така: 128 MB = 134217728 bytes = 262144 sector-а ни трябват за този
+дял.  262144 / 324 сектора на цилиндър = 809 цилиндъра. Дискът ни има
+3314 цилиндъра и ако сложим swap дяла последен, той ще заема цилиндри
+от 2505 до 3314, което означава, че root дяла трябва да е до 2504-ти
+цилиндър, което въвеждаме на промпта на fdisk, който още ни чака :)
+         
+
+Следваща стъпка: изтриваме \texttt{sda9} (volume header-a) и го правим
+наново пак като \texttt{sda9} (9-ти partition) с цилиндри от 0 до 100.
+След това създаваме \texttt{sda2} със цилиндри от 2505 до 3314, така
+че накрая имаме:
+         
+\begin{verbatim}
+Pt# Device    Info   Start End     Sectors  Id  System
+----------------------------------------------------------
+ 1: /dev/sda1 boot   101   2504    778896   83  Linux native
+ 2: /dev/sda2 swap   2505  3313    262116   82  Linux swap
+ 9: /dev/sda3        0     100     32724     0  SGI volhdr
+11: /dev/sda4        0     3313    1073736   6  SGI volume
+\end{verbatim}
+        
+
+Лека проверка с \texttt{v} (нямаме неалокирани сектори), \texttt{w}
+(записваме таблицата на диска и излизаме). В моя случай продължавам с
+\texttt{fdisk /dev/sdb}, тъй като искам да си направя дялове за
+\texttt{/var}, \texttt{/usr} и \texttt{/home}.  Тъй като този диск не
+е boot-able, тук нещата са по-прости: създавам си три дяла набързо и
+имам:
+         
+\begin{verbatim}
+# fdisk -l /dev/hdb
+Disk /dev/sdb: 33 heads, 61 sectors, 1019 cylinders
+Units = cylinders of 2013 * 512 bytes
+
+Device    Boot  Start  End   Blocks id System
+-------------------------------------------------
+/dev/sdb1       1      261   262666 83 Linux        (за /home)
+/dev/sdb2       262    522   262696 83 Linux        (за /var)
+/dev/sdb3       523    1019  500230 83 Linux        (за /usr)
+\end{verbatim}
+        
+
+Записваме таблицата с \texttt{w} и се връщаме обратно на първа конзола
+(Alt-F1).
+
+\textbf{ВНИМАНИЕ:} Описаните по-горе стойности на цилиндри, глави,
+сектори и така нататък се отнасят конкретно за моите дискове и служат
+само за пример как трябва да проведете нещата при вас. С изключение на
+случая, когато имате \textbf{точно} същите дискове (много малко
+вероятно), тези стойности са напълно неприложими за вашата инсталация,
+и \textbf{трябва} да пресметнете всичко спрямо \textbf{вашите}
+параметри.
+         
+
+Продължаваме инсталацията по нормалния начин (указвайки кои са ни root
+и swap дяловете).  Инсталационната програма конкретно при мен не
+поиска да си намери дяловете на \texttt{/dev/sdb}, така че пак във
+втора конзола им направих файлови системи (ext3, както и root дяла),
+дори и така не пожела да ги mount-не през инсталера. Конкретно аз се
+отказах да пробвам да ги mount-на на ръка в \texttt{/target}, където
+им е мястото, и оставих тази част за после, инсталирайки само в
+\texttt{sda1}.
+ 
+\subsection{Довършителни процедури}
+
+
+Следващата стъпка е инсталация на кернел върху новата машина: избираме
+"`from internet"' (FIXME: описание на инсталация от NFS). Настройваме
+"`network settings"' (или си пускаме пак DHCP сървъра на сервизната
+машина и му казваме да ползва DHCP). Въпрос на вкус и възможности е от
+къде ще дръпне кернела и драйверите, аз се съгласих с default-ната
+стойност \texttt{http://http.us.debian.org:80}. Добрата новина тук е,
+че \texttt{http://ftp.bg.debian.org} съдържа
+\hlink{binary-mips}{http://ftp.bg.debian.org/debian/dists/woody/main/binary-mips/},
+така че нататък инсталацията ще върви по-бързичко :) За съжаление
+другият Debian mirror в България, \hlink{http://debian.ludost.net}{http://debian.ludost.net},
+засега mirrorва само \texttt{i386} и \texttt{source}. След
+конфигуриране на drivers (ако имате нужда) следва инсталацията на Base
+System по познатия начин от \hlink{http://ftp.bg.debian.org/debian}{http://ftp.bg.debian.org/debian},
+като не трябва да се забравя proxy-то (a тъй като аз имам машина с
+\man{apt-proxy}{8} и това е второто Indy което инсталирам, нещата
+вървят доста бързичко --- въпрос на network setup и bandwidth, както
+винаги)
+         
+
+Следват \texttt{make system bootable}, и още малко настройки в Command
+Monitor-a на Indy-то:
+         
+\begin{verbatim}
+setenv OSLoader linux
+setenv SystemPartition scsi(0)disk(X)rdisk(0)partition(8)
+setenv OSLoadPartition /dev/sda1
+\end{verbatim}
+        
+
+Където \textit{X} е SCSI id-то на \texttt{/dev/sda} диска (това ще ви
+го каже накрая инсталационната програма).
+         
+
+Чрез едно \man{dmesg}{8} на втората конзола преди да reboot-нем
+виждаме (в моя случай):
+         
+\begin{verbatim}
+Attached scsi disk sda at scsi0, channel 0, id 1, lun 0
+\end{verbatim}
+         
+
+Така че при мен настройките трябва да са:
+         
+\begin{verbatim}
+setenv OSLoader linux
+setenv SystemPartition scsi(0)disk(1)rdisk(0)partition(8)
+setenv OSLoadPartition /dev/sda1
+\end{verbatim}
+         
+
+Boot-ваме, следва \man{base-config}{8}, т.е. процедираме по стандарния
+начин за Debian, описваме си apt-sources, и аз лично се лишавам както
+от услугите на dselect, така и от тези на tasksel, като предпочитам
+нататък да си инсталирам на ръка. Завършваме с base-config-а по
+традиционния начин.
+
+
+Препратки:
+\begin{itemize}
+\item \hlink{Някои "`хитрости"' от Рик
+    Моен}{http://www.linuxmafia.com/debian/tips}
+\end{itemize}

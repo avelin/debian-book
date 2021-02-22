@@ -1,0 +1,128 @@
+\chapter{Изготвяне на резервни копия - backup}
+
+\section{Общи сведения}
+
+\begin{large}
+\textbf{\textit{Има два типа хора - такива на които има е трябвал бакъп, и такива на които всеки
+момент ще им потрябва.}}
+\end{large}
+
+\begin{flushright}
+\texttt{\textit{Александър Велин}}
+\end{flushright}
+
+\bigskip
+
+Като идея изготвянето на резервни копия е много добро нещо. Така както и използването на RAID и LVM ако
+можем да си го позволим разбира се. Това не е специфично за Debian, така, че ще е полезно и
+ще може да се използва и от други системи. Начини за изготвяне на резервни копия има много и
+то с най-различни цели и подходи. Дори всеки може да си измисли технология за резервиране
+на важните за него файлове. Разбира се говорим за неща малко по-сложни от \texttt{cp -ra},
+като инкрементирано обновяване на бакъпа, автоматизирано, отдалечено, върху различни носители
+и прочее. Ще се опитаме да предложим всякакви варианти.
+
+\section{Прости програми за дублиране или резервиране}
+
+\subsection{dd - копиране на файлове}
+
+Програмата \man{dd}{1} е част от пакета \deb{coreutils}.
+
+\begin{verbatim}
+apt-get install coreutils
+\end{verbatim}
+
+Най-общо се използва така. Ако например искаме да направим огледално копие на първия primary
+дял на първия логически дял на същия IDE disk. Може и на друг disk разбира се, както от disk
+на tape и обратно. Не използвайте тази команда преди да сте прочели ман-страницата й и
+внимавайте да не презапишете нещо върху важни за вас данни. 
+
+\begin{verbatim}
+dd if=/dev/hda1 of=/dev/hda5
+\end{verbatim}
+
+\subsection{raw - свързва linux raw device към block device}
+
+Програмата \man{raw}{8} е част от пакета \deb{util-linux}.
+
+\begin{verbatim}
+apt-get intall util-linux
+\end{verbatim}
+
+Най-общо се използва така
+
+\subsection{dump - dump и restore за ext2/3 файлови системи}
+
+Програмите \man{dump}{8}, \man{restore}{8}, \man{rmt-dump}{8}, \man{rdump}{8},
+\man{rrestore}{8} са част от пакета \deb{dump}.
+
+\begin{verbatim}
+apt-get intall dump
+\end{verbatim}
+
+Най-общо се използва така
+
+
+\subsection{pcopy - large disk(partition) to disk(partition) copying tool}
+
+Програмата \texttt{pcopy} е аналогична на \man{dd}{1} и към момента я няма в официалния архив
+на Debian. Можете да я намерите \hlink{тук}{http://sf.www.lysator.liu.se/\textasciitilde pen/pcopy/}
+
+\section{По-сложни подходи и системи за изготвяне на бакъп}
+
+\subsection{revision control systems - удобно за текстови файлове}
+
+\subsubsection{Използване на вашата домашна директория или /etc със CVS}
+
+\hlink{Joey Hess shows you how to keep track of everything with
+  CVS}{http://www.linuxjournal.com/article.php?sid=5976}
+
+На пръв поглед странен начин да се поддържа ред в своя
+\texttt{\$HOME}. След известна практика може да се окаже, че поне една
+част е удачно да се пази по такъв начин. Внимавайте с конфиденциалните
+данни, ако CVS хранилището е публично (включвайте \texttt{.cvsignore},
+скривайте \texttt{.cvspass} ;-)
+
+Естествено подобно нещо може да се прави и чрез аналозите на CVS, като \deb{subversion},
+\deb{arch}, \deb{tla}, \deb{rcs}, \deb{cssc} и т.н.
+
+\subsection{rsync - бърза и ефективна програма за отдалечено синхронизиране}
+
+Инсталираме пакета \deb{rsync}.
+
+Много добра статия по въпроса има на:
+\hlink{http://www.mikerubel.org/computers/rsync\_snapshots/}{http://www.mikerubel.org/computers/rsync\_snapshots/}
+
+\subsection{dirvish - filesystem-базиран бакъп чрез rsync}
+
+\subsection{backuppc - disk-базиран бакъп с много възможности}
+
+\subsection{bacula - network-базиран бакъп, възстановяване и верификация}
+
+\subsection{partimage - partitions-базиран бакъп в компресирани image files}
+
+\subsection{mondo - CD-базиран бакъп}
+
+\subsection{amanda - клиент/сървър-базиран автоматичен advanced network disk archiver}
+
+\subsection{cdrw-taper - дабавка за amanda за CD-RW и DVD+RW бакъпи}
+
+\subsection{multicd - CD-базиран бакъп}
+
+\subsection{faubackup - filesystem-базиран бакъп}
+
+\subsection{dar - многоцелеви архиватор, дифенциални бакъпи, компресия, ssh}
+
+\subsection{rdiff-backup - deltas-базиран бакъп}
+
+\subsection{pdumpfs - filesystem-базиран бакъп, използващ ruby}
+
+\subsection{storebackup - рекурсивно копиране на директорийни дървета}
+
+\subsection{ibackup - бакъп за /etc, включително автоматизирано и отдалечено}
+
+\subsection{afbackup - клиент/сървър-базиран бакъп}
+
+\subsection{kbackup - компресиране, криптиране, multi-volume archives, и много други}
+
+\subsection{cdbackup - CD-R(W) бакъп}
+

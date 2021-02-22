@@ -1,0 +1,122 @@
+\chapter{По-user-friendly десктоп} 
+         
+
+Като че ли си е достатъчно friendly, но все пак трябва да се угоди на
+колкото се може повече потребители.
+         
+\section{Debian Desktop Project} 
+         
+\hlink{Debian Desktop
+  Project}{http://www.debian.org/devel/debian-desktop/} е група в
+Debian, която работи за един Debian, който да е по-примамлив за
+desktop потребители.
+         
+\begin{verbatim}
+# apt-get install desktop-base
+# dpkg -L desktop-base
+\end{verbatim}
+         
+\section{Debian Menu System} 
+         
+
+Разработена е прекрасна система за унифициране на менютата на
+различните графични среди, като maintainers трябва да решат какви
+менюта ще предоставят: \textit{upstream}, \textit{debian specific} или
+комбинация от двете, която потребителя може да избере. В самия пакет
+\deb{menu} се използват програми на \textit{shell} и \textit{C++}. Използва се 
+свой собствен описателен език за конструиране на менютата.
+
+\begin{itemize}
+\item \hlink{Menu packages}{http://packages.debian.org/menu}
+\item \hlink{Debian Menu
+  Manual}{http://www.debian.org/doc/packaging-manuals/menu.html/}         
+\item \hlink{Debian Menu
+  Sub-policy}{http://www.debian.org/doc/packaging-manuals/menu-policy/}  
+\item \hlink{Предложение за нова Debian Menu
+  System}{http://phys251.phy.olemiss.edu/cgi-bin/viewcvs.cgi/}
+\item Ето и едно още по-ново предложение за Debian Menu System. Enrico
+  Zini
+  \hlink{предполага}{http://lists.debian.org/debian-devel-0304/msg00800.html},
+  че настоящата система за десктоп менюта се нуждае от редизайн и би
+  трябвало да се интегрира с вече съществуващи такива. Той предлага да
+  се премине към формата на \hlink{Desktop Menu
+    Specification}{http://www.freedesktop.org/standards/menu/draft/menu-spec/menu-spec.html}
+  for desktop entries, и по този начин Debian да продължи да
+  предоставя menu information за приложенията които нямат свои
+  собствена такава.
+\end{itemize}
+
+
+Описание - provides \man{update-menus}{1L} functions for some
+applications The intent of this package is to streamline the menu's
+(like the fvwm2 ones) in debian. For this purpose, menu provides an
+\man{update-menus}{1L} command, that will read all installed menu
+files (as provided by other packages in \textbf{/usr/lib/menu}), and
+run the frontents for various window-managers in
+\textbf{/etc/menu-methods} to create startup files for the window
+managers (or \man{pdmenu}{1}).  The user and system admin can easily
+override the menu files on a \textit{by-user} or \textit{by-system}
+bases.
+
+
+FIXME: да се опише по-детайлно{\ldots} Документацията, както винаги,
+може да се намери в \texttt{/usr/share/doc/menu/}
+
+
+Друга подобна меню система е \hlink{pdmenu}{http://www.kitenet.net/programs/pdmenu/},
+която е пакетирана и налична и в Debian архива като едноименния пакет \deb{pdmenu}. Въз
+основа на \man{pdmenu}{1} може да ползвате
+\hlink{\textbf{apteryx}}{http://www.internetlab.org/apteryx/}, който обединява \man{apt-get}{8} и
+\man{apt-cache}{8} и техните опции поднасяйки ги чрез \man{pdmenu}{1}.
+
+
+Подобен на \texttt{apteryx} инструмент извикващ \man{apt-get}{8} и \man{apt-cache}{8} е
+\hlink{\textbf{apt-iselect}}{http://www.rot13.org/\textasciitilde dpavlin/apt-iselect.html}. Той се
+основана на \hlink{http://www.engelschall.com/sw/iselect/}{http://www.engelschall.com/sw/iselect/} 
+(дебианския пакет е \deb{iselect}) и ако последния не е инсталиран при първото стартиране на
+\texttt{apt-iselect} ще бъде инсталиран автоматично.
+
+\section{Debian Usability Research}
+
+
+\hlink{Debian Usability Research}{http://deb-usability.alioth.debian.org/} е под-проект на
+проекта \hlink{Debian}{http://www.debian.org} занимаващ се с използваемостта на софтуера
+специфичен за операционните системи на Debian. Основните цели са:
+
+\begin{itemize}
+\item състоянието на package metadata: кое е добре, какво липсва и как може да бъде добавено
+\item техники за package searching и browsing, така щото да се превъзмогнат проблемите при 
+постоянното нарастване броя на пакетите
+\item как debian package subsets адрасиращи специфични нужди може да помогнат да се изгради
+дистрибуция която по-добре адресира потребностите на различните общности и как те по-лесно
+могат да бъдат създавани
+\item как да се обработват usability bug reports
+\end{itemize}
+
+
+Освен това се работи и по 
+\hlink{Debian Package Manager brainstorming session}{http://deb-usability.alioth.debian.org/pkgman-brainstorm.html}. 
+Целта е да се набира информация относно пакетните менажери и как те да бъдат използвани и
+подобрявани. Това проучване ще се използва като основа за по-нататъшни анализи и заключения относно
+дизайна на пакетните менажери в Debian.
+
+
+Търсене на информация за пакетите и файловете, които предоставят те,
+може да стане по много начини, включително и през
+\hlink{http://packages.debian.org}{http://packages.debian.org}. 
+Ето едно алтернативно предложение на Erich Schubert, който 
+\hlink{анонсира}{http://lists.debian.org/debian-devel-0303/msg01371.html}
+нова версия на неговия \hlink{Package
+  Browser}{http://debian.vitavonni.de/packagebrowser/}, който да
+помогне категоризирането на Debian пакетите. Това ще подобри
+браузването на пакетите през йерархично подредени категории вместо
+сортирани в секции. Package Browser се базира на data sets от пакета
+\deb{aptitude}. Сега тези усилия са прехвърлени към проекта
+\hlink{Debian Package Tags}{http://deb-usability.alioth.debian.org/debtags/}.
+
+
+На практика вече има и пакети като \deb{debtags} и \deb{synaptic-debtags} 
+
+
+
+

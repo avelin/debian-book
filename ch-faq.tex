@@ -1,0 +1,237 @@
+
+Въпроси, които се повтарят отново и отново или такива, които винаги
+сте искали да зададете, но не сте задали, за да не ви помислят за \textit{lamer} ;-)
+
+\begin{itemize}
+\item
+\textbf{В1: Какво все пак означава наименованието Debian (Дебиан)? }
+
+\textbf{О1:} Дебиан е проект, започнат през 1993-та година от Иан Мърдок.
+Името Дебиан идва от Деб + Иан (Деб идва от Дебора, съпругата на Иан Мърдок)
+
+\item
+\textbf{В2: Къде в България мога да си изтегля или закупя Debian, Knoppix и т.н. CD-та?}
+
+\textbf{О2}: Можете да изтеглите ISO-файлове от няколко сървъра в България:
+
+\begin{itemize}
+\item \hlink{ftp://ftp.bg.debian.org/debian-cd/}{ftp://ftp.bg.debian.org/debian-cd/}
+\item \hlink{http://mirrors.ludost.net/cd-images/}{http://mirrors.ludost.net/cd-images/}
+\item \hlink{ftp://ftp.uni-sofia.bg/debian-iso/}{ftp://ftp.uni-sofia.bg/debian-iso/}
+\item \hlink{ftp://ftp.uni-sofia.bg/cd-images/}{ftp://ftp.uni-sofia.bg/cd-images/}
+\item \hlink{http://d.linux-bg.org}{http://d.linux-bg.org}
+\end{itemize}
+
+Ако имате стари CD/DVD дискове, можете да ги upgrade-нете с \deb{jigdo}. Т.е. ще се изтеглят
+само новите файлове, старите ще се вземат от старите ви дискове.
+Дистрибуционни CD-та на Debian, книги, програми и т.н можете да си закупите от
+\hlink{CDforME}{http://www.cdforme.net/default.php?cPath=20\_24}.
+Книги, CD-та и други материали, могат също така да се закупят от
+каталога на \hlink{Amazon.com}{http://www.Amazon.com}, като съответно
+съществува по-приемлив \hlink{вариант за разплащане и доставка в
+  България}{http://shop.global.bg/helpbg\_n.asp} --- фирмата срещу
+съответен процент доставя стоката по ISBN номер.
+
+\item
+\textbf{В3: Необходимо ли е да си изтегля (download) всичките 5/7/9 Debian CD-та?}
+
+\textbf{О3:} Ако разполагате с връзка към Интернет, достатъчно е да имате само
+първото CD \textbf{binary-1\_NONUS.iso}.  Оттам може да се инсталира минималната
+система, достатъчна да довършите мрежова инсталацията (да свалите всичко останало от Интернет).
+
+\item
+\textbf{В4: Кои сървъри са най-подходящи за включване в \textbf{/etc/apt/sources.list} за
+България?}
+
+\textbf{О4:} Няколко са:
+
+\begin{itemize}
+\item \hlink{ftp.bg.debian.org}{ftp.bg.debian.org} 
+\item \hlink{debian.ludost.net}{debian.ludost.net}
+\item \hlink{ftp.uni-sofia.bg}{ftp.uni-sofia.bg}
+\end{itemize}
+
+Или в \textbf{/etc/apt/sources.list} може да имате:
+\begin{verbatim}
+deb http://ftp.bg.debian.org/debian stable main contrib non-free
+deb http://ftp.bg.debian.org/debian-non-US stable/non-US main contrib non-free
+
+deb-src http://ftp.bg.debian.org/debian stable main contrib non-free
+deb-src http://ftp.bg.debian.org/debian-non-US stable/non-US main contrib non-free
+\end{verbatim}
+
+
+Препратка: \hlink{http://www.debian.org/mirrors/mirrors\_full\#BG}{http://www.debian.org/mirrors/mirrors\_full\#BG}
+
+\item
+\textbf{B5: Не намирам някои пакети в официалния архив, а преди
+време ги имаше. Къде да ги търся?}
+
+\textbf{O5:} Snapshots на официалния Debian архив можете да претърсвате тук:
+\hlink{http://snapshot.debian.net}{http://snapshot.debian.net}. На сайта е описано как се
+правят тези snapshots, как да се претърсват и ползват с \man{apt-get}{8} от \man{sources.list}{5}.
+
+\item
+\textbf{В6: Има ли пощенски списъци (mailing lists) за Debian в България?}
+
+\textbf{О6:} Да, има такива 
+\hlink{http://lists.zadnik.org/cgi-bin/mailman/listinfo}{http://lists.zadnik.org/cgi-bin/mailman/listinfo}.
+
+\item
+\textbf{В7: Има ли свързани с Debian български софтуерни проекти?}
+
+\textbf{О7:} Погледнете проекта
+\hlink{bgdebian}{http://sf.net/projects/bgdebian/}.
+
+\item
+\textbf{В8: Защо при \textit{apt-get update} получавам грешка от вида: }
+\begin{verbatim}
+Reading Package Lists... Error!
+E: Dynamic MMap ran out of room
+\end{verbatim}
+\textbf{О8:} Списъка с Debian пакети за инсталиране е твърде голям
+(дълъг лист от сървъри в \texttt{/etc/apt/sources.list}) и \deb{apt}
+няма достатъчно памет за да го обработи. Трябва да разрешите на
+\deb{apt} да ползва повече памет.  За целта коригирайте стойността на
+\texttt{Cache-Limit} в \texttt{/etc/apt/apt.conf}:
+
+\begin{verbatim}
+APT::Cache-Limit 25165824
+\end{verbatim}
+
+\item
+\textbf{В9: Как да намирам и инсталирам при поискване съответните пакети
+съдържащи \texttt{development libraries and header files} необходими за
+компилацията и свързването на приложения от \texttt{upstream sources}?}
+
+\textbf{О9:} Можете да wrap-нете процеса по търсене на съответните файлове в
+системата, компилирането на сорса и свързването на обектните файлове. При
+липсващи файлове, ще бъдете попитани за разрешение за инсталирането на
+съответните пакети, ако са достъпни от посочените от вас източници. Даден файл
+може да се среща в няколко пакета, при което ще избирате. Запознайте се с \man{auto-apt}{1}:
+\begin{verbatim}
+# apt-get install auto-apt
+# auto-apt update updatedb update-local
+# cd arbitrary-src-dir/
+# auto-apt run ./configure --your-options-here
+# auto-apt run make
+\end{verbatim}
+
+\item
+\textbf{В10: При инсталиране или премахване на \textit{packages}, получавам съобщение от вида: }
+\begin{verbatim}
+apt-get remove xscreensaver
+.. .. .. .. .. .. .. .. .. ..
+dpkg: error processing xscreensaver (--remove):
+ subprocess post-removal script returned error exit status 127
+Errors were encountered while processing:
+ xscreensaver
+\end{verbatim}
+
+
+\textbf{О10:} Както ни се съобщава, нещата няма да станат автоматично
+в команди от вида на:
+\begin{verbatim}
+# apt-get install -f
+\end{verbatim}
+
+Също така не бихме постигнали и успех с \texttt{force} опции. Трябва
+да редактираме скриптовете за съответния пакет в директория
+\texttt{/var/lib/dpkg/info/}, така че след като бъдат извикани от
+\man{dpkg}{8}, те да приключат своята работа успешно, а не да връщат
+съобщение за грешка. Това може да бъде по тяхна вина или по вина на
+програма, която пък те извикват.  Скриптовете имат вида:
+\texttt{/var/lib/dpkg/info/\textit{пакет}.\textit{скрипт}}, където
+\textbf{скрипт} е \texttt{preinst}, \texttt{postinst}, \texttt{prerm}
+или \texttt{postrm}. В този случай не завършва изпълнението си поради
+някаква причина и трябва да бъде редактиран, дори и времено
+\textit{post removal} скрипта
+\texttt{/var/lib/dpkg/info/xscreensaver.postrm} за пакета
+\deb{xscreensaver}.  В книгата е даден пример за самостоятелно (т.е.
+неавтоматично) справяне с подобни проблеми, като там е взет за
+денонстрация пакета \deb{scrollkeeper}.
+
+\item
+\textbf{В11: Има ли начини за автоматично разпознаване и конфигуриране на хардуера?}
+
+\textbf{О11:} За целта има програми като \deb{discover} и \deb{kudzu},
+който се ползват и в други дистрибуции. Knoppix LiveCD, например,
+ползва собствени конфигуриращи хардуера скриптове заедно с модула
+\textit{cloop}, който вече е в официалния Debian архив благодарение на
+Klaus Knopper като пакети \deb{cloop-src} и \deb{cloop-utils}. Имайте
+предвид, че ако на вашата система някой драйвър не е компилиран като
+модул за ядрото или не е закомпилиран в самото ядро, то ще трябва да
+направите поне едно от двете, за да може да използвате съответния
+хардуер.
+
+\item
+\textbf{В12: А някакви журнални файлови системи да се ползват в Debian? }
+
+\textbf{О12:} Да, като навсякъде другаде, зависи от ядрото което, ползвате, и
+няколко user-space utils. Може би е добре да започнете оттук:
+\hlink{http://people.debian.org/\textasciitilde blade/}{http://people.debian.org/\textasciitilde blade/}
+
+\item
+\textbf{В13: Защо е необходим този Perl horror с debconf,
+    debhelper, kernel-package и т.н.}
+
+\textbf{О13:} Всичко това е необходимо за да се унифицира и изгради
+интелигентен процес по конфигурирането, компилирането и инсталирането
+на binary и source packages, така че всичко да е под пълен контрол.
+\hlink{Perl}{http://www.perl.com} често е наричан "`щвейцарската
+резачка на Unix"' и е съвсем в реда на нещата да е застъпено
+по-широкото му използване за административни цели в тези системи.
+Гореспоменатите пакети точно това правят и това е една от много
+силните страни на Debian.
+
+\item
+\textbf{B14: Мога ли и аз да upload-вам пакети в Debian?}
+
+\textbf{O14:} Може би. За официалния Debian архив се обърнете към
+\hlink{http://nm.debian.org}{http://nm.debian.org}. Иначе неофициален
+архив всеки може да си направи.
+
+\item
+\textbf{B15: Как мога да помогна на проекта Debian?}
+
+\textbf{O15:} Обърнете към
+\hlink{http://www.debian.org/devel/join/}{http://www.debian.org/devel/join/}.
+
+\item
+\textbf{B16: Има ли българи участници в проекта Debian?}
+
+\textbf{O16:} Има. Обърнете се към
+\hlink{http://db.debian.org}{http://db.debian.org} и
+\hlink{http://www.debian.gr.jp/\textasciitilde kitame/maint.cgi}{http://www.debian.gr.jp/\textasciitilde kitame/maint.cgi}.
+
+\item
+\textbf{В17: Аааa Debian може ли {\ldots}?}
+
+\textbf{О17:} Цитираме Christoph Lameter:
+\textbf{Do not ask me: Does Debian support this and that. Debian supports everything.}
+
+\end{itemize}
+
+
+Други страници с отговори на въпроси:
+\begin{itemize}
+\item \hlink{Официалната Debian страница с
+    отговори}{http://www.debian.org/doc/FAQ/}
+\item \hlink{Често задавани въпроси във freenode \texttt{\#debian} IRC
+    канал}{http://www.linuks.mine.nu/debian-faq/}
+\item \hlink{Въпроси/отговори за Debian
+    CD-тата}{http://www.debian.org/CD/faq/}
+\item \hlink{Работа с Java в
+    Debian}{http://www.debian.org/doc/manuals/debian-java-faq/}
+\item \hlink{http://www.debian-administration.org}{http://www.debian-administration.org}
+\item \hlink{http://www.debianplanet.org}{http://www.debianplanet.org}
+\item \hlink{http://planet.debian.org}{http://planet.debian.org}
+\item \hlink{http://www.maximumdebian.org}{http://www.maximumdebian.org}
+\item \hlink{http://www.debian-enterprise.org}{http://www.debian-enterprise.org}
+\item \hlink{KDE3 FAQ}{http://davidpashley.com/debian-kde/faq.html}
+\item \hlink{Руска страница с отговори на въпроси, свързани предимно с
+    кирилизацията на
+    Debian}{http://linux.perm.ru/doc/distro/debian/3.0/}
+\item \hlink{Управление на \textit{rpm} пакети с
+    \deb{apt}}{http://apt4rpm.sourceforge.net/faq.html}
+\end{itemize}

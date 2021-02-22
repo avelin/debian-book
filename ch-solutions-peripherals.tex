@@ -1,0 +1,75 @@
+\chapter{Периферни устройства}
+
+\section{Принтери}
+
+FIXME: Има да се пълни тук.
+
+\section{Скенери}
+\subsection{Подкарване на скенер Acer S2W 3300U}
+
+
+Понеже скенерът използва USB-порт, трябва при компилиране към ядрото да се добави
+\texttt{USB support}, а също така \texttt{USB-scanner support} като модул. След тези
+процедури трябва да бъде инсталиран \hlink{SANE}{http://www.mostang.com/sane/} -
+"Scanner Access Now Easy".
+
+\begin{verbatim}
+# apt-get install sane sane-utils
+\end{verbatim}
+
+
+Препоръчително е да се инсталира и \deb{libsane-extras}, където е включен и
+въпросният скенер:
+
+\begin{verbatim}
+# apt-get install libsane-extras
+\end{verbatim}
+
+
+След това в \texttt{/etc/sane.d/snapscan.conf} трябва да редактирате реда, започващ с
+\texttt{firmware} и да опишете пътя до съответния \texttt{bin} файл. На
+\hlink{snapscan.sourceforge.net}{snapscan.sourceforge.net} има таблица, в която е описано кой \texttt{bin}
+файл кога да се използва. За да разберете при Вас кой е, изпълнете последователно
+като root следните команди:
+
+\begin{verbatim}
+# modprobe scanner
+
+# sane-find-scanner
+\end{verbatim}
+
+
+Би трябвало да се получи нещо подобно:
+
+\begin{verbatim}
+found USB scanner (vendor=0x04a5, product=0x20de) at /dev/usb/scanner0
+\end{verbatim}
+
+
+\texttt{Bin} файловете можете да намерите на диска към скенера или от
+\hlink{тук}{http://majesty.host.sk/Programs/Acer-bins/index.html}. Също така трябва
+да се укаже и на кой порт е закачен скенерът. Както се вижда в случая -
+\texttt{/dev/usb/scanner0} и съответно се описва.
+
+
+С това се приключва с \texttt{/etc/sane.d/snapscan.conf}. Сега трябва да се
+инсталира и frontend към SANE. \deb{xsane} е подходящо решение. Ако не Ви харесва,
+разгледайте и kooka, който е част от KDE.
+
+\begin{verbatim}
+apt-get install xsane xsane-common
+\end{verbatim}
+
+
+Вече можете да използвате пълноценно Вашия скенер. Може да добавите в
+\texttt{/etc/modules.conf} следния ред, взет след изпълнението на командата
+\texttt{sane-find-sannner}:
+
+\begin{verbatim}
+options scanner vendor=0x04a5 product=0x20de
+\end{verbatim}
+
+
+Ето и един адрес, на който е описано достатъчно добре как се подкарва този скенер и
+има доста интересни и полезни препратки
+\hlink{http://www.acronymchile.com/scanner.html}{http://www.acronymchile.com/scanner.html}

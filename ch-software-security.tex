@@ -1,0 +1,316 @@
+\chapter{Сигурност и надеждност}
+
+\section{Документи и пакети}
+
+Обърнете внимание на \hlink{http://security.debian.org}{http://security.debian.org}.
+
+\begin{itemize}
+ \item \hlink{Security Team FAQ}{http://www.debian.org/security/faq} 
+ \item \hlink{Securing Debian
+     Manual}{http://www.debian.org/doc/user-manuals\#securing}
+\end{itemize}
+
+
+Имайте предвид, че при откриване на проблем в сигурността на даден
+софтуер Security Team винаги първо ще се погрижи за настоящия Stable
+Release, ако той е засегнат в дадения случай, като не винаги е
+задължително да предпочетат upgrade до по-новата upstream версия на
+софтуера.  Много вероятно е старата уязвима версия да бъде закърпена,
+ако се счете, че промените, адресиращи и поправящи съответната
+уязвимост, е по-добре да бъдат backported и приложени към старата и
+уязвима версия.  Вижте Security Team FAQ за повече обяснения. След
+това се гледа дали е засегнат и предишният Stable Release и настоящите
+Testing и Unstable.  В повечето случаи се изкарват почти веднага
+поправки за всички засегнати издания (или Suites на Debian).
+
+\section{Пакети за анализ и оценка на сигурността}
+
+Предвидени са и специални пакети за анализ и оценка на сигурността,
+някои от които са:
+         
+\begin{itemize}
+\item \deb{harden}
+\item \deb{harden-tools}
+\end{itemize}
+
+\section{Автоматизиран контрол върху правата на изпълнимите файлове}
+
+Подобно на всяка уважаваща себе си дистрибуция Debian предлага автоматизирана възможност за управление правата на изпълнимите файлове.
+
+\begin{verbatim}
+# apt-get install suidmanager
+\end{verbatim}
+
+
+Принципът на управление е лесен. Преди всичко, трябва да подложите на щателен анализ системата си - кои програми имат suid-бит и се изпълняват с администраторски права, кой какво има право да изпълнява. Например, да допуснем, че има програми, които искат suid, за да се ползват нормално, но от друга страна не искате всеки да може  да ги изпълнява, а само членовете на групата users. Тогава на помощ идва командата \texttt{dpkg-statoverride} от пакета \deb{suidmanager}. Решаваме да променим правата върху файла \texttt{/usr/bin/cdrecord} така, че да се изпълнява само от членовете на групата users. Ето какво ни казва и помощната информация за начина на използване на тази команда:
+
+\begin{verbatim}
+# dpkg-statoverride [options] --add <owner> <group> <mode> <file>
+\end{verbatim}
+
+
+Значи трябва да изпълним само:
+
+\begin{verbatim}
+# dpkg-statoverride --update --add root users 4754 /usr/bin/cdrecord
+\end{verbatim}
+
+
+Така казахме на \deb{dpkg} да промени групата на файла и да разреши само на членовете на тази група да го изпълняват независимо от  задължителния suid-бит, който е необходим на cdrecord, за да се стартира от потребители без администраторски привилегии. Сега можем да бъдем спокойни, че и след поредния ъпгрейд на пакета, този изпълним файл ще получава именно тези права от \deb{dpkg}. Всъщност, тази информация се записва във файла \texttt{/var/lib/dpkg/statoverride} и има съвсем разбираем вид, дори може да бъде редактиран ръчно.
+
+
+Бърз преглед на опциите на командата \texttt{dpkg-statoverride}:
+
+\begin{verbatim}
+debian-nikola:~# dpkg-statoverride --help
+Debian dpkg-statoverride 1.10.18.
+Copyright (C) 2000 Wichert Akkerman.
+
+This is free software; see the GNU General Public Licence version 2 or later
+for copying conditions.  There is NO warranty.
+
+Usage:
+
+  dpkg-statoverride [options] --add <owner> <group> <mode> <file>
+  dpkg-statoverride [options] --remove <file>
+  dpkg-statoverride [options] --list [<glob-pattern>]
+
+  Options:
+  --update                 immediately update file permissions
+  --force                  force an action even if a sanity check fails
+  --quiet                  quiet operation, minimal output
+  --help                   print this help screen and exit
+  --admindir <directory>   set the directory with the statoverride file
+\end{verbatim}
+
+Тази програма може да ви послужи и не само за изпълнимите файлове, а и за всеки файл или директория, чиито права искате да бъдат специфични.
+
+\section{Подписване на пакети - Debian keyring}
+
+
+GPG/PGP ключовете на debian maintainers можете да получите по следните начини:
+
+\begin{itemize}
+
+\item \hlink{keyring.debian.org}{http://keyring.debian.org}, на този хост има и
+\texttt{rsync} сървър, module \texttt{keyring} 
+\item \hlink{http://ftp.debian.org/debian/doc/debian-keyring.tar.gz}{http://ftp.debian.org/debian/doc/debian-keyring.tar.gz}
+\item пакета \deb{debian-keyring}
+\item finger \texttt{maintainer}@db.debian.org
+\end{itemize}
+
+\subsection{Debian source packages - подписване на сорса}
+Ако свалите някой debian source package чрез \texttt{apt-get source
+  \textit{пакет}}, то ще забележите, че в един от файловете,
+\texttt{.dsc}, се намира и подписът на съответния debian maintainer.
+Например:
+
+\begin{verbatim}
+-----BEGIN PGP SIGNED MESSAGE-----
+
+Format: 1.0
+Source: sysvinit
+Version: 2.84-3
+Binary: sysvinit
+Maintainer: Miquel van Smoorenburg <miquels@cistron.nl>
+Architecture: any
+Standards-Version: 3.5.2.0
+Files: 
+ 57f11fc13458d8a59894df099449ddbe 91130 sysvinit_2.84.orig.tar.gz
+ 4b90729bfad0c576e8e46250efb65e4d 42387 sysvinit_2.84-3.diff.gz
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.0.6 (GNU/Linux)
+Comment: For info see http://www.gnupg.org
+
+iQB1AwUBPPNh6FiLscT2F1RZAQGw7QMAk0nUPS/Hsx6V5XD7Cjk54R9C8jvWPRkB
+yxs7/GOpnUWPW9ND517mtnW7E0ZAOcZb0oj50wW5PS0ylRIuQui1IaNv0comzoRv
+TACbvUv99j9eAcRTs+qYjnuX8MKTIVO7
+=uKkZ
+-----END PGP SIGNATURE-----
+\end{verbatim}
+
+Можете да проверите сигнатурата чрез \man{dscverify}{1}, което се намира в пакета
+\deb{devscripts}.
+
+\subsection{Debian binary packages ({deb's}) - per-deb подписване}
+
+\hlink{http://dpkg-sig.turmzimmer.net}{http://dpkg-sig.turmzimmer.net} - индивидуално подписване.
+
+\subsection{Debian \texttt{Release.gpg} files - per-Archive подписване}
+
+\hlink{http://monk.debian.net/apt-secure/}{http://monk.debian.net/apt-secure/} - групово подписване.
+
+FIXME: да се обясни повече за Debian keyring, като \hlink{подписване
+  на пакетите и
+  проверка}{http://www.debian.org/doc/manuals/securing-debian-howto/ch7.en.html\#s-deb-pack-sign}
+и ползването от maintainer's на \deb{debsigs}.
+FIXME: някой ползвал ли е \hlink{http://people.debian.org/\textasciitilde ajt/apt-check-sigs}{http://people.debian.org/\textasciitilde ajt/apt-check-sigs}?
+
+\section{Прилагане на security updates за множество машини}
+    
+\smallskip
+\textbf{\textit{Пример 11:} Настройка на apt-proxy}
+
+
+Ето например как можете да процедирате, ако имате желание да
+автоматизирате прилагането на security updates към многото ваши Stable
+Debian машини. Разбира се, ако предпочитате, това можете да правите и
+ръчно.
+
+
+\deb{apt-proxy} може да кешира всякакви пакети, но тук ще дадем пример
+с еднократното изтегляне на security updates за множество машини. Нека
+имате множество Debian машини, които имат в \texttt{/etc/cron.daily/}
+скрипт, който представлява:
+
+\begin{verbatim}
+#!/bin/bash
+apt-get update && apt-get -y upgrade
+\end{verbatim}
+
+
+В \texttt{/etc/apt/sources.list} трябва да имате следния ред:
+
+\begin{verbatim}
+deb http://security.debian.org/ stable/updates main
+\end{verbatim}
+
+
+Представете си, ако излезе update на glibc, всичките машини ще теглят
+доста MB-ти от \hlink{security.debian.org}{security.debian.org}.
+
+
+За да не се хаби излишно трафик, можете да ползвате пакета
+\deb{apt-proxy}. Всичко, което е нужно, е да го инсталирате на един от
+сървърите си:
+
+\begin{verbatim}
+# apt-get install apt-proxy
+\end{verbatim}
+
+
+След което редактирайте \texttt{/etc/apt-proxy/apt-proxy.conf}. Ето
+един:
+
+\begin{verbatim}
+APT_PROXY_CACHE=/var/cache/apt-proxy
+
+add_backend /main/                                      \
+        $APT_PROXY_CACHE/debian/                        \
+        ftp.us.debian.org::debian/                      \
+        ftp.de.debian.org::debian/                      \
+        ftp2.de.debian.org::debian/                     \
+        ftp.uk.debian.org::debian/
+
+add_backend /non-US/                                    \
+        $APT_PROXY_CACHE/non-US/                        \
+        ftp.de.debian.org::debian-non-US/               \
+        ftp2.de.debian.org::debian-non-US/              \
+        ftp.uk.debian.org::debian/non-US/
+
+add_backend /security/                                  \
+        $APT_PROXY_CACHE/security/                      \
+        security.debian.org::debian-security/           \
+        non-us.debian.org::debian-security/
+\end{verbatim}
+
+
+Естествено е да сложите най-близкия до вас Mirror на Debian. По
+подразбиране портът, на който слуша \deb{apt-proxy}, е 9999. Можете да
+го промените в \texttt{/etc/inetd.conf}.
+
+
+За конфигурация на клиентите, които ще ползват apt-proxy-то, е нужно
+да редактирате \texttt{/etc/apt/sources.list}, као коментирате всички
+редове и да добавите следните:
+
+\begin{verbatim}
+deb http://apt-proxy-сървър:9999/non-US stable/non-US main contrib non-free
+deb http://apt-proxy-сървър:9999/security stable/updates main contrib non-free
+deb http://apt-proxy-сървър:9999/main stable main non-free contrib
+\end{verbatim}
+
+
+След това на клиентския компютър е достатъчно да изпълните:
+
+\begin{verbatim}
+# apt-get update  
+\end{verbatim}
+
+
+При тази конфигурация, при всяко ползване на \texttt{apt-get} за
+инсталация на даден пакет от Интернет самият пакет се пази в кеша на
+apt-proxy-то и при повторна заявка от друг сървър пакетът не се тегли
+наново, а се взема от локалната директория. Наистина спестява доста
+трафик.
+
+\section{Контрол върху правата на файловете и директориите с помощта на \deb{acl}}
+
+
+От известно време насам всички разпространени файлови системи в Линукс поддържат разширените свойства за контрол над правата, известни като \texttt{ACLs} (Access Control Lists) или "Списъци за контрол на достъпа". Въпросните разширения са базирани на стандарта POSIX 1003.1e. Накратко ще обясним какъв е техният смисъл. Както всеки от вас знае, т. нар. Unix permissions или просто стандартните права в една Unix/Linux-система са организирани съвсем просто: те се дефинират по собственик, група и останали потребители. В голяма част от случаите тази организация е достатъчна. Когато имаме усложнени нужди обаче, тя се оказва неудобна. Представете си, че имате директория, която може да се чете само от собственика и на която сме дали \texttt{chmod 700}. Искате да разрешите на друг да влиза в нея. Тогава правите нова група, в която включвате двамата потребители и променяте правата на директорията така, че освен от собственика да може да се чете и от групата, което става с командата \texttt{chmod 750}. Чудесно. А ако искате да направите същото и с други директории и други потребители? Трябва да създавате нови групи и така докато стигнете до момент, в който вече просто изпускате нишката. Ето тук на помощ идват "Списъците за контрол на достъпа". С тях можем лесно да делегираме разнообразни права на всеки върху всичко, без да пипаме нито потребителите, нито групите, нито да променяме стандартните Unix permissions на директорията/файла, т.е. без да си играем с команди като \texttt{chmod} или \texttt{chown}. Важно е да отбележим, че използването на ACLs не пречи с нищо на прилагането на стандартните команди за управление на Unix-правата. Двата метода съжителстват съвсем мирно.
+
+
+
+Като за начало трябва изпълним командата:
+
+\begin{verbatim}
+apt-get install acl
+\end{verbatim}
+
+
+Този пакет съдържа двата основни инструмента за управление на ACLs, които ще се превърнат в нашата дясна ръка. 
+
+
+Следва да редактираме файла \texttt{/etc/fstab}, за да кажем на ядрото да включи поддръжката на ACLs за съответните дискови дялове. Това става лесно, с добавяне на опция \texttt{acl} и премонтиране на съответния дял. Тук е мястото да отбележим, че Линукс поддържа \texttt{acl} за Ext2/Ext3 едва в последните версии на ядрата от серията 2.4 и в 2.6. Ако ползвате файловата система XFS, не е необходимо да пипате нищо в fstab, защото тази файлова система идва по подразбиране с вградена поддръжка на ACLs. Ако искате поддръжка на ACLs в Линукс, препоръчително е да се спрете на XFS или Ext2/Ext3 със съответната версия на ядрото, която поддържа опцията \texttt{acl} (тя е нужна само за Ext2/Ext3). 
+
+
+Пример за \texttt{fstab} за Ext2/Ext3.
+
+\begin{verbatim}
+/dev/hda2     /home     ext3     rw,usrquota,nosuid,nodev,noatime,acl     0     0
+\end{verbatim}
+
+
+С командата \texttt{getfacl} извличаме информация за acl-статуса на дадения файл или директория.
+
+\begin{verbatim}
+# getfacl shots/
+# file: shots
+# owner: nikola
+# group: nikola
+user::rwx
+group::r-x
+other::r-x
+\end{verbatim}
+
+
+Така изглеждат правата на всяка директория по подразбиране. В момента тази директория е собственост на nikola, но всеки може да влиза и да чете в нея.
+
+\begin{verbatim}
+chmod 700 shots/
+ls -l shots
+drwx------    5 nikola   nikola        111 2004-06-13 09:57 shots/
+\end{verbatim}
+
+
+Сега вече никой друг не може да влиза в тази директория освен нейния собственик. Това е чудесно, но да речем, че искаме да публикуваме директорията в уеб. Тогава трябва да разрешим на уебсървъра да я чете. Това ще стане с командата \texttt{setfacl}. В Debian потребителят на уебсървъра е www-data.
+
+\begin{verbatim}
+setfacl -m u:www-data:r-x shots/
+getfacl shots/
+# file: shots
+# owner: nikola
+# group: nikola
+user::rwx
+user:www-data:r-x
+group::---
+group::---
+mask::r-x
+other::---
+\end{verbatim}
+
+
+В този случай ние разрешихме на потребителя (флагът за потребител е \texttt{u}, а за група - \texttt{g}) www-data да чете и да изпълнява (флаговете \texttt{r} и \texttt{x} са познати от командата \texttt{chmod}) в тази директория.
+
+Тук решихме една проста и банална задача, с което искахме да обясним простичко и накратко какъв е смисълът от използването на ACLs. Всички опции и възможности на командата \texttt{setfacl} са описани подробно в съответната man-страница.

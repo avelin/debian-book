@@ -1,0 +1,266 @@
+\section{Справяне с някои "`упорити"' програми}
+
+\subsection{GNOME}
+
+\subsubsection{GTK}
+
+
+Подразбиращите се шрифтове за GTK базираните програми (това включва
+всички програми на GNOME) могат да се променят чрез редактиране на
+файла \texttt{/etc/gtk/gtkrc.bg}.
+
+\subsubsection{AbiWord}
+
+
+Следващите инструкции са преработка на \hlink{едно
+  писмо}{http://linux-bulgaria.org/lug-bg-list/archive/2003/Jan/0260.html}
+от \hlink{Георги Данчев}{http://danchev.fccf.net/}.  Използват се
+TrueType шрифтове, например тези на Майкрософт, които могат да се
+инсталират чрез пакета \deb{msttcorefonts}.  В частта за шрифтове има
+повече информация за TrueType шрифтовете.
+
+\begin{enumerate}
+
+\item Създайте директория \texttt{/usr/share/AbiSuite/fonts/CP1251}.
+  Всички следващи команди предполагат, че сте в тази директория.
+
+\item Създайте препратки към \texttt{*.ttf} файловете, които искате да
+  ползвате, например с командата (като последният аргумент е точка):
+
+\begin{verbatim}
+# ln -s /usr/lib/X11/fonts/TrueType/*.ttf .
+\end{verbatim}
+
+\item Изпълнете командите (като пакетът \deb{ttmkfdir} трябва да е
+  инсталиран):
+
+\begin{verbatim}
+# ttmkfdir | grep microsoft-cp1251$ > fonts.list
+# (wc -l fonts.list; cat fonts.list) > fonts.scale
+# mkfontdir
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+\item За да проверите дали всичко е наред, изпълнете командата:
+
+\begin{verbatim}
+# ttftool -e print
+\end{verbatim}
+
+  
+  В изхода на командата трябва да присъства кодирането CP1251.
+
+\item Изпълнявате командата:
+
+\begin{verbatim}
+# ttfadmin.sh /usr/share/AbiSuite/fonts/CP1251 CP1251
+\end{verbatim}
+
+  
+  В директорията с CP1251 шрифтове на AbiWord ще се появят файлове с
+  разширения \texttt{.t42}, \texttt{.afm} и \texttt{.u2g}.
+
+\item \textit{(Използвайте това закърпване на положението само ако
+    имате проблеми.  В оригиналното писмо се настоява за тази промяна,
+    но при мен всичко върви добре и с \texttt{LANG=bg\_BG}.)} Когато
+  се стартира AbiWord, трябва в променливата \textit{LANG} да се
+  съдържа стойността \texttt{bg\_BG.CP1251}.  Забележете, че при
+  нормално кирилизирана система тази стойност обикновено е
+  \texttt{bg\_BG}.  По принцип стойността \texttt{bg\_BG.CP1251} е
+  по-правилна, така че е оправдано променянето на глобалната стойност
+  на \texttt{bg\_BG.CP1251}.  И така, има два варианта:
+
+  \begin{itemize}
+
+  \item \textit{Промяна на глобалната стойност.} Редактирайте файла
+    \texttt{/etc/environment} и променете \texttt{LANG=bg\_BG} на
+    \texttt{LANG=bg\_BG.CP1251}.  Вариант на този подход е да се
+    добави в \texttt{\textasciitilde /.bash\_profile} реда
+
+\begin{verbatim}
+export LANG=bg_BG.CP1251
+\end{verbatim}
+
+  \item \textit{Създаване на "`опаковка"'.}  Създайте файл
+    \texttt{/usr/local/bin/abi} със следното съдържание:
+
+\begin{verbatim}
+#!/bin/sh
+LANG=bg_BG.CP1251 exec abiword
+\end{verbatim}
+
+    
+    Друг вариант е в \texttt{\textasciitilde /.bash\_profile} да
+    добавите
+
+\begin{verbatim}
+alias abi='LANG=bg_BG.CP1251 abiword'
+\end{verbatim}
+
+    
+    Недостатъкът на всички тези подходи е, че тогава редакторът трябва
+    да се стартира от команден ред или да се направи нещо като
+    Shortcut.
+
+  \end{itemize}
+
+\item Ако изцяло сте поверили X шрифтовете на \deb{xfs} сървър, както
+  е препоръчано по-горе, и ви се появява досадно съобщение за грешка
+  при добавяне на Abiword шрифтовете към шрифтовете на X сървъра,
+  изключете Modify Unix Font Path от частта Preferences Schemes от
+  диалога Preferences, достъпен от менюто Tools.
+
+\end{enumerate}
+
+\subsubsection{GDM}
+
+
+Във файла \texttt{/etc/init.d/gdm} в началото се добавят следните
+команди:
+
+\begin{verbatim}
+LANG=bg_BG
+export LANG
+\end{verbatim}
+
+
+Във файла \texttt{/etc/locale.alias} се добавя реда
+
+\begin{verbatim}
+bulgarian       bg_BG.CP1251
+\end{verbatim}
+
+
+Следните параметри от файла \texttt{/etc/X11/gdm/gdm.conf} трябва да
+се променят:
+
+\begin{verbatim}
+DefaultLocale=bg_BG
+SystemMenu=true
+Use24Clock=true
+\end{verbatim}
+
+\subsection{KDE}
+
+
+С KDE и въобще приложенията разчитащи на библиотеката Qt (защото има и доста такива които се
+разработват и извън проекта \hlink{KDE}{http://www.kde.org}) няма да имате никакви проблеми.
+Но все пак ето някои бележки, които може да са непълни. Ако имате някакви
+предложения, казвайте ги в 
+\hlink{http://lists.zadnik.org/cgi-bin/mailman/listinfo}{http://lists.zadnik.org/cgi-bin/mailman/listinfo}.
+
+
+KDE изисква следните настройки: (\hlink{май има и още
+  неща}{http://www.linux-bg.org/cgi-bin/y/index.pl?page=article\&id=advices\&key=343148460}):
+
+\begin{itemize}
+
+\item Kontrol panel --- Personalization --- Country \& language ---
+  Charset се установява на \texttt{windows-1251}.
+
+\item В Kontrol panel --- Look \& feel --- Fonts кодирането на всички
+  шрифтове се прави \texttt{windows-1251}.
+
+\end{itemize}
+
+
+Вместо \texttt{windows-1251}, може да използвате UTF-8, ако сте компилирали и тези локали,
+и имате инсталирани Unicode шрифтове, т.е. ако се налага може да преконфигурирате изпълнявайки:
+
+\begin{verbatim}
+# dpkg-reconfigure locales
+\end{verbatim}
+
+
+Ще се появи меню (от \deb{debconf}) и ще може да посочите за bg\_BG и CP1251, UTF-8 и т.н.
+Реално това което става е, че се извиква скрипта \texttt{/usr/sbin/locale-gen} чийто конфигурационен файл е
+\texttt{/etc/locale.gen}. От така компилираните локали ще се възползват всички програми
+разбиращи от тях, т.е. не само тези от KDE или разчитащи на Qt.
+
+
+(Display Manager-ите \deb{kdm} и \deb{wdm} също
+\hlink{изискват}{http://linux-bulgaria.org/lug-bg-list/archive/2002/Aug/0211.html}
+някои допълнителни действия.)
+
+\subsection{Mozilla}
+
+
+Мозила използва FreeType2 библиотеката, и като следствие, не се
+съобразява с файла \texttt{/etc/X11/XftConfig}.  За да използвате тази
+библиотека, трябва да инсталирате пакета \deb{libfreetype6}.  При
+инсталирането на Мозила се пита дали да се използва библиотеката:
+отговорете, че искате.  В Sarge (бъдещата още неиздадената версия след
+Woody) не се задава такъв въпрос, но допълнително трябва да
+инсталирате пакета \deb{mozilla-xft}.  Във файла
+\texttt{/etc/mozilla/prefs.js} могат допълнително да се настройва
+употребата на FreeType2, като трябва там да добавите директорията
+\texttt{/usr/lib/X11/fonts/TrueType}.  Допълнително може да зададете
+чрез настройката \texttt{font.antialias.min} какъв да е най-малкият
+размер, при който знаците да се изглаждат.
+
+\subsection{Midnight Commander}
+
+
+Стартирате \textbf{mc}, от менюто избирате \textbf{Options}, след което \textbf{Display Bits}
+и включвате \textit{Full 8 bit input} и \textit{Full 8 bit output}.
+
+\subsection{teTex}
+
+
+Българизирането на \textbf{teTeX} е описано в главата \textbf{Работа с \LaTeX~}\ref{sec:work-with-latex}
+
+\section{\textit{tasksel}: Бързо българизиране на Debian}
+
+
+Истината е, че не е нужно да се задълбочавате в подробности, за да
+може бързо да си българизирате вашия Дебиан.  Достатъчно е да
+изпълните командата
+
+\begin{verbatim}
+# tasksel
+\end{verbatim}
+
+която показва кратък списък от групи, съдържащи пакети.  (Това е
+същата програма, която се изпълнява съвсем в края на инсталирането на
+Дебиан 3.0.)  Интересни са групите "`desktop environment"' и
+"`Cyrillic environment"'.  На теория инсталирането на тези групи
+трябва наведнъж да направи всичко, но действителността, както
+обикновено, не се оказва толкова розова.  По време на конфигурирането
+различни пакети ще ви задават въпроси.  Имената на някои от тези
+пакети са включени в имена на секции от тази статия.  Това е нарочно
+направено за справка по време на инсталирането.  Ако използвате
+\deb{language-env}, дейността по конфигурирането се упростява.
+
+\subsection{\textit{language-env}: Автоматично конфигуриране на програми}
+
+
+Може да се инсталира и пакета \deb{language-env} (CD2, част от
+"`Cyrillic environment"' на \texttt{tasksel}), който е предназначен да
+създава точка-файлове, т.е. конфигурационни файлове, за разпространени
+програми.  След инсталирането си този пакет не извършва никакви
+глобални конфигурации.  Всеки потребител трябва сам да стартира
+командата
+
+\begin{verbatim}
+$ set-language-env
+\end{verbatim}
+
+% $ -- затваряне на долара във verbatim
+
+която задава въпроси за предпочитанията и създава различни
+конфигурационни файлове в потребителската директория.  За да се
+обърнат промените, които програмата е извършила, се изпълнява
+командата
+
+\begin{verbatim}
+$ set-language-env -r
+\end{verbatim}
+ 
+% $ -- затваряне на долара във verbatim
+
+Предимствата на този пакет са две.  Първо, не е нужно да се
+конфигурират пакета \deb{console-cyrillic} и XKB метода за въвеждане,
+и второ, всеки потребител може да има различни настройки.  Не трябва
+да се забравя, че пакетът \deb{locales} трябва да е конфигуриран
+коректно.

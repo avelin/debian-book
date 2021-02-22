@@ -1,0 +1,379 @@
+\chapter{Работа с \LaTeX}
+\label{sec:work-with-latex}
+
+\textbf{Преди да комитвате в SVN хранилището, проверявайте \LaTeX~кода за коректност:}
+
+\begin{itemize}
+\item Един добър инстарумент е \deb{lacheck}. Подавате му главния файл
+\texttt{debian-book.tex} като аргумент и всички други файлове включвани 
+от него ще бъдат проверени за коректност.
+\item Също така се убедете, че се компилира при вас. Винаги тествайте с PDF изхода.
+\end{itemize}
+
+\section{Инсталиране на \LaTeX}
+
+
+\LaTeX~е мощна система за изготвяне на документи, позволяваща
+форматиране на по-ниско и високо ниво и конвертирането в различни
+формати за четене и печат.  Само част от поддържаните формати са DVI,
+PostSrypt, PDF, HTML.  Ако сте инсталирали някоя дистрибуция на
+GNU/Linux, можете да проверите дали имате инсталирани \LaTeX~(или,
+по-точно, една от реализациите му teTex), като използвате някоя от
+командите \texttt{latex}, \texttt{tex}, \texttt{pdflatex}.  Ако нито
+една от тях не работи, тогава ще ви се наложи да инсталирате.
+Най-добре прочетете инструкциите за инсталация на Вашата дистрибуция и
+изберете съответните необходими пакети.
+
+
+Ако разполагате с Debian:
+\begin{verbatim}
+# apt-get install tetex-extra
+\end{verbatim}
+
+
+За съжаление стандартната дистрибуция на \LaTeX~не е достатъчно добре
+кирилизирана и не е много наясно с българския език.  Именно затова,
+преди да се впуснем в не особенно сложния процес на създаване на PDF,
+PostScript и т.н. изходи от \LaTeX, е нужно да инсталираме няколко
+пакета.
+
+
+\textbf{bgtex-v2} е първият пакет, който е нужен за българизация на
+teTeX.  Можете да го изтеглите от
+\hlink{ftp://lml.bas.bg/home/anton/tex/}{ftp://lml.bas.bg/home/anton/tex/} и след като го
+разпакетирате, внимателно прочетете и следвайте инструкциите за
+инсталация.
+
+
+\textbf{scalable-cyrfonts-tex} е пакет, който добавя нови шрифтове в
+teTeX.  Тези шрифтове са напълно безплатни и нямат ограничения за
+рапространението си.  Можете да дръпнете пакета от:
+\hlink{ftp://lml.bas.bg/home/anton/tex/}{ftp://lml.bas.bg/home/anton/tex/} и след като го разпакетирате
+внимателно прочетете, следвайте инструкциите за инсталация.
+
+
+Ако разполагате с Debian:
+\begin{verbatim}
+# apt-get install scalable-cyrfonts-tex
+\end{verbatim}
+
+
+Не забравяйте да добавите следните ред в съответните файлове:
+
+\begin{tabular}{|l|l|}
+\hline \textbf{Файл} & \textbf{Ред} \\
+\hline \texttt{/etc/texmf/dvips/config.ps} &
+\texttt{p +cyrfonts.map} \\
+\hline \texttt{/etc/texmf/pdftex/pdftex.cfg} &
+\texttt{map +cyrfonts.map} \\
+\hline
+\end{tabular}
+
+
+Ако не можете да намерите някой от тези два файла, пробвайте със
+следните алтернативни имена:
+
+\begin{tabular}{|l|l|}
+\hline \texttt{/etc/texmf/dvips/config.ps} &
+\texttt{/usr/share/texmf/dvips/config/config.ps} \\
+\hline \texttt{/etc/texmf/pdftex/pdftex.cfg} &
+\texttt{/usr/share/texmf/pdftex/config/pdftex.cfg} \\
+\hline
+\end{tabular}
+
+\section{Писане на \LaTeX}
+
+
+Тук следват леки насоки за езика \LaTeX~и как го ползваме в нашия
+документ. Добри източници за езика \LaTeX~са:
+
+\begin{itemize}
+\item 
+\hlink{A beginner's introduction to typesetting with \LaTeX~}{http://www.ctan.org/ctan/tex-archive/info/beginlatex/} 
+За да разберете както е \TeX~,\LaTeX~и \texttt{teTeX} започнете от тук
+\item
+\hlink{Comprehensive \TeX~Archive Network}{http://www.ctan.org}
+\item
+\hlink{\TeX~Users Group}{http://www.tug.org}
+\item
+\hlink{\LaTeX~Project}{http://www.latex-project.org}
+\item
+\hlink{\texttt{teTeX}}{http://www.tug.org/tetex}
+\item 
+\hlink{The \TeX~catalogue online}{http://datamining.csiro.au/tex/}
+\item
+\hlink{UK List of \TeX~FAQ}{http://www.tex.ac.uk/cgi-bin/texfaq2html}
+\item 
+\hlink{Справочник latexhelp.html}{http://www.debianbookbg.org/utils/latexhelp.html}
+\item 
+\hlink{Hypertext Help with \LaTeX~}{http://www.giss.nasa.gov/latex/}
+\end{itemize}
+
+
+Нека се спазва установеният \LaTeX~стил, както и стилът на поднасяне
+на информацията --- ясно, точно и ако може да се привеждат и примери.
+Където има съмнения или все още не е довършено нещо, нека се поставя
+FIXME. Добра идея ще е за повече подробности относно \LaTeX~кода да се
+обърнете към кода на самия документ в директорията \texttt{src/}, и ще
+добиете представа, че хич не е страшно:
+
+
+\LaTeX~е мощен език, но ние ползваме много малка част от него. Например:
+
+
+За части, глави, подглави и т.н. разделението е такова:
+\begin{verbatim}
+\part{заглавие}
+\chapter{заглавие}
+\section{заглавие}
+\subsection{заглавие}
+\subsubsection{заглавие}
+..............
+\end{verbatim}
+
+\subsection{Форматиране на текста}
+
+\begin{verbatim}
+Абзаците се пишат направо.  Между отделните абзаци трябва да има поне
+един празен ред.
+
+\textbf{тук има bold текст} \\
+\textit{тук има italic текст}, може и комбинирано: \\
+\textbf{\textit{хем bold, хем italic} тука ще е само bold текст} \\
+..............
+
+\begin{verrbatim}
+  Изход на някаква команда или просто текст, който искаме да
+  представим, точно както сме го написали. Нарочно използваме двойно
+  "`r"' щото не можем да го escape-нем, иначе се ползва с едно ;-)
+  Cheating \ thru \textbackslash doesn't help either :-( FIXME:
+\end{verrbatim}
+\end{verbatim}
+
+Откриваме параграф.
+
+\textbf{тук има bold текст} \\
+\textit{тук има italic текст}, може и комбинирано: \\
+\textbf{\textit{хем bold, хем italic} тука ще е само bold текст} \\
+{\ldots} 
+
+\begin{verbatim}
+  Изход на някаква команда или просто текст, който искаме да
+  представим, точно както сме го написали. Нарочно използваме двойно
+  "`r"' щото не можем да го escape-нем, иначе се ползва с едно ;-)
+  Cheating \ thru \textbackslash doesn't help either :-( FIXME:
+\end{verbatim}
+
+
+\subsection{Списъци}
+
+\begin{verbatim}
+\begin{itemize}
+\item Debian
+\item GNU
+\item Linux
+\end{itemize}
+\end{verbatim}
+
+\begin{itemize}
+\item Debian
+\item GNU
+\item Linux
+\end{itemize}
+
+\begin{verbatim}
+\begin{enumerate}
+\item Едно
+\item Две
+\item Три
+\end{enumerate}
+\end{verbatim}
+
+\begin{enumerate}
+\item Едно
+\item Две
+\item Три
+\end{enumerate}
+
+\subsection{Таблици}
+
+\begin{verbatim}
+\begin{tabular}{|l|r|c|}
+\hline \textbf{Първи стълб} & \textbf{Втори стълб} &
+\textbf{Трети стълб} \\
+\hline ляво & дясно & централно \\
+\hline още ляво & още дясно & още централно \\
+\hline
+% Последният \hline задължително трябва да бъде точно на
+% следващия ред след последното \\.
+\end{tabular}
+\end{verbatim}
+
+\begin{tabular}{|l|c|r|}
+\hline \textbf{Първи стълб} & \textbf{Втори стълб} & \textbf{Трети
+  стълб} \\
+\hline ляво & централно & дясно \\
+\hline още ляво & още централно & още дясно \\
+\hline
+\end{tabular}
+
+\subsection{Специални макроси}
+
+
+В книгата се използват макроси, които не са част от стандартния
+\LaTeX.  Използвайте ги винаги, когато е възможно.
+
+\begin{tabular}{|l|l|}
+
+  \hline \textbf{\LaTeX} & \textbf{Изглед} \\
+
+  \hline \texttt{\textbackslash hlink\{http://www.debian.org\}\{http://www.debian.org\}}
+  & \hlink{http://www.debian.org}{http://www.debian.org} \\
+
+  \hline \texttt{\textbackslash hlink\{Заглавна страница\}\{http://www.debian.org\}}
+  & \hlink{Заглавна страница}{http://www.debian.org} \\
+
+  \hline \texttt{\textbackslash deb\{vsftpd\}} & \deb{vsftpd} \\
+
+  \hline \texttt{\textbackslash man\{dpkg\}\{8\}} & \man{dpkg}{8} \\
+
+  \hline \texttt{\textbackslash manx\{apt-get\}\{8\}} & \manx{apt-get}{8} \\
+  \hline
+
+\end{tabular}
+
+
+В HTML изходите \texttt{\textbackslash man} генерира хипервръзка към
+сайт със справочни страници.  Той обаче не съдържа всички справочни
+страници на Debian, а само основните.  В случай, че хипервръзката е
+нежелана, използвайте \texttt{\textbackslash manx}.
+
+\subsection{Специални знаци}
+
+
+Някои знаци в \LaTeX~са специални и трябва да ги напишете по определен
+начин, за да ги включите в документа, който пишете:
+
+\begin{tabular}{|c|l|}
+\hline \textbf{Знак} & \textbf{Заместител} \\
+\hline \texttt{\#} & \texttt{\textbackslash\#} \\
+\hline \texttt{\$} & \texttt{\textbackslash\$} \\
+\hline \texttt{\%} & \texttt{\textbackslash\%} \\
+\hline \texttt{\&} & \texttt{\textbackslash\&} \\
+\hline \texttt{\textasciitilde} &
+\texttt{\textbackslash textasciitilde} \\
+\hline \texttt{\_} & \texttt{\textbackslash\_} \\
+\hline \texttt{\textasciicircum} &
+\texttt{\textbackslash textasciicircum} \\
+\hline \texttt{\textbackslash} &
+\texttt{\textbackslash textbackslash} \\
+\hline \texttt{\{} & \texttt{\textbackslash \{} \\
+\hline \texttt{\}} & \texttt{\textbackslash \}} \\
+\hline
+\end{tabular}
+
+
+Някои от тези специални знаци, като \texttt{\textbackslash%
+  textbackslash}, ще ви принудят да добавите интервал след тях.
+\LaTeX~ще премахне тези интервали в PDF изхода, но latex2html ще го
+направи само ако няма нов ред между тези интервали.  Ако има знак за
+нов ред, latex2html ще добави интервал, който вероятно не желаете.
+Това се случва понякога, когато е активиран режимът Word Wrap на
+текстовия редактор.  Най-доброто решение е да добавите знака \%
+непосредствено преди знака за нов ред.
+
+
+Ако искате точно обратното поведение: да има интервал след знака,
+използвайте знака \textasciitilde, който означава празно място, което
+не може да се пренася (като \texttt{\&nbsp;} в HTML).
+
+
+Всичко това е вярно и за всяка друга \texttt{\textbackslash команда}.
+
+\begin{verbatim}
+% Няма интервал между знака и следващата част:
+\textbackslash texttt
+\textbackslash        texttt
+\textbackslash%
+  texttt
+
+% Има интервал:
+\textbackslash~texttt
+\end{verbatim}
+
+\subsection{Кавички}
+
+
+От версия 0.1 в \LaTeX~кода на \texttt{debian-book} вече не се използва
+шрифта \texttt{teams}, а \texttt{times} от пакета \texttt{scalable-cyrfonts-tex}. Когато
+пишете на \LaTeX~имайте предвид следното:
+
+
+За кавички винаги използвайте \verb#"`# този начин \verb#"'#.  Така текстът
+изглежда "`по-български"', защото ще бъде по правописните правила на
+българския език. Българските кавички ще изглеждат "`така"'. За сега поне българските кавички
+излизат правилно само в PDF изхода.
+
+
+Не използвайте за кавички \verb#``# по този начин \verb#''#,
+както е описано в книгите за \LaTeX. Английските кавички ще изглеждат ``така''
+
+
+Няма проблем да използвате в \LaTeX~единични кавички 'така' и двойни "така". Шрифта който
+използваме в \LaTeX~поддържа тези символи така, че те ще се изобразяват точно така в HTML и PDF
+изходите, но няма да е по правилата на българския език, т.е. отварящите кавички на са като
+деветки долу вляво, а затварящите като шестици горе в дясно.
+
+\subsection{Тирета}
+
+
+Има два основни вида тирета: късо тире и дълго тире.  Късото тире се
+използва между думи --- например в "`по-бързо"'.  Дългото тире се
+използва между части на изречението, като например в предното
+изречение.
+
+
+В \LaTeX~за късо тире се използва просто знака \verb#-#.  За дълго
+тире се използва последователност от три обикновени тирета:
+\verb#---#.  Има и още едно междинно тире, което се представя с две
+обикновени тирета.  В английския език се използва между две числа,
+които са граници на интервал:
+
+\begin{verbatim}
+Пробвайте 2--3 пъти --- ако не стане, значи няма да стане.
+\end{verbatim}
+
+
+В някои случай се налага да представите последователност от две
+тирета.  Това се налага при вмъкване на опции на команди.  В такива
+случай използвайте \verb#\verb#:
+
+\begin{verbatim}
+Опциите \verb#--help# и \verb#--version# трябва да се обработват от
+всяка GNU програма.
+\end{verbatim}
+
+\section{Структура и съдържание - организация на файловете}
+
+\begin{description}
+  
+\item[\texttt{./}] главна директория. Всичко, на което не може да се
+  намери място, е тук.
+
+\item[\texttt{src/}] \LaTeX~сорсовете на самата книга и всички
+  изходни файлове, като \texttt{src/debian-book.tex} е главният \LaTeX~файл.
+  Започва с всички общи и по-сложни настройки за документа и накрая
+  включва останалите файлове. Ако искате да включите нов файл, се прави
+  по-този начин, ако не, то просто редактирате някой съществуващ.
+  Забележете, че разширението \texttt{.tex} при включване се пропуска.
+
+\item[\texttt{dists/}] bzip2 tarballs на изходите са в тази
+  директория.
+
+\item[\texttt{queue/}] ако някой има проблеми с \LaTeX, то може да
+  предостави своите писания в чист текст, но на български език.
+
+\item[\texttt{utils/}] ако някой е написал и ползва неофициално някоя
+  собствена програмка, може да я сподели тук.
+
+\end{description}

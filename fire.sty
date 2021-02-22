@@ -1,0 +1,70 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%             This is maketitle.xxx
+%
+% it modifies the appearence of the title
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\subtitle#1{\gdef\@subtitle{#1}}
+\def\@subtitle{}
+
+\def\abstract{\if@twocolumn
+\section*{\abstractname}%
+\else \small
+\begin{center}%
+{\bf \abstractname\vspace{-.5em}\vspace{\z@}}%
+\end{center}%
+\quotation
+\fi}
+
+\def\endabstract{\if@twocolumn\else\endquotation\fi}
+
+
+\def\maketitle{\par
+ \begingroup
+   \def\thefootnote{\fnsymbol{footnote}}%
+   \def\@makefnmark{\hbox
+       to\z@{$\m@th^{\@thefnmark}$\hss}}%
+   \if@twocolumn
+     \twocolumn[\@maketitle]%
+     \else \newpage
+     \global\@topnum\z@   % Prevents figures from going at top of page.
+     \@maketitle \fi\thispagestyle{empty}\@thanks
+     \par\penalty -\@M
+ \endgroup
+ \setcounter{footnote}{0}%
+ \let\maketitle\relax
+ \let\@maketitle\relax
+ \gdef\@thanks{}\gdef\@author{}\gdef\@title{}\let\thanks\relax}
+
+\def\@maketitle{\newpage
+ \null
+ \vskip 2em                 % Vertical space above title.
+\begingroup
+  \def\and{\unskip, }
+  \parindent=\z@
+  \pretolerance=10000
+  \rightskip=0pt plus 3cm
+  {\LARGE                   % each author set in \LARGE
+   \lineskip .5em
+   \@author
+   \par}%
+  \vskip 2cm                % Vertical space after author.
+  {\Huge \@title \par}%     % Title set in \Huge size.
+  \vskip 1cm                % Vertical space after title.
+  \if!\@subtitle!\else
+   {\LARGE\ignorespaces\@subtitle \par}
+   \vskip 1cm                % Vertical space after subtitle.
+  \fi
+ \vfill
+  \if!\@date!\else
+    {\large \begin{center}\@date\end{center}}%          % Date set in \large size.
+    \par
+    \vskip 1.5em               % Vertical space after date.
+  \fi
+  {\large \dbversion}%         % XXX Обикновено се слага в друг файл.
+  \par
+  \vskip 1.5em               % Vertical space after version.
+\endgroup}
+
+\parskip=2pt plus 2pt

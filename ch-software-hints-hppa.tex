@@ -1,0 +1,233 @@
+\section{Debian/GNU Linux върху HP PA-RISC}
+
+\subsection{Хардуер}
+
+Описаната тук процедура е проведена с:
+
+\begin{verbatim}
+
+         ARCH: HP PA-RISC 2.0
+        MODEL: 9000/800/A400-44 (Crescendo DC-440)
+          CPU: PA8500 (PCX-W) 440 MHz (512 KB I-cache, 1024 KB D-cache)
+          RAM: 1024 MB
+         ETH0: Digital DS21143 Tulip rev 65
+         SCSI: 2x sym53c875, 2x sym53c896
+          SDA: SEAGATE ST336704LCV (36704 MB)
+          SDB: SEAGATE ST336704LCV (36704 MB)
+          SDC: SEAGATE ST318404LC  (18210 MB)
+          SR0: HP DVD-ROM 6x/32x
+\end{verbatim}
+
+\subsection{Документация}
+
+\begin{itemize}
+\item \hlink{Debian for PA-RISC}{http://www.debian.org/ports/hppa/}
+\item \hlink{The PA-RISC Linux Project Web}{http://parisc-linux.org/}
+\item \hlink{Installing PA-RISC
+    Linux}{http://parisc-linux.org/software/install.html}
+\item \hlink{PALO PA-RISC/Linux Boot
+    Loader}{http://ftp.parisc-linux.org/cgi-bin/cvslite/palo/README.html}
+\item \hlink{PA-RISC/Linux Boot
+    HOWTO}{http://pateam.esiee.fr/parisc-linux-boot/doc.html}
+\item \hlink{HP Systems Documentation}{http://docs.hp.com/hpux/hw/}
+\item \hlink{HP PA-RISC Architecture Reference
+    Documents}{http://h21007.www2.hp.com/dev/}
+\item \hlink{The OpenPA Project}{http://www.openpa.net/}
+\end{itemize}
+
+\subsection{Начало на инсталацията}
+
+\hlink{ISO-та на Woody за
+  HPPA}{ftp://gsyprf10.external.hp.com/debian-cd/3.0\_r0/hppa/}
+
+
+Дърпате, записвате, боотвате hppa машината и прекъсвате boot процеса:
+
+\begin{verbatim}
+Processor is booting from first available device.
+
+To discontinue, press any key within 10 seconds.
+
+Boot terminated.
+
+
+---- Main Menu ---------------------------------------------------------------
+
+     Command                           Description
+     -------                           -----------
+     BOot [PRI|ALT|<path>]             Boot from specified path
+     PAth [PRI|ALT] [<path>]           Display or modify a path
+     SEArch [DIsplay|IPL] [<path>]     Search for boot devices
+
+     COnfiguration menu                Displays or sets boot values
+     INformation menu                  Displays hardware information
+     SERvice menu                      Displays service commands
+
+     DIsplay                           Redisplay the current menu
+     HElp [<menu>|<command>]           Display help for menu or command
+     RESET                             Restart the system
+----
+Main Menu: Enter command or menu > 
+\end{verbatim}
+
+
+Търсим за boot устройства:
+
+\begin{verbatim}
+Main Menu: Enter command or menu > sea
+                                      
+Searching for potential boot device(s)
+This may take several minutes.
+
+To discontinue search, press any key (termination may not be immediate).
+
+
+   Path#  Device Path (dec)  Device Path (mnem)  Device Type
+   -----  -----------------  ------------------  -----------
+   P0     0/0/1/0.1          extscsia.1          Random access media       
+   P1     0/0/1/0.0          extscsia.0          Random access media       
+   P2     0/0/1/1.15         intscsia.15         Random access media       
+   P3     0/0/2/0.1          extscsib.1          Random access media       
+
+
+Main Menu: Enter command or menu >
+\end{verbatim}
+
+
+В този случай 0/0/2/0.1 ми е CD-ROMа от който искам да boot-на. Тъй
+като в Linux наименоването на устройствата започва от най-малкото SCSI
+ID, горните paths ще бъдат:
+
+\begin{verbatim}
+        0/0/1/0.0       /dev/sda
+        0/0/1/0.1       /dev/sdb
+        0/0/1/1.15      /dev/sdc
+        0/0/2/0.1       /dev/sr0
+\end{verbatim}
+
+
+Сега е момента да помислите кой диск(ове) ще дадете на Debian, и как
+ще се виждат под Linux, какви partitions ще има, и дали няма да
+изтриете някой друг диск по грешка. След което bootваме от CD-то:
+
+\begin{verbatim}
+Main Menu: Enter command or menu > bo p3
+Interact with IPL (Y, N, or Cancel)?> n 
+\end{verbatim}
+
+\begin{verbatim}
+Booting... 
+Boot IO Dependent Code (IODC) revision 1
+
+
+HARD Booted.
+palo ipl 1.0 root@palinux Mon Apr  1 10:02:53 MST 2002
+                                                      
+Boot image contains:
+    0/vmlinux32 3687647 bytes @ 0x649000
+    0/vmlinux64 4719374 bytes @ 0x9cd800
+    0/ramdisk 2663046 bytes @ 0xe4e000  
+
+Information: No console specified on kernel command line. This is normal.
+PALO will choose the console currently used by firmware (serial).        
+Command line for kernel: 'ramdisk_size=8192 root=/dev/ram \
+console=ttyS0TERM=vt102 palo_kernel=0/vmlinux'
+Selected kernel: /vmlinux from partition 0
+Selected ramdisk: /ramdisk from partition 0
+Warning: kernel name doesn't end with 32 or 64 -- Guessing... \
+Choosing 64-bit kernelELF64 executable
+Entry 00100000 first 00100000 n 4
+Segment 0 load 00100000 size 2568152 mediaptr 0x1000
+Segment 1 load 00374000 size 722104 mediaptr 0x274000
+Segment 2 load 00428000 size 463872 mediaptr 0x325000
+Segment 3 load 0049c000 size 49152 mediaptr 0x397000 
+Loading ramdisk 2663046 bytes @ 3fd65000...         
+Branching to kernel entry point 0x00100000.  If this is the last
+message you see, you may need to switch your console.  This is  
+a common symptom -- search the FAQ and mailing list at parisc-linux.org
+\end{verbatim}
+
+
+След което boot-ва самия кернел. debian-hppa използва за boot loader
+PALO, а не LILO (както се вижда по горе), и виждаме познатия Debian
+Installer.  (FIXME: Проблеми)
+
+\subsection{Основни конфигурации}
+
+
+Избор на клавиатура няма, тъй като сме през конзола (в моя случай ---
+през GSP), следва partitioning на дисковете. Тук имаме следните
+моменти:
+
+\begin{itemize}
+\item Debian GNU/Linux и HP-UX не могат да си делят един и същи диск,
+  така, че ще трябва да заделите отделен за Debian
+\item по таблицата "`Device Path <-> /dev/sd*"' която си направихме в
+  началото, преценяваме с кой диск ще работим (това, че сте в Debian
+  Installer, не значи, че терминала няма scrollback buffer, в който да
+  видите все пак кернела кое как е детектнал)
+\item веднъж след като се инсталирали Debian GNU/Linux във firmware-а
+  на машината, можете на следващия reboot да кажете кой ще е primary
+  boot path-a (от кой диск да bootва по default) (команда \texttt{PAth
+    [PRI|ALT] [<path>]} Display or modify a path)
+\item казахме, използва се PALO за boot loader, поради което имаме следните разлики:
+\begin{itemize}
+\item PALO боотва кернела директно от Linux (ext2/ext3) дял, няма
+  нужда се runва palo, когато се променя кернела
+\item hp firmware/PALO изискват един служебен partition тип
+  \texttt{f0}, в който ще се съдържат secondary boot loader image и
+  recovery kernel, препоръчва се големина 16MB (аз лично направих моя
+  32 MB)
+\item partition-а който ще съдържа обикновенния кернел, който тръгва
+  по default (а не recovery kernel-а), трябва да е във първите 2 GB от
+  диска.  И тук имаме два вариянта --- или \texttt{f0} дяла и root
+  дяла да са в първите 2 GB (което значи, че root ще ни е по-малко от
+  2 GB), или да имаме отделни \texttt{root} и \texttt{/boot} дялове.
+  Аз лично обикновенно си правя \texttt{/boot} дял, препоръчва се обем
+  от около 32 MB.
+\end{itemize}
+\end{itemize}
+
+
+Като се имат предвид горните забележки, правим си дяловете, и в моя
+случай накрая имаме следното:
+
+\begin{verbatim}
+
+                                  cfdisk 2.11n
+ 
+                              Disk Drive: /dev/sda
+                            Size: 36703932928 bytes
+              Heads: 64   Sectors per Track: 32   Cylinders: 35003
+ 
+    Name        Flags      Part Type  FS Type          [Label]        Size (MB)
+ ------------------------------------------------------------------------------
+    sda1                    Primary   Linux/PA-RISC boot                  32.51         (recovery дял)
+    sda2                    Primary   Linux                               32.51         (/boot)
+    sda3                    Primary   Linux                             1024.46         (/)
+    sda5                    Logical   Linux swap                        2047.87         (swap)  
+    sda6                    Logical   Linux                             1024.46         (/tmp)
+    sda7                    Logical   Linux                             2047.87         (/var)
+    sda8                    Logical   Linux                             2047.87         (/usr)
+    sda9                    Logical   Linux                            28445.77         (/home)
+
+\end{verbatim}
+
+
+Продължаваме по стандарния начин с debian installer (Initialize and
+Activate a Swap Partition, Initialize a Linux Partition), докато ги
+mount-нем всичките{\ldots} root дялът --- първи, лично аз избрах да ги
+направя ext3 а не ext2.
+
+\subsection{Довършителни процедури}
+
+
+Продължаваме с инсталацията (основно от CD, българските mirror-и на
+Debian не съдържат hppa, така че засега upgrade и инсталации могат да
+се правят само от international mirror-и). След конфигуриране на
+drivers (ако имате нужда) следва инсталацията на Base System по
+познатия начин, reboot, base-config, описваме си apt-sources, и аз
+лично се лишавам както от услугите на dselect, така и от тези на
+tasksel, като предпочитам нататък да си инсталирам на ръка.
+Завършваме с base-config-а по традиционния начин.
+

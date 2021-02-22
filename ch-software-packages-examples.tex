@@ -1,0 +1,714 @@
+\section{Контролиране на избора на пакети за инсталиране}
+
+
+Ето един конфигурационен файл \texttt{/etc/apt/sources.list} със
+списък на официални и някои (примерни) неофициални източници:
+
+\begin{verbatim}
+###################################################################
+# Official US & non-US, binary & source package entries start here
+###################################################################
+
+# BINARY PACKAGES
+deb ftp://ftp.bg.debian.org/debian stable   main contrib non-free
+deb ftp://ftp.bg.debian.org/debian testing  main contrib non-free
+deb ftp://ftp.bg.debian.org/debian unstable main contrib non-free
+
+deb ftp://ftp.bg.debian.org/debian-non-US stable/non-US   main contrib non-free
+deb ftp://ftp.bg.debian.org/debian-non-US testing/non-US  main contrib non-free
+deb ftp://ftp.bg.debian.org/debian-non-US unstable/non-US main contrib non-free
+
+deb http://non-us.debian.org/debian-non-US stable/non-US   main contrib non-free
+deb http://non-us.debian.org/debian-non-US testing/non-US  main contrib non-free
+deb http://non-us.debian.org/debian-non-US unstable/non-US main contrib non-free
+
+# Proposed & security updates
+deb http://security.debian.org stable/updates main contrib non-free
+deb http://security.debian.org testing/updates main contrib non-free
+deb ftp://ftp.bg.debian.org/debian proposed-updates main contrib non-free
+deb ftp://ftp.bg.debian.org/debian testing-proposed-updates main contrib non-free
+
+# SOURCE PACKAGES
+deb-src ftp://ftp.bg.debian.org/debian stable   main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian testing  main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian unstable main contrib non-free
+
+deb-src ftp://ftp.bg.debian.org/debian-non-US stable/non-US   main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian-non-US testing/non-US  main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian-non-US unstable/non-US main contrib non-free
+
+deb-src http://non-us.debian.org/debian-non-US stable/non-US   main contrib non-free
+deb-src http://non-us.debian.org/debian-non-US testing/non-US  main contrib non-free
+deb-src http://non-us.debian.org/debian-non-US unstable/non-US main contrib non-free
+
+# Proposed & security updates
+deb-src http://security.debian.org     stable/updates  main contrib non-free
+deb-src http://security.debian.org     testing/updates  main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian proposed-updates main contrib non-free
+deb-src ftp://ftp.bg.debian.org/debian testing-proposed-updates  main contrib non-free
+
+
+#####################################################################
+# Unofficial APT entries start here - binary and/or source packages
+#####################################################################
+# Various unofficial sources for APT can be found here:
+# http://www.internatif.org/bortzmeyer/debian/apt-sources/
+# http://www.apt-get.org
+
+#####################################################################
+# Unofficial apt-build local repository - note compiler optimizations
+#####################################################################
+#deb file:/var/cache/apt-build/repository apt-build main
+
+# 1) MY OWN LOCAL REPOSITORY
+# ===========================
+#deb file:/usr/local/src/Mplayer-dev/mplayer-netinst/MPlayer-CVS   ./
+
+
+# 2) GNOME 2 semi-officials
+# =========================
+# after apt-get update, go examine list files in /var/lib/apt/lists/
+# ex: apt-get install -t experimental gnome2
+# ex: apt-get -t experimental install nautilus2 gnome-panel2
+#     gnome-applets2 gnome-terminal2 gnome-control-center2 fam
+#     msttcorefonts ...
+
+deb http://ftp.de.debian.org/debian/ ../project/experimental main contrib non-free
+deb-src http://ftp.de.debian.org/debian/ ../project/experimental main contrib non-free
+
+# apt-get install gnome2
+#deb http://people.debian.org/~walters/debian/staging/ ./
+
+
+# 3)  KDE 3.x unofficials
+# =======================
+# SEE http://davidpashley.com/debian-kde/faq.html
+#
+# for KDE 3.1 unofficial deb's see http://wh9.tu-dresden.de/kde3/
+
+# for stable backport from download.kde.org
+
+#deb http://download.kde.org/stable/3.1.1/Debian stable main
+#deb-src http://download.kde.org/stable/3.1.1/Debian stable main
+
+# KOffice, kdeartwork, kdeaddons, kdeedu, kdesdk, kdetoys, kile,
+# kbear, quanta, kcd, kcpuload, kdbg, knetload, konq-speaker, kprof
+#deb http://people.debian.org/~bab/kde3 ./
+
+# kdevelop
+#deb http://people.debian.org/~njordan kde3.0/
+
+# ksensors, kvim, kxicq2, krusader, yammi, arson
+#deb http://ers.linuxforum.hu/kde3deb/ ./
+
+
+# 4) Joey Hess's kitenet development network http://kitenet.net/programs/debs.cgi
+# ===============================================================================
+# very powerful perl version of apt-src program + more ...
+#    deb     http://kitenet.net/programs/code/debian /
+#    deb-src http://kitenet.net/programs/code/debian /
+
+ 
+# 5) OPERA
+# ========
+deb http://www.opera.com/debian stable opera non-free
+
+
+# 6) ICKLE
+# ========
+#deb http://stud3.tuwien.ac.at/~e0027500/debian/ ./
+
+
+# 7) Pixie Plus
+# =============
+#deb http://arachni.kiwi.uni-hamburg.de/~harlekin/binary-i386/ ./
+
+
+# 8) Blackdown java files
+# =======================
+#deb ftp://metalab.unc.edu/pub/linux/devel/lang/java/blackdown.org/debian woody non-free
+
+# 9) Jonas site - lame, pine binaries, etc ... , do in mind apt's preferences !
+# ==============================================================================
+#    deb http://debian.jones.dk/ unstable misc
+#    deb http://debian.jones.dk/ testing misc
+
+# 10) snapshot.debian.net - Fumitoshi UKAI <ukai@debian.or.jp>
+# ============================================================
+
+# Different from usual mirror site, it provides daily snapshot since
+# 2002/06/04.  It uses pdumpfs to backup debian & debian-non-US
+# daily. This is useful in case you got broken version of package and
+# you want to get old working version of package without searching
+# around delayed debian mirror sites. Whenever you like, you can
+# access debian archive on specific date. For example, you can get
+# debian packages of June 20th from
+
+# http://snapshot.debian.net/archive/2002/06/20/debian
+# or apt-line
+#deb http://snapshot.debian.net/archive/2002/06/20/debian unstable main contrib non-free
+
+# You can also get debian packages on relative date, for instance, last week's
+# debian from http://snapshot.debian.net/archive/date/last-week/debian/
+# or apt-line
+#deb http://snapshot.debian.net/archive/date/last-week/debian unstable main contrib non-free
+# In place of 'last-week', you can use any datestr recognized by date(1).
+# You can also access all version of debian package in snapshot.debian.net by using the following apt-line
+#deb http://snapshot.debian.net/archive pool packagename1 packagename2 ....
+# This is useful if you don't know when specific version of package you want
+# was installed in debian but know which version of package.
+\end{verbatim}
+
+
+Вече трябва да сте се ориентирали как стоят нещата, и може да го
+ползвате, допълвайки го или коментирайки излишното. Ето ви и още
+няколко примерни конфигурационни файлове:
+
+
+\textbf{/etc/apt/apt-build.conf}:
+\begin{verbatim}
+cc = gcc-2.95
+Olevel = -O3
+march = -march=i686
+mcpu = -mcpu=i686
+\end{verbatim}
+
+
+\textbf{/etc/apt/apt.conf}:
+\begin{verbatim}
+/* This file is a sample configuration file with a few harmless sample 
+   options.   
+*/
+
+APT 
+{
+  // Options for apt-get
+  Get 
+  {
+     Download-Only "false";
+  };
+  
+};
+
+// Always show packages to be upgraded (-u)
+APT::Get::Show-Upgraded "true";
+
+// Options for the downloading routines
+Acquire
+{
+  Retries "0";
+};
+
+// Things that effect the APT dselect method
+DSelect 
+{
+  Clean "auto";   // always|auto|prompt|never
+};
+
+DPkg 
+{
+  // Probably don't want to use force-downgrade..
+  Options {"--force-overwrite";}
+}
+
+    APT::Default-Release "testing";
+    APT::Cache-Limit "25165824";
+
+// All dpsyco packages should be updated after installation.
+DPkg::Post-Invoke {"/usr/sbin/update-dpsyco || true";};
+
+\end{verbatim}
+
+
+\textbf{/etc/apt/apt-file.conf}:
+\begin{verbatim}
+# cache directory. All Contents files will be stored in this directory
+cache = /var/cache/auto-apt
+
+# verbose. Run apt-file in verbose mode
+verbose off
+
+# arch. Processor architecture (defaults to host architecture)
+# arch = i386
+
+# sources-list. Where to find the `sources-list' file
+sources-list = /etc/apt/sources.list
+
+# ftp-passive. Switch to passive ftp connection
+ftp-passive on
+
+# case-sensitive. Find files in case sensitive mode
+case-sensitive on
+
+# recursive. Search file in a recursive mode
+recursive on
+\end{verbatim}
+
+
+\textbf{/etc/apt/preferences} (I):
+\begin{verbatim}
+Package: *
+Pin: release o=Jones
+Pin-Priority: 99
+\end{verbatim}
+
+
+\textbf{/etc/apt/preferences} (II):
+\begin{verbatim}
+Package: *
+Pin: release a=stable
+Pin-Priority: 200
+
+Package: *
+Pin: release a=testing
+Pin-Priority: 300
+
+Package: *
+Pin: release a=unstable
+Pin-Priority: 400
+\end{verbatim}
+
+
+\textbf{/etc/apt/preferences} (III):
+\begin{verbatim}
+# OLD VALUES BEGIN
+# Package: *
+# Pin: release o=Jones
+# Pin-Priority: 99
+# OLD VALUES END
+
+#  Package: *
+# Pin: release v=3.0*
+# Pin-Priority: 1001
+
+# Using APT with both Debian and non-Debian sources
+# ----------------------------------------------------------------
+#
+# APT's Default-Release setting (aka "apt-get --target-release") is an
+# extremely useful feature, but it has problems if you're using non-Debian
+# entries in your /etc/apt/sources.list file.  This file improves the
+# situation a bit.
+#
+# Copy this file to /etc/apt/preferences and edit the following Pin:
+# line, replacing "testing" with "stable" if that's your preferences.
+# The rest of the file contains an explanation, you don't have to
+# worry about anything other than this line if you don't care about
+# the details.
+#
+# ----------------------------------------------------------------
+
+Pin: release a=testing
+
+# ----------------------------------------------------------------
+#
+# The above Pin: is your default release.  The way it's set is the
+# equivalent of the apt.conf APT::Default-Release setting.  It's
+# convenient to have it here instead so that all the pinning settings
+# are in one place.
+#
+
+Package: *
+Pin-Priority: 900
+
+# Pin unstable at a lower than default priority.  Here's an example to
+# show why this is necessary.  Consider a package which is available
+# from 3 releases like this:
+#
+#    rel.       ver.    without pin     with pin
+#    ----       ----    -----------     --------
+#    testing    1.0     900             900
+#    local      1.1     500             500
+#    unstable   1.2     500             200
+#
+# Without this pin version 1.1 installed from local would be immediately
+# upgraded to the 1.2 version from unstable, since they're both priority
+# 500.
+#
+# The priority of this pin has to be > 100 (the priority of currently
+# installed packages) else a package installed from unstable wouldn't
+# track new versions from unstable.
+#
+# This isn't a complete solution.  Say your apt.sources included
+# Debian's testing and unstable, plus 3 external sources A, B, and
+# C.  It'd be nice to be able to install a package from B and have
+# it always come from B (or from the default release, if a newer
+# version gets there), but I don't see a way to do that without
+# listing the other releases here explicitly.  Since A, B, and C all
+# have the same priority (500, the default priority) a package from
+# B can be replaced by a newer one from C.  If this is a problem for
+# you, the best solution I can currently offer is to add a new pin
+# here for each of your external sources.  Even then I don't see a
+# way to do per-release mutual exclusion, so you'll still have to
+# order them.  If they don't provide a Release file you should be
+# able to use a specifier like "Pin: origin www.somesource.com".
+
+Package: *
+Pin: release o=Debian
+Pin-Priority: 200
+\end{verbatim}
+
+
+FIXME: да се обясни за apt-cdrom, и въобще за \texttt{/usr/lib/apt/methods/}
+         
+\subsection{Избор на release, от който да се вземат пакети}
+
+
+Нека имаме един такъв разширен /etc/apt/sources.list, както е показан
+по-горе, с редове за official stable, testing, unstable, experimental
+и дузина unofficials, това е само пример за демонстрация, не е
+задължително винаги на подхождате така глобално). Освен това в
+/etc/apt/apt.conf можем да укажем например
+
+\begin{verbatim}
+APT::Default-Release "testing"
+\end{verbatim}
+
+така че apt по подразбиране да точи от testing и само с изрично
+указана опция \texttt{-t}, \texttt{-{}-target-release},
+\texttt{-{}-default-release}, подавана на apt, да се предприема
+теглене от stable, unstable и др. Aко няма указано нищо за
+\texttt{APT::Default-Release}, не е подадена опция \texttt{-t}, и
+освен това няма промяна от потребителя в приоритета на пакетите чрез
+\texttt{Package:}, \texttt{Pin:} или \texttt{Pin-Priority:} в
+\texttt{/etc/apt/preferences}, което е с по-голяма тежест от
+\texttt{APT::Default-Release}, apt ще предпочете най-голямата версия
+на пакета. Ето какво бихме получили:
+
+
+Само този \textit{пакет} да се тегли от unstable и нищо друго, ако има
+неудоволетворени зависимости apt ще каже:
+
+\begin{verbatim}
+# apt-get install пакет/unstable 
+\end{verbatim}
+        
+
+Apt има разрешение освен за \textit{пакет} от unstable да вземе и
+неговите зависимости, ако има такива, пак от там:
+
+\begin{verbatim}
+# apt-get install -t unstable пакет
+\end{verbatim}
+         
+
+Опцията \texttt{-s} е за симулация, т.е. ползвайте я, за да проверите
+какво би се получило, като нищо няма да бъде изтеглено и инсталирано,
+само за проверка.
+
+\begin{verbatim}
+# apt-get install пакет1/stable пакет2/testing пакет3/unstable -s
+\end{verbatim}
+        
+
+Дори може да се конкретизира и до версия на пакет и т.н.
+
+\begin{verbatim}
+# apt-get install пакет=версия 
+\end{verbatim}
+         
+
+Имайте предвид, че по този начин, а и изброените по-горе, може и да
+downgrade даден инсталиран вече във вашата система пакет, като при
+ситуация на downgrade apt предупреждава изрично, че минавате към
+по-ниска версия на пакета.
+
+\begin{verbatim}
+# apt-get install пакет/stable 
+\end{verbatim}
+         
+\subsection{Възстановяване на стари версии на пакети}
+
+
+Състоянието на unstable много бързо се променя, Testing също, но
+по-бавно.  Stable само със security updates, така че за кратко време
+влизат доста нови packages, като някои стари версии може да изпадат от
+официалните архиви и т.н.  Ако търсите някоя по-стара версия на даден
+пакет и я няма в Unstable или Testing към момента, а така също и във
+вашия локален кеш \texttt{/var/cache/apt/archives/}, но е била там
+преди известно време, то може да добавяте и редове във файла
+\man{sources.list}{5} към \hlink{http://snapshot.debian.net}{http://snapshot.debian.net} 
+за търсене на такива по-стари и изпаднали към момента версии на отделните
+пакети. На сайта си пише как се ползва.
+
+
+Има предвидена и още една възможност в подобни ситуации. Ако във
+вашата система имате инсталирана версия на пакет, който е изпаднал към
+момента от официалните stable/testing/unstable, освен това сте го
+премахнали и от локалния си кеш на apt и отгоре на това не ви се търси
+точно тази версия в архивите на \hlink{http://snapshot.debian.net}{http://snapshot.debian.net},
+то може да използвате Perl скрипта \texttt{dpkg-repack}, който идва с
+едноименния пакет \deb{dpkg-repack}. Преди да upgrade-вате така
+дефицитните версии на интересуващите ви пакети, изпълнете:
+         
+\begin{verbatim}
+# dpkg-repack пакет
+\end{verbatim}
+         
+
+Инсталираният в системата пакет ще бъде събран пак като инсталационен
+\texttt{.deb} пакет и сега вече спокойно може да upgrade-вате към нови
+версии на дадените пакети, при което, ако те нещо не ви харесат, ги
+премахвате или форсирате downgrade за тях.
+
+\subsection{Приоритети на пакетите}
+
+
+Apt отчита вътрешно списък с приоритети на пакетите (candidate version
+policy, или начина, по които те да бъдат избирани от apt), описание на
+които ще намерите в \man{apt\_preferences}{5}.  Там е обяснено и какво
+са non-automatic priorities и как може да се променят подразбиращите
+се такива, а оттам и селективното поведение на apt. Когато правите
+такива промени, винаги използвайте \texttt{-s} опцията на apt, за да
+се уверите, че ще постигнете точно това, което желаете, избягвайки
+нежелателни изненади.  Изпълнявайки:
+         
+\begin{verbatim}
+# apt-cache policy пакет
+\end{verbatim}
+         
+
+ще получите информация за Installed и Candidate версиите и Version
+Table, в която за всяка достъпна версия на пакета се изписват
+приоритета и мястото, от където евентуално ще изтеглите този пакет.
+
+
+FIXME: Страницата е вече променена.  Един пример
+\hlink{http://people.debian.org/\textasciitilde walters/gnome2.html}{http://people.debian.org/\textasciitilde walters/gnome2.html}
+за това как може да се промени приоритета на packages от experimental
+(трябва да имате experimental entries в /etc/apt/sources.list, и да
+сте изпълнили apt-get update), за да бъдат предпочетени те от APT пред
+тези от unstable (Sid). В случая е даден пример с GNOME 2 packages
+(виж отговора на предпоследния въпрос).  Забележете и интересно
+предложение за \texttt{debfoster -u}, което се дава.  Чрез промяна на
+приоритета на пакетите може да се постигне и т.н. им "`заковаване"'.
+FIXME: Реферира се apt-howto-bg.
+         
+
+\subsection{Downgrade}
+
+
+Downgrade-ването на цялата система, да речем от настоящия Testing към
+настоящия Stable, може да се разглежда като специален случай на
+цялостен upgrade от Stable към Testing, който вие изпълнявате чрез
+
+\begin{verbatim}
+# apt-get dist-upgrade
+\end{verbatim}
+
+Това може да стане чрез pinning feature на apt-0.5.4.  Вижте
+\hlink{APT
+  HOWTO}{http://www.debian.org/doc/manuals/apt-howto/ch-apt-get.en.html\#s-pin}
+и \man{apt\_preferences}{5} за повече подробности.  На практика debian
+packaging tools са толкова развити, че спокойно може да се програмира
+върху тях, ползвайки ги като stable API.  Например статията \hlink{How
+  I Downgraded Testing to
+  Stable}{http://www.debianplanet.org/node.php?id=880} показва как
+може да постигнете горното по един такъв начин със създадени от вас
+приложения. Разбира се, трябва да знаете какво правите, имайки поне
+базови познания и опит с debian packaging system. Например, че ако
+"`слизате"' от Testing към Stable, трябва да имате предвид какво ще
+правите с пакетите, които ги има в Testing и ги имате инсталирани на
+вашата система и които към момента ги няма в Stable. Известни познания
+за shell програмиране въобще не пречат ;-). Шелът ви дава достатъчно
+възможности, но с употребата на Perl или Python скриптиране за подобни
+ваши цели можете да направите нещата наистина сериозни.  Всъщност
+добър пример за административни Perl скриптове са пакетите debconf и
+debhelper, чиито сорсове можете да разгледате. По подобен начин ако
+решите, че \deb{apt-src}, \deb{apt-build}, \deb{pbuilder} и т.н. не ви
+предлагат достатъчно възможности за получаването на binary packages от
+съответните source packages, може да погледнете в кодовете им и да
+запрограмирате нещо аналогично и по-специфично за вашите цели, като
+отчитате, че ще се нуждаете само от source packages на тези binary
+packages, които вие имате инсталирани, плюс необходимото за техния
+успешен build.
+         
+\subsection{Виртуални и мета-пакети}	 
+
+
+Една от силните страни на пакетната система на Debian това е наличието на
+виртуални и мета-пакети. Те спестяват много време и усилия на потребителите.
+
+\item \textbf{Виртуални пакети} - Има пакети, които предлагат същата или почти
+същата функционалност. В такъв случай е добра идея да се създаде виртуален пакет,
+който да обедини тези функционалности. Тези пакети се наричат "виртуални пакети".
+Виртуалните пакети съществуват само логически - т.е те не са истински
+пакети (от там идва и името им - виртуални).
+Тази им функционалност е доста полезна за хората, които не са запознати
+с конкретни имена на програми, но знаят каква функционалност търсят.
+Например ако се търси ftp сървър не е нужно потребителят да знае конкретни имена
+на продукти и да търси не-ефективно (в отговорите на apt-cache ще има доста
+програми, които всъщност не са ftp сървъри, а просто имат някаква връзка), 
+нужно е просто да се изпълни:
+\begin{verbatim}
+# apt-cache search ftp-server 
+\end{verbatim}
+
+Отговорът вече е повече от задоволителен:
+\begin{verbatim}
+bsd-ftpd - Port of the OpenBSD FTP server
+ftpd - FTP server
+ftpd-ssl - FTP server with SSL encryption support.
+heimdal-servers - Servers for Heimdal Kerberos
+kerberos4kth-servers - Servers for Kerberos4 From KTH
+krb5-ftpd - Secure FTP server supporting MIT Kerberos
+lukemftpd - The enhanced ftp daemon from NetBSD.
+vsftpd - The Very Secure FTP Daemon
+wu-ftpd - powerful and widely used FTP server
+......
+.....
+\end{verbatim}
+
+Информация за наличните виртуални пакети в Debian можете да намерите
+на адрес: doc/package-developer/virtual-package-names-list.text
+в най-близкия локален mirror на \hlink{Debian.org}{http://www.debian.org/} например:
+\hlink{bg.debian.org}{http://www.bg.debian.org/doc/package-developer/virtual-package-names-list.text}
+
+Ако имате инсталиран пакета \deb{debian-policy} на вашата система можете да
+прочетете този списък и от:
+/usr/share/doc/debian-policy/virtual-package-names-list.txt.gz
+
+\item \textbf{Мета-пакети} - Мета-пакетите са още един много полезен инструмент
+за начинаещите и за напредналите в Debian. Както добре се знае един от основните проблеми при
+запознаването с Linux, и при боравенето със софтуера впоследствие е как
+потребителя да е сигурен, че е инсталирал всички пакети, необходими му за работа
+или използване на всичките възможности на дадена програма. Мета-пакетите правят
+точно това. Най-добър пример за мета-пакети са тези на \deb{kde},\deb{gnome} и
+\deb{x-window-system}. С инсталирането на \deb{x-window-system} ще се инсталира всичко
+необходимо за да стартирате графична среда във вашия Debian. Съответно
+инсталирането на мета-пакета \deb{kde} ще ви снабди с \hlink{KDE}{http://www.kde.org/}
+и пълното му обкръжение от софтуер: \deb{kdegraphics},\deb{koffice}.. и т.н	
+За да разберете с какви мета-пакети можете да боравите във вашата система
+изпълнете:
+
+\begin{verbatim}
+#apt-cache search metapackage
+\end{verbatim}
+
+Системата ще върне списък със всички мета-пакети, които можете да използвате:
+
+\begin{verbatim}
+arts - Analog Realtime Synthesizer (aRts) metapackage
+debian-reference - A metapackage to install all translations of Debian Reference
+education-astronomy - DebianEdu astronomy related applications
+education-chemistry - DebianEdu chemistry related applications
+education-desktop-gnome - DebianEdu GNOME desktop applications
+education-desktop-kde - DebianEdu KDE desktop applications
+education-desktop-other - DebianEdu desktop applications (non-GNOME, non-KDE)
+education-electronics - DebianEdu electronics related applications
+education-geography - DebianEdu applications for geography
+education-graphics - DebianEdu graphics related applications
+.....
+....
+\end{verbatim}
+	 
+\subsection{Алтернативи на \textit{dpkg} и \textit{apt}}
+
+
+За пояснение, самата инсталация на packages се прави от \man{dpkg}{8}
+(аналогично на \deb{rpm}), а \deb{apt} се използва за внасяне на
+допълнителна логика върху всичко това и правене на по-специални магии,
+които не са работа на \man{dpkg}{8} да знае и може (той си има
+достатъчно друга работа), на него \man{apt-get}{8} му подава готов
+набор от пакети за обработка.  Реално може да ползвате и само
+\man{dpkg}{8} (точно както и програмата \deb{rpm}) и без надстройка
+като \man{apt-get}{8} (или \man{dselect}{8}), но ако има някакви
+неудоволетворени зависимости и/или конфликти, \man{dpkg}{8} само ще
+изреве и ще спре работа и ще се оплаква докато не му ги доставите и
+подадете ръчно в съответния ред, вместо да даде предложения за решения
+и т.н., което е от компетенцията на \man{apt-get}{8} (и
+\man{dselect}{8}). Такива надстройки има и за \deb{rpm}, разбира се.
+Има и графични надстройки и над \deb{apt} като \deb{aptitude},
+\deb{synaptic}, \deb{gsynaptic}, \deb{stormpkg}, \deb{deity},
+\deb{gnome-apt}, \deb{kpackage}.  Последните две май са лош пример за
+такива ;-)
+
+
+Нека не се бъркат програмите пакетни менажери (като \deb{dpkg} и
+\deb{rpm}) със съответните пакетни бинарни формати (\texttt{.deb} и
+\texttt{.rpm}), с които те работят. Тези бинарни файлове (да речем,
+\texttt{.deb}) са просто един архив, който се разпознава и от програми
+като \man{ar}{1}, \man{tar}{1}, \man{file}{1}. Te се получават от
+съответните сорсове (source packages).  Те са си \texttt{.tgz} или
+\texttt{.tar.gz} архив, като са конфигурирани по подходящ начин, за да
+се компилират и инсталират коректно на съответната система, т.е.
+спазва се някакъв стил и политика. Реално пакетният менажер \deb{rpm}
+го има и в Debian, но не бива да се ползва директно за инсталиране на
+\texttt{.rpm} пакети, най-малкото понеже тези пакети не са подходящо
+конфигурани и едва ли спазват стила и практиката на Debian при
+изготвянето на пакети, т.е. те не го спазват и това не им е работа,
+разбира се.  Той е сложен за създаване на такива при добро желание от
+страна на потребителя.  Има и един пакет \deb{alien}, който е
+предназначен уж за подобно конвертиране на бинарните пакетни файлове,
+но трябва да се убедите и разгледате какво и как конвертира, защото не
+винаги го прави коректно.  Има maintainer scripts, които едва ли се
+генерират при едно такова конвертиране, такива scripts просто се
+създават за debian source packages и са си специфични за Debian.
+Такива \texttt{.rpm} пакети са конфигурирани за Red Hat, Mandrake,
+SuSE и т.н., дори за съответните версии на тези дистрибуции, като хич
+не е добра идея \texttt{.rpm} пакет, конфигуриран за Red Hat, да се
+инсталира, особено форсирано, на нещо различно от Red Hat като
+Mandrake, SuSE и т.н. Не си чупете дистрибуциите по този смешен начин,
+гледайки на пакетните файлове и пакетните менажери като на ябълки и
+круши {\ldots} ;-) Това хич не е GNU/Linux way{\ldots} Подобно поведение от
+страна на потребителите е лошо наследство от работата на сляпо с
+предишна операционна система (затворена), която лесно се обозава и
+плаче за преинсталация на определен период от време. Това са смешни
+истории и мисля, че са безкрайно ясни.
+         
+
+FIXME: Да се обясни повече за \deb{apt-listchanges},
+\deb{apt-listbugs}, \deb{apt-show-source}, \deb{apt-show-versions}.
+
+\textit{Документация}
+       
+
+Като нов потребител за начало ще е полезно да прочетете:
+         
+\begin{itemize} 
+
+\item \hlink{Install Manual за вашата хардуерна
+  архитектура}{http://www.debian.org/releases/stable/installmanual}
+  (пакет \deb{install-doc})
+  
+\item
+  \hlink{APT-HOWTO}{http://www.debian.org/doc/user-manuals\#apt-howto}
+  или \hlink{стария превод на
+    български}{http://danchev.fccf.net/files/docs/linux/apt-howto-bg/}
+  (пакет \deb{apt-howto-en})
+  
+\item
+  \hlink{quick-reference}{http://www.debian.org/doc/user-manuals\#quick-reference},
+  който е силно ориентирано към потребителя (пакет
+  \deb{debian-reference-en})
+  
+\item \hlink{apt-dpkg-ref}{http://people.debian.org/\textasciitilde
+    mrd/deb-ref/apt-dpkg-ref.html} --- бърз справочник за \deb{apt} и
+  \deb{dpkg} (пакет \deb{apt-dpkg-ref})
+  
+\item \hlink{Wiki pages за
+    APT}{http://www.spack.org/index.cgi/AptHelp}
+  
+\item Linux HOWTO's, mini-HOWTO's, FAQ's (пакети \deb{doc-linux-text}
+  и \deb{doc-linux-html})
+  
+\item Освен това може да е удобно да публикувате документация,
+  инсталирана във вашата система, във вашето уеб пространство за
+  по-лесно и бързо браузване.  Ето пакети, които правят това:
+
+  \begin{itemize}
+  \item \deb{dwww} показва документацията на адрес
+  \texttt{http://localhost/dwww}
+  \item \deb{dhelp} показва документацията на адрес
+  \texttt{http://localhost/doc/HTML}
+  \item \deb{doc-central} показва документацията на адрес
+    \texttt{http://localhost/dc}
+  \end{itemize}
+
+
+Можете да разгледате как би изглеждала цялата документация на
+\hlink{http://www.fifi.org/documentation/}{http://www.fifi.org/documentation/}
+
+\item още препратки към
+  \hlink{FAQ's}{http://www.linuks.mine.nu/debian-faq/}
+
+\end{itemize}

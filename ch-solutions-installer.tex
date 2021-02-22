@@ -1,0 +1,656 @@
+\chapter{Инсталация на Debian GNU/Linux Woody от CD-ROM на x86 PC}
+
+
+Доста сложна е задачата на инсталационния процес, като се има предвид
+броят поддържани хардуерни архитектури и начини на инсталация. Вече
+разбрахме, че като инсталатор на Debian за x86 машини може да се
+ползва и CD-ROM диска на Knoppix (\texttt{/usr/local/bin/knx-hdinstall}).
+
+
+Следва описание на инсталационната процедура от CD-ROM на Debian GNU/Linux Woody 
+върху x86 PC. Може би това е най-често срещаната ситуация при начинаещите потребители, 
+но това далеч не е единствения метод за инсталиране на Debian. 
+
+\section{Стартиране на инсталационния процес}
+
+
+Първо да укажем на компютъра да зарежда от CD-ROM-а при стартиране:
+
+Включваме компютъра и още в началото докато се инициализира BIOS-а (Basic Input/Output System) в
+долният край на екрана се появява надписът \textbf{Press DEL to enter Setup}.
+Натиснете клавиша \textbf{Delete} докато се вижда надписа, за да влезете в менюто с 
+настройките на \textbf{BIOS}. Ако сте с марков компютър (IBM,Dell,HP и т.н) то най-вероятно
+тази клавишна комбинация няма да е валидна за вас. Опитайте например с \textbf{F1} или 
+\textbf{F2}, понякога може да се наложи и да упорствате.
+ В самото меню навигацията се осъществява с клавишите със стрелките и Enter
+(изписано е на самото меню). След като сте влезли в менюто на BIOS-а изберете опцията
+\textbf{BIOS FEATURES SETUP} (или подобно). В новопоказалото се меню отидете на \textbf{Boot
+Sequence} или мястото, от където се указва подредбата на устройствата, от които зарежда
+компютъра. Там задайте първо да зарежда от CD-ROM-а (или \textbf{First Booting Device} да е
+\textbf{CD-ROM}). Сложете CD-ROM диска с Debian Woody в CD-ROM устройството След това натиснете
+\textbf{Esc}, за да отидете отново в главното меню и там изберете \textbf{SAVE AND EXIT
+SETUP}. Потвърдете с \textbf{Y(es)} и \textbf{Enter}. Компютърът ще се рестартира и ще опита да
+зареди първо от CD-ROM устройството.
+
+
+Компютърът зарежда от CD-ROM и се стига до \textbf{boot:} запитването. Ако натиснете
+\textbf{Enter} ще започнете инсталация на Debian с \textbf{kernel} (ядро) версия
+\textbf{2.2.20} (считано от някои за старо). Ако искате по-модерната версия \textbf{2.4}
+въведете на \textbf{boot:} bf24 (можете да разгледате наличните ядра с клавиша \textbf{F3} и
+да получите още разнообразна информация с клавиши от \textbf{F1} до \textbf{F10}).
+
+
+В тази примерна инсталация ще продължим с ядро версия \textbf{2.4}, така, че на
+\textbf{boot:} задаваме \textbf{bf24}. След натискането на \textbf{Enter} указаното ядро бива
+заредено и първият въпрос, които се показва пред нас е за избор на език на който да протече
+инсталацията.
+
+\section{Choose The Language}
+
+
+Тук се указва на какъв език да продължи инсталацията. В този пример ще изберем
+\textit{[en] (English)}. Показва се следният въпрос:
+
+
+\textbf{\textit{Choose language Variant}}
+
+Избираме \textit{English(United States)}
+
+
+Следват \textbf{\textit{Release Notes}}.
+
+Просто натиснете Enter :-)
+
+
+Ето ни в главното инсталационно меню на Debian GNU/Linux{\ldots} 
+
+
+\section{Debian GNU/Linux Installation Main Menu}
+
+
+Навигацията се осъществява със "стрелките" на клавиатурата и
+\textbf{Enter}. Нека да започнем работа, сега ;-). Изберете от менюто (маркирайте
+със стрелките и натиснете Enter):
+
+\subsection{1.Configure Keyboard}
+
+
+Изберете \textbf{qwerty/us}
+
+\subsection{2.Partition a Hard Drive}
+
+
+\textbf{\textit{Select Disk Drive}}
+
+
+Ако имате един IDE твърд диск най-вероятно ще бъде изписано \textbf{/dev/hda}.
+Ако е например /dev/sda - това означава, че сте късметлия и разполагате със SCSI
+твърд диск.В този пример ще приемем, че има само един - натискаме Enter. Ако обаче
+имате повече от един твърд диск ще трябва да зададете на кой ще инсталирате Debian.
+
+
+\textbf{\textit{LILO Limitations}}
+
+Enter
+
+
+\textbf{\textit{Note on additional space for the ReiserFS Journal}}
+
+Enter
+
+
+{\ldots} зарежда се програмата \textbf{cfdisk}. CFDISK е еквивалента на страшната команда
+fdisk в DOS - помните я нали? Разбира се и тук има команда fdisk, но повярвайте ми -
+работите ли веднъж със cfdisk - ще забравите за fdisk.
+Навигацията е със стрелките <- и -> за
+менюто долу, а с другите две в таблицата с дяловете (partition table) на твърдия
+диск. \textbf{Enter} селектира маркираната опция/дял. Ето как изглежда, ако
+предположим, че твърдия диск Ви е с големина 20GB и има два дяла (означени под
+Windows като C: и D:)
+
+
+\begin{center}
+cfdisk 2.11u \linebreak 
+Disk Drive: /dev/hda \linebreak
+Size:20560412672 bytes \linebreak
+Heads:255 Sectors per Track:63 Cylinders:2499 \linebreak
+
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline Name & Flags & Part. Type & FS(File System) & Type   & [Lablel] & Size(MB) \\
+\hline hda1 & Boot  & Primary    & Win95           & FAT32  &          & 6259.45  \\
+\hline hda2 &       & Primary    & Win95           & FAT32  &          & 14295.56 \\
+\hline
+\end{tabular}
+
+[Bootable] [Delete] [Help] [Maximize] [Print]
+
+[Quit] [Type] [Units] [Write]
+
+\end{center}
+
+
+Поради всевъзможните различия в големината на твърдите дискове и разделението им на
+дялове, не може да се даде пример, валиден за всеки един отделен случай. За това
+най-добре разгледайте \textbf{[Help]} секцията на \textbf{cfdisk}. И все пак, за да
+можем да продължим примерната инсталация ще приемем, че PC-то не е виждало що е то
+GNU/Linux - има два Primary (главни) дяла (като на схемата на cfdisk по-горе). (ако
+преди това сте инсталирали на компютъра си някоя друга GNU/Linux дистрибуция и дяла й
+все още е на твърдия диск, Debian ще го засече и ще Ви предложи да използвате вече
+съществуващия дял, без да е нужно да правите нов. По този начин си спестявате
+частта Partition a Hard Drive и продължавате с останалите стъпки.)
+
+
+Сега да продължим по сценария - един 20GB твърд диск с два дяла под Windows{\ldots} 
+За да създадем дял за Debian ще трябва да изтрием втория дял (на първия евентуално се
+намира операционната система Windows, която не желаем да затрием.. поне за сега
+;-) ) и от освободилото се място (Free Space както го показва cfdisk) да направим
+няколко нови дяла - един за Windows, един за GNU/Linux и един swap дял (играе ролята на
+виртуална RAM памет, само че доста по-бавна, тъй като е създадена на твърдия диск).
+Маркираме с помощта на стрелките втория дял с име (Name в cfdisk) hda2. След като е
+маркиран дяла hda2 избираме от менюто на cfdisk опцията \textbf{[Delete]} (така
+изтриваме втория дял и мястото, което той е заемал се освобождава като Free Space;
+\textbf{имайте предвид, че при това изтриване ще изгубите всичката информация съхранявана
+на втория дял}; ако сте задали само \textbf{[Delete]} не се безпокойте, промените
+не се записват докато не се зададе \textbf{[Write]} от менюто на cfdisk. Така че
+можете просто да дадете \textbf{[Quit]}, без това да се отрази по някакъв начин на
+информацията на Вашия твърд диск.) В нашия пример ще предположим, че всички ценни
+данни от втория дял са били предварително прехвърлени на първия. Така втория дял е
+изтрит и е освободено мястото, което той е заемал - точно 14295.56MB. Сега да
+създадем новите дялове: първо Windows дяла - селектираите Free Space-а от таблицата
+на cfdisk и от менюто изберете \textbf{[New]}. Трябва да укажете колко MB желаете
+да е дяла, например 9000MB. Въвеждате числото 9000 и натиснете Enter.
+Докато е маркиран новонаправения дял изберете \textbf{[Type]} от менюто. Показва се
+таблица с различните файлови системи (FS), които могат да бъдат указани с cfdisk и
+съответстващия им код (номер). Ако в долния край на екрана пише \textit{Press any
+key to continue} натиснете един произволен клавиш. Показва се краят на таблицата и
+следният текст: \textit{Enter filesystem type:82}. Тук се въвежда кодът съответсващ
+на файловата система, която искаме да укажем за новия дял. Най-вероятно ще е
+зададен кодът \textbf{82}, съответстващ на файловата система за Linux -
+\textbf{ext2}. Но ние желаем да зададем дял за Windows, за това ще въведем
+съотвестващият код - \textbf{0B} (нула B). Новият дял е готов. Сега по същата схема
+да направим дял и за Debian - маркиране на Free Space, \textbf{[New]}, задаване на
+големината на дяла - 5000MB, после \textbf{[Type]} - код \textbf{82}. И за swap
+дяла - \textbf{[New]}, задайте цялото оставащо място (по принцип и 100-200MB са
+предостатъчни), \textbf{[Type]} - код \textbf{83}. Това е само пример как се работи
+с cfdisk. Можете да си поиграете с дяловете на Вашия твърд диск, но без да задавате
+\textbf{[Write]} освен, ако не сте сигурни, че искате да запазите новосъздадения
+ред в таблицата с дялове. Така след като сме си свършили работата с дяловете и
+искаме да запазиме новата подредба избираме \textbf{[Write]} и отговаряме на
+въпроса \textit{Do you want (to) write the partition table to disk?} с
+\textit{Yes}, за да бъдат записани промените. След това \textbf{[Quit]} и отиваме
+на:
+
+\subsection{3.Initialize and Activate a Swap Partition}
+
+
+\textbf{\textit{Scan for Bad Blocks}}
+
+Задайте No, освен ако Вашият твърд диск е от по--старичките или просто
+искате да бъде направена проверката за лоши блокове.
+
+
+\textbf{\textit{Are you sure?}}
+
+Yes
+
+\subsection{4.Initialize a Linux Partition}
+
+
+\textbf{\textit{Choose Filesystem Type}}
+
+Ако нямате представа за какво става въпрос, просто изберете \textbf{ext2} ;-)
+
+
+\textbf{\textit{Select Partition}}
+
+Тук изберете дяла, който създадохте с cfdisk. От примера - \textbf{/dev/hda3:Linux
+native}
+
+
+\textbf{\textit{Scan for Bad Blocks?}}
+
+Както при swap-a.
+
+
+\textbf{\textit{Are you sure?}}
+
+Yes ;-) След това се създава файловата система и се появява въпросът:
+
+
+\textbf{\textit{Mount as the Root Filesystem?}}
+
+Yes
+
+\subsection{5.Install Kernel and Driver Modules}
+
+
+\textbf{\textit{Found a Debian CD-ROM}}
+
+Yes и изчакайте да свърши копирането.
+
+\subsection{6.Configure Device Driver Modules}
+
+
+\textbf{\textit{Note about loaded drivers}}
+
+Enter
+
+
+\textbf{\textit{Select Category}}
+
+Ако не сте сигурни просто изберете \textbf{Exit(Finished. Return to previous menu)}
+
+\subsection{7.Configure the host name}
+
+
+\textbf{\textit{Choose the Hostname}}
+
+Тук задавате името на машината Ви или така напечения hostname. По подразбиране е
+debian.
+
+\subsection{8.Install the Base System}
+
+
+\textbf{\textit{Select Installation Media}}
+
+\textbf{cdrom:CD-ROM drive}
+{\ldots} ако имате повече от едно CD-ROM устройство ще се появи следния въпрос:
+
+
+\textbf{\textit{Select CD-ROM drive}}
+
+Ако не знаете кое устройство да зададете, изберете едно и потвърдете с
+Enter. И след като на следващия въпрос:
+
+
+\textbf{\textit{Please insert the CD-ROM}}
+
+натиснете Enter се появи: \textbf{\textit{Mount failed}}
+значи сте избрали грешния CD-ROM (!диска с Debian Woody трябва да е в едно от
+CD-ROM устройствата!). Не се притеснявайте --- дайте пак Enter и се
+връщате обратно в главното инсталационно меню. Там пак изберете
+\textbf{\textit{Install the Base System}} като продължите по същия път, само че
+сега задайте правилното CD-ROM устройство.
+
+
+\textbf{\textit{Select Archive path}}
+
+Enter
+{\ldots} започва инсталацията на най-важните пакети, тоест Base System-a. Ако всичко е
+протеклно нормално, пак ще се озовете в \textbf{\textit{Installation Main Menu}}.
+
+\subsection{9.Make System Bootable}
+
+
+\textbf{\textit{Select Archive path}}
+
+Препоръчително е да изберете \textbf{/dev/hda:Install LILO in MBR}.
+
+
+\textbf{\textit{Other bootable partitions}}
+
+Изберете \textbf{Include all into the menu}. Така ще можете да зареждате всички
+операционни системи, инсталирани на компютъра Ви.
+
+
+\textbf{\textit{Securing LILO}}
+
+Enter
+
+\subsection{10.Make a Boot Floppy?}
+
+
+В тази част от инсталацията имате възможност да създадете дискета, от която
+евентуално можете да зареждате Debian-а си.
+
+
+\textbf{\textit{Change Disk}}
+
+Ако искате да направите подобна дискета, сложете във флопито една (!ако има
+някаква информация на нея, то тя ще бъде загубена!) и натиснете Enter.
+Ако ли не --- само натиснете Enter и на изскочилия
+
+
+\textbf{\textit{Problem}}
+
+просто натиснете Enter. Това по никакав начин не пречи на инсталацията Ви.
+Ето ни обратно в \textbf{\textit{Installation Main Menu}}.
+
+\subsection{11.Reboot the System}
+
+
+Ще рестартираме системата.
+
+\textbf{\textit{Reboot the system?}}
+
+Ако има някакви дискети или CD-ROM-и, извадете ги от съответните устройства и
+задайте Yes. Reboot{\ldots} 
+
+
+След рестартирането се появява LILO Boot Menu-то. От тук избирате коя операционна
+система (OS) да бъде заредена. Избираме Linux и Enter. Започва се
+конфигурирането{\ldots} 
+
+\section{Debian System Configuration}
+
+
+Enter
+
+\subsection{Time Zone Configuration}
+
+
+\textbf{\textit{Is the hardware clock set to GMT?}}
+
+Ако имате няколко различни OS на компютъра по-добре изберете No, защото
+може да се получи една хубава каша{\ldots} 
+
+
+\textbf{\textit{What area do you live in?}}
+
+\textbf{None of the above}
+FIXME: виж малко по-надолу
+
+
+\textbf{\textit{Select a city or time zone:}}
+
+Изберете \textbf{UTC}.
+FIXME. Препоръчително е тъй като се намирате на 2h време от GMT, да изберете България/София, или просто GMT+2.
+Имайте предвид, че дори и да изберете град със същата часова зона, daylight saving time (лятното часово време)
+не е същото. Имайте го предвид ако си настроите Кайро, Истанбул или нещо от сорта, че все пак не е София ;-)
+
+\subsection{Password setup}
+
+
+\textbf{\textit{Shall I enable md5 passwords?}}
+
+Yes
+
+
+\textbf{\textit{Shall I enable shadow passwords?}}
+
+Yes
+
+
+\textbf{\textit{Enter a password for root:}}
+
+Въведете парола за \textbf{root} (това е най-важния потребител на системата или
+още администраторa; за него няма ограничения в действията - може да
+отвори/изтрие/модифицира всеки файл/директория на системата)
+
+
+\textbf{\textit{Re-enter password to verify:}}
+
+Въведете отново същата парола за потвърждение.
+
+
+\textbf{\textit{Shall I create a normal user account now?}}
+
+За създаване на обикновен потребителски акаунт, който се използва обикновено вместо
+\textbf{root} акаунта (използването на \textbf{root} по време на irc сесии,
+разглеждане на сайтове и тем подобни се счита за рисково относно сигурността на
+системата)
+
+
+\textbf{\textit{Enter a username for your account:}}
+
+Въведете потребителско име за новия акаут.
+
+
+\textbf{\textit{Enter a username for your account:}}
+
+"Въведете пълно име за новия потребител"{\ldots} може да въведете и произволен текст, а
+може и нищо да не въвеждате - само да натиснете Enter.
+
+
+\textbf{\textit{Enter a password for the new user:}}
+
+Паролата{\ldots} и след това още веднъж{\ldots} 
+
+
+{\ldots} ето ни пак в \textbf{\textit{Debian System Configuration}}.
+
+
+\textbf{\textit{Shall I remove the pcmcia packages}}
+
+Yes (в този пример се предполага, че към системата няма pcmcia устройства,
+както би било с някой най-обикновен компютър за домашна употреба)
+
+
+\textbf{\textit{Do you want to use a PPP connection to install the system?}}
+
+No
+
+\subsection{Apt Configuration}
+
+
+\textbf{\textit{Choose the method apt should use to access the Debian archives}}
+
+За сега задайте само \textbf{cdrom}. Ако диска не е бил поставен в CD-ROM-а ---
+поставете го.
+
+
+\textbf{\textit{Enter CD-ROM device file:}}
+
+Само поставете диска и натиснете Enter. Диска бива сканиран и следва
+въпроса:
+
+
+\textbf{\textit{Scan another CD}}
+
+{\ldots} дали желаете да се сканира друг диск. Ако разполагата само с диска, с който
+извършихте инсталацията изберете No. Ако имате още Debian дискове, можете
+да зададете Yes и те да бъдат сканирани, за да знае системата и за
+намиращите се в тях пакети.
+
+
+\textbf{\textit{Add another apt source?}}
+
+Засега No.
+Оставете това за по-късно, запомнете командата apt-setup, тя ще ви пести copy\&paste ;-)
+
+
+\textbf{\textit{Use security updates from security.debain.org?}}
+
+За сега No. По-късно като се вържем към Интеренет и ще нагласим тези
+настройки.
+
+
+Ето ни обратно в \textbf{\textit{Debian System Configuration}}.
+
+
+\textbf{\textit{Run tasksel?}}
+
+No
+
+
+\textbf{\textit{Run dselect?}}
+
+No
+
+
+\textbf{\textit{Do you want to continue?}}
+
+Yes
+
+
+\textbf{\textit{Do you want to erase any previously downloaded deb files?}}
+
+Yes
+
+
+\textbf{\textit{Press enter to continue}}
+
+Enter. Следва конфигурирането на exim:
+
+
+\textbf{\textit{I can do some{\ldots} bla bla{\ldots}}}
+
+Enter. За да не се занимавате с конфигурацията на exim, можете да зададете
+5 и да натиснете Enter. Ако не - четете менютата{\ldots} 
+
+
+\begin{center}
+\textbf{\textit{Thank you for choosing Debian}}
+\end{center}
+
+
+Честит Ви новичък Debian Woody :). Сега можете да влезете в системата като
+root или "обикновения" потребител, който създадохте по време на
+инсталацията. Няколко подробности: ако желаете да рестартирате машината, въведете
+следната командата като root:
+\begin{verbatim}
+# shutdown -r now
+\end{verbatim}
+Същият ефект можете да постигнете със популярната клавишна комбинация \textbf{Ctrl+Alt+Del}.
+
+
+За изключване на компютъра:
+\begin{verbatim}
+# shutdown -h now
+\end{verbatim}
+
+
+За повече информация относно \man{shutdown}{8}. За информация относно някоя
+команда:
+\begin{verbatim}
+$ man команда
+\end{verbatim}
+
+\chapter{Разработка на официалния debian-installer и други installer(s)}
+
+\section{Официалният debian-installer}
+
+
+До Woody 3.0 официалния инсталатор се наричаше \texttt{boot-floppies}, за 
+следващото стабилно издание Sarge вече има нов проект (или по-точно голямо 
+разширение на предния) който се нарича \texttt{debian-installer}. CVS хранилище 
+на двата проекта можете да намерите на \hlink{cvs.debian.org}{cvs.debian.org}.
+Официалната страница на новия инсталатор можете да намерите на 
+\hlink{http://www.debian.org/devel/debian-installer/}{http://www.debian.org/devel/debian-installer/}.
+
+
+Основните обвинения към официалния инсталатор са към единствения
+засега текстов интерфейс и скромния hardware autodetecting, но пък от
+друга страна има и потребители, които не искат и да чуят за повече от
+това. За да бъдат всички доволни, се подхожда колкото е възможно
+по-модулно и с "`повече лица"', т.е. предлага се общ базов протокол за
+минималните и задължителни неща, които трябва да присъстват в един
+такъв инсталатор, справящ се с доста хардуерни архитектури и начини на
+инсталация, като отгоре му вече се избира опционално видът на
+интерфейса (text, dialog, debconf, slang, gtk и др.), дали да се прави
+hardware autodetecting и по какъв начин, с използването на програми
+като \deb{kudzu}, \deb{discover} и т.н. Това е в процес на разработка и 
+ще бъде официалния инсталатор за Sarge.
+
+\section{\textit{pgi}: The Progeny Graphical Installer}
+
+
+Този инсталатор има \hlink{собствен
+  сайт}{http://hackers.progeny.com/pgi/}, както и пакет \deb{pgi}.
+
+
+А както и хранилище на \hlink{alioth.debian.org/projects/pgi}{alioth.debian.org/projects/pgi}.
+
+
+\hlink{Progeny}{http://www.progeny.com} реши да предостави Debian 3.0
+Woody i386 installer images, базирани на
+\hlink{PGI}{http://archive.progeny.com/progeny/pgi/} 1.0.1 (свободен
+лизенз).  ISO image (има и \hlink{bg
+  mirror}{http://mirrors.ludost.net/cd-images/linux/debian/pgi/})
+съдържа само базова инсталация, като се прави hardware autodetection и
+ви се предлага да изберете групи от пакети.  След което може да
+продължите с инсталиране на пакети от външен източник, например
+насочвайки apt към друго Debian CD, HTTP или FTP mirror и т.н.
+
+
+Има и \hlink{снимки}{http://hackers.progeny.com/pgi/screenshots/} на
+това, как изглежда началото на инсталацията с PGI 0.9.6.
+
+
+Дори можете да си създадете инсталатор по ваш вкус и желание,
+ползвайки като основа кода и документацията:
+
+\begin{itemize}
+\item \hlink{Creating Debian Installers with
+    PGI}{http://hackers.progeny.com/pgi/guide.html}
+\item \hlink{The Discover Hardware Detection
+    System}{http://hackers.progeny.com/discover/doc/guide.html}, която
+  е включена и в Debian като \deb{discover};
+\item \deb{autoinstall}: Progeny Debian auto-installation system
+\item \deb{autoinstall-i386}: Progeny Debian auto-installation system
+  --- i386-specific files
+\end{itemize}
+
+\section{\textit{fai}: Fully Automatic Installation for Debian GNU/Linux}
+
+\begin{itemize}
+\item \hlink{официален сайт}{http://www.informatik.uni-koeln.de/fai/}
+\item пакет \deb{fai}
+\end{itemize}
+
+
+Целевата група на FAI са системните администратори, които имат за
+задача да инсталират Debian на множество машини. Може да се използва
+за инсталиране на Beowulf cluster, rendering farm, web server farm или
+linux лаборатория или classroom. Също така large-scale linux мрежи с
+разнообразен хардуер и различни инсталационни изисквания не са проблем
+при използването на FAI. Това е автоматизиран инсталационен инструмент
+за Debian GNU/Linux, подобен на, но по-добър (според автора) от
+инструменти като kickstart за Red Hat, yast и alice за SuSE, lui от
+IBM или Jumpstart за Solaris.
+
+\section{SystemInstaller, SystemImager, SystemConfigurator}
+
+
+\deb{systeminstaller}
+
+
+Creates Linux distribution images from a set of packages
+SystemInstaller creates Linux distribution images from a set of
+packages and specification files.  Working in conjunction with
+SystemImager and SystemConfigurator, these images can then be
+installed to machines throughout your cluster/network.  As a
+side-effect, it can be used as a tool for building chroot environments
+for many package based distributions. Further details can be found at
+\hlink{http://systeminstaller.sourceforge.net}{http://systeminstaller.sourceforge.net} and
+\hlink{http://sisuite.org}{http://sisuite.org}.
+
+
+\deb{systemimager-common}
+
+
+SystemImager ramdisk for client nodes SystemImager is a set of
+utilities for installing GNU/Linux images to clients machines over the
+network.  Images are stored in flat files on the server, making
+updates easy.\ rsync is used for transfers, making updates efficient.
+\hlink{http://www.systemimager.org/download/}{http://www.systemimager.org/download/}
+
+
+\deb{systemconfigurator}
+
+
+Unified Configuration API for Linux Installation Provides an API for
+various installation and configuration processes that are otherwise
+inconsistent between the many Linux distributions, and the many
+architectures they run on.  For example, you can configure the
+bootloader on a system in a general way - you don't need to know
+anything about the particular boot loader on the system.  You can
+update the network settings of a system, without knowing the
+distribution or the format of its network configuration files.
+
+\section{Replicator}
+
+
+\deb{replicator}: Автоматизирана инсталация през мрежа. Използвайки
+nfs-root файлова система и \deb{rsync}, \deb{replicator} ви позволява
+интерактивно да използвате като източник компютър с инсталирана
+система, която да пренесете върху друга машина през мрежата, като
+взима предвид различията в разделянето на дисковите дялове и в
+хардуера. Специално проектиран за клъстери, класни стаи и всякакви
+идентични помежду си компютри, това наистина е най-бързият метод на
+инсталация.
+
+
+Който и източник на инсталация с даден инсталатор да ползвате, все ще
+получите стандартен Debian Base (т.е. стандартна базова инсталация на Debian). 
+

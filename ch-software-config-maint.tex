@@ -1,0 +1,226 @@
+\chapter{Конфигуриране на пакети - проблеми и решения}
+        
+
+В Debian са предвидени добре обмислени и стандартизирани процедури за
+почти всякакви ситуации. Освен наличието на такива за правилното
+инсталиране на софтуера, съществуват и такива за неговото
+преконфигуриране в най-различни аспекти. Имплементацията наистина е
+много сериозна, но за съжаление не много потребители обръщат внимание
+на това, а това е прекрасен източник за придобиване на чужди знания и
+опит (особено за хакерите на Perl, а вече и Python). Ще е много добре,
+ако сте запознати със стандартните GNU development tools, като
+\deb{autoconf}, \deb{automake}, \deb{make}, \deb{gcc}, познания по
+shell и особено по Perl скритиране също ще са от голяма полза. Всичко
+това, разбира се, е част от скромния ни опит да погледнем по надълбоко
+в една Debian система.
+
+\section{Официалните документи}
+         
+
+Официалните документи, които се съблюдават са:
+         
+\begin{itemize}
+\item \hlink{Debian New Maintainers'
+    Guide}{http://www.debian.org/doc/maint-guide/}
+\item \hlink{Debian Developer's
+    Reference}{http://www.debian.org/doc/developers-reference/}
+\item \hlink{Debian Policy
+    Manual}{http://www.debian.org/doc/debian-policy/}
+\item \hlink{Debian Perl
+    Policy}{http://www.debian.org/doc/packaging-manuals/perl-policy/}
+\item \hlink{Debian MIME
+    Policy}{http://www.debian.org/doc/packaging-manuals/mime-policy/}
+\item \hlink{Debian Java
+    Policy}{http://www.debian.org/doc/packaging-manuals/java-policy/}
+\end{itemize}
+         
+
+Това са правилата, които са създадени и се спазват от debian
+maintainers, като те могат да са и upstream developers на код,
+специфичен или неспецифичен за Debian.
+
+
+Както и с документите:
+\begin{itemize}
+\item \hlink{Debian Package Management HOWTO Version
+    1.2}{http://www.linuxorbit.com/modules.php?op=modload\&name=Sections\&file=index\&req=viewarticle\&artid=535}
+\item \hlink{Debian New Maintainer's
+    Guide}{http://www.debian.org/doc/maint-guide/}, още достъпен и
+  като пакет \deb{maint-guide}, или стария му превод на
+  \hlink{http://debian.gabrovo.com/docs/maint-guide/}{http://debian.gabrovo.com/docs/maint-guide/}
+\item \hlink{How To Create Your Own Debian
+    Package}{http://www.kclee.com/clemens/unix/HowToCreateYourOwnDebianPackage.html}
+\item Ако ползвате локални (персонални) apt repositories, ето този
+  бърз пример: 
+  \hlink{http://www.symonds.net/\textasciitilde rajesh/localdeb.html}{http://www.symonds.net/\textasciitilde rajesh/localdeb.html}
+\item повече обяснения можете да намерите в \hlink{Debian Repository
+    HOWTO}{http://www.isotton.com/debian/docs/repository-howto/}
+\item навярно ще ви е полезен и пакета \deb{mini-dinstall}:
+\end{itemize}
+
+\section{Многото лица на \textit{debconf}}
+
+\begin{itemize}
+\item \hlink{The many faces of
+    Debconf}{http://kitenet.net/programs/debconf/}
+\item \man{debconf}{1}
+\item \deb{debconf}, \deb{debconf-utils}, \deb{debconf-devel}
+\end{itemize}
+
+
+Като \texttt{frontend} към пакетите ползващи \deb{debconf} като конфигиратор 
+може да използвате пакета \deb{configure-debian}. При стартирането на едноименната 
+команда се появява списък на тези пакети групирани тематично.
+
+\subsection{Обработване на конфигурационните файлове на пакетите} 
+
+
+Това става чрез \deb{debconf}-скриптове, извиквани от maintainer
+scripts:
+         
+\begin{verbatim}
+# apt-get install base-files
+Preparing to replace base-files 3.0.5 (using .../base-files_3.0.6_i386.deb)...
+Unpacking replacement base-files ...
+Setting up base-files (3.0.6) ...
+Configuration file `/etc/profile'
+==> Modified (by you or by a script) since installation.
+==> Package distributor has shipped an updated version.
+
+What would you like to do about it ? Your options are:
+
+Y or I : install the package maintainer's version
+N or O : keep your currently-installed version
+D : show the differences between the versions
+Z : background this process to examine the situation
+
+The default action is to keep your current version.
+*** profile (Y/I/N/O/D/Z) [default=N] ? I
+
+Installing new version of config file /etc/profile ...
+\end{verbatim}
+
+\subsection{Манипулация на файлове от други пакети} 
+
+
+\textit{Divertions на файлове} е начин да се укаже на \man{dpkg}{8} да
+инсталира даден файл или файлове от даден пакет не точно на неговото
+място, а на друго, с цел добавяне на някаква допълнителна
+функционалност. Обикновено от maintainer scripts се извиква
+\man{dpkg-divert}{8}, така щото файлове от даден пакет да могат да
+бъдат модифицирани при инсталирането или премахването на този пакет.
+Това например се наблюдава при инсталирането и премахването на пакета
+\deb{dpkg-cross}. Нека преди да инсталираме \deb{dpkg-cross} да
+направим следната проверка, т.е. с кой пакет идва скрипта
+\textbf{/usr/bin/dpkg-buildpackage}:
+         
+\begin{verbatim}
+# dpkg -S /usr/bin/dpkg-buildpackage
+dpkg-dev: /usr/bin/dpkg-buildpackage
+\end{verbatim}
+
+
+Нека сега да инсталираме \deb{dpkg-cross} и да наблюдаваме неговото поведение:
+
+\begin{verbatim}
+# apt-get install dpkg-cross
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following NEW packages will be installed:
+dpkg-cross
+0 packages upgraded, 1 newly installed, 0 to remove and 19 not upgraded.        
+Need to get 43.7kB of archives. After unpacking 205kB will be used.
+Get:1 ftp://ftp.de.debian.org stable/main dpkg-cross 1.13.1 [43.7kB]
+Fetched 43.7kB in 27s (1607B/s)
+Selecting previously deselected package dpkg-cross.
+(Reading database ... 154258 files and directories currently installed.)
+Unpacking dpkg-cross (from .../dpkg-cross_1.13.1_all.deb) ...
+Adding `diversion of /usr/bin/dpkg-buildpackage to
+/usr/bin/dpkg-buildpackage.orig by dpkg-cross'
+Adding `diversion of /usr/bin/dpkg-shlibdeps to
+/usr/bin/dpkg-shlibdeps.orig by dpkg-cross'
+Setting up dpkg-cross (1.13.1) ...
+Updating Debian Packages of System Configurations.
+\end{verbatim}
+         
+
+Обърнете внимание какво ни се съобщава с реда \texttt{Adding diversion{\ldots}}. 
+Файлът \texttt{/usr/bin/dpkg-buildpackage} е бил преименуван
+на \texttt{/usr/bin/dpkg-buildpackage.orig}, т.е. заместен с друга
+версия на този файл, идваща с пакета \deb{dpkg-cross}. Това се прави
+от неговия postinst-скрипт, който освен в директория \texttt{debian} в
+сорс пакета можете да намерите и в
+\texttt{/var/lib/dpkg/info/dpkg-cross.postinst}, след неговото
+инсталиране, разбира се. Този файл ще бъде върнат в предишното си
+състояние при премахването на пакета \deb{dpkg-cross}.  Това се прави
+от неговия prerm-скрипт. Този \textit{diversion}, извършван от
+\deb{dpkg-cross}, в случая е необходим, за да се модифицира скрипта
+\texttt{dpkg-buildpackage}, така че да може да поддържа
+крос-компилиране.  За повече детайли вижте документацията на
+\deb{dpkg-cross}. Забележете, че \deb{dpkg-cross} изисква наличието на
+пакета \deb{dpkg-dev}, в който се съдържа оригиналния скрипт
+\texttt{/usr/bin/dpkg-buildpackage} и който ще бъде модифициран:
+         
+\begin{verbatim}
+# apt-cache show dpkg-cross | grep Depends
+Depends: dpkg-dev, perl5 | perl
+\end{verbatim}
+         
+
+След като сме инсталирали \deb{dpkg-cross}, проверяваме какво ще ни
+каже \texttt{dpkg -S} за \texttt{/usr/bin/dpkg-buildpackage}:
+        
+\begin{verbatim}
+# dpkg -S /usr/bin/dpkg-buildpackage
+diversion by dpkg-cross from: /usr/bin/dpkg-buildpackage
+diversion by dpkg-cross to: /usr/bin/dpkg-buildpackage.orig
+dpkg-cross, dpkg-dev: /usr/bin/dpkg-buildpackage
+\end{verbatim}
+        
+
+Т.е. вече е регистриран факта за модификацията на оригиналния скрипт
+\texttt{/usr/bin/dpkg-buildpackage} и потребителя се информира за
+това, когато попита с \texttt{dpkg -S}.
+         
+
+Нека сега премахнем пакета \deb{dpkg-cross} и пак да наблюдаваме какво става:
+         
+\begin{verbatim}
+# apt-get --purge remove dpkg-cross
+Reading Package Lists... Done
+Building Dependency Tree... Done
+The following packages will be REMOVED:
+dpkg-cross*
+0 packages upgraded, 0 newly installed, 1 to remove and 19 not upgraded.
+Need to get 0B of archives. After unpacking 205kB will be freed.
+Do you want to continue? [Y/n]
+(Reading database ... 154276 files and directories currently installed.)
+Removing dpkg-cross ...
+Removing `diversion of /usr/bin/dpkg-buildpackage to
+/usr/bin/dpkg-buildpackage.orig by dpkg-cross'
+Removing `diversion of /usr/bin/dpkg-shlibdeps to
+/usr/bin/dpkg-shlibdeps.orig by dpkg-cross'
+
+Purging configuration files for dpkg-cross ...
+Updating Debian Packages of System Configurations.
+\end{verbatim}
+
+
+Обърнете внимание, че вече ни се съобщава за \texttt{Removing diversion {\ldots}}.  
+Т.е. нещата се връщат наистина в изходна позиция. Естествено, пак ще попитаме:
+         
+\begin{verbatim}
+# dpkg -S /usr/bin/dpkg-buildpackage        
+dpkg-dev: /usr/bin/dpkg-buildpackage
+\end{verbatim}
+        
+
+Вече се съобщава само за \deb{dpkg-dev} и нямаме наличието на
+diversion, която беше добавена от \deb{dpkg-cross}.  Т.е. след тези
+гимнастики имаме чисто премахване, въпреки промените и по файлове от
+чужди пакети, осъществавяни от \deb{dpkg-cross}.
+         
+
+Реализацията с код на това не е сложна, разбира се. Важното е, че е
+предвиден и подобен начин на модификация на файловете, идващи с
+пакетите.
